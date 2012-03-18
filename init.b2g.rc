@@ -1,0 +1,23 @@
+on early-init
+    export TMPDIR /data/local/tmp
+    export LD_LIBRARY_PATH /vendor/lib:/system/lib:/system/b2g
+
+service httpd /system/bin/busybox httpd -f -p 127.0.0.1:7777 -h /
+    class main
+    user root
+    group inet cache misc net_admin net_raw log
+
+service fakeperm /system/bin/fakeperm
+    class main
+    user root
+
+service b2g /system/b2g/b2g
+    class main
+    onrestart restart media
+
+service rilproxy /system/bin/rilproxy
+    class main
+    socket rilproxy stream 660 root system
+    socket rilproxyd stream 660 root system
+    user root
+    group radio
