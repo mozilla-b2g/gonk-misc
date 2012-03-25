@@ -21,3 +21,7 @@ service rilproxy /system/bin/rilproxy
     socket rilproxyd stream 660 root system
     user root
     group radio
+
+service mount-sdcard /system/bin/mountvol.sh sdcard
+    class main
+    oneshot
