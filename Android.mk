@@ -45,3 +45,13 @@ LOCAL_MODULE_CLASS := EXECUTABLES
 LOCAL_SRC_FILES    := mountvol.sh
 LOCAL_MODULE_PATH  := $(TARGET_OUT_EXECUTABLES)
 include $(BUILD_PREBUILT)
+
+$(OUT_DOCS)/api-stubs-timestamp:
+	mkdir -p `dirname $@`
+	touch $@
+	mkdir -p $(TARGET_OUT_COMMON_INTERMEDIATES)/JAVA_LIBRARIES/android_stubs_current_intermediates/src
+
+$(call intermediates-dir-for,APPS,framework-res,,COMMON)/package-export.apk:
+	mkdir -p `dirname $@`
+	touch `dirname $@`/dummy
+	zip $@ `dirname $@`/dummy
