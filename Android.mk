@@ -55,3 +55,45 @@ $(call intermediates-dir-for,APPS,framework-res,,COMMON)/package-export.apk:
 	mkdir -p `dirname $@`
 	touch `dirname $@`/dummy
 	zip $@ `dirname $@`/dummy
+
+#
+# Gecko glue
+#
+
+include $(CLEAR_VARS)
+GECKO_PATH := gecko
+GECKO_OBJDIR := $(LOCAL_PATH)/objdir-gecko
+MOZCONFIG_PATH := $(LOCAL_PATH)/default-gecko-config
+UNICODE_HEADER_PATH := $(abspath $(LOCAL_PATH)/Unicode.h)
+
+LOCAL_MODULE := gecko
+LOCAL_MODULE_CLASS := DATA
+LOCAL_MODULE_TAGS := optional eng
+LOCAL_SRC_FILES := b2g.tar.gz
+LOCAL_MODULE_PATH := $(TARGET_OUT)
+include $(BUILD_PREBUILT)
+
+$(LOCAL_INSTALLED_MODULE):
+	@echo Install dir: $(TARGET_OUT)/b2g
+	rm -rf $(TARGET_OUT)/b2g
+	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
+
+GECKO_MAKE_FLAGS ?= -j16
+GECKO_LIB_DEPS=$(addprefix $(TARGET_OUT_STATIC_LIBRARIES)/,libm.so libc.so libdl.so liblog.so libmedia.so)
+
+.PHONY: $(LOCAL_PATH)/b2g.tar.gz
+$(LOCAL_PATH)/b2g.tar.gz: $(GECKO_LIB_DEPS)
+	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
+	export GONK_PRODUCT="$(TARGET_DEVICE)" && \
+	export TARGET_TOOLS_PREFIX="$(abspath $(TARGET_TOOLS_PREFIX))" && \
+	export GONK_PATH="$(abspath .)" && \
+	export GECKO_OBJDIR="$(abspath $(GECKO_OBJDIR))" && \
+	export USE_CACHE=$(USE_CCACHE) && \
+	export MAKE_FLAGS="$(GECKO_MAKE_FLAGS)" && \
+	export MOZCONFIG="$(abspath $(MOZCONFIG_PATH))" && \
+	export EXTRA_INCLUDE="-include $(UNICODE_HEADER_PATH)" && \
+	echo $(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
+	$(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
+	$(MAKE) -C $(GECKO_OBJDIR) package && \
+	cp $(GECKO_OBJDIR)/dist/b2g-*.tar.gz $@
+
