@@ -79,10 +79,17 @@ $(LOCAL_INSTALLED_MODULE):
 	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
 
 GECKO_MAKE_FLAGS ?= -j16
-GECKO_LIB_DEPS=$(addprefix $(TARGET_OUT_STATIC_LIBRARIES)/,libm.so libc.so libdl.so liblog.so libmedia.so)
+GECKO_LIB_DEPS := \
+	libm.so \
+	libc.so \
+	libdl.so \
+	liblog.so \
+	libmedia.so \
+	libstagefright.so \
+	libstagefright_omx.so
 
 .PHONY: $(LOCAL_PATH)/b2g.tar.gz
-$(LOCAL_PATH)/b2g.tar.gz: $(GECKO_LIB_DEPS)
+$(LOCAL_PATH)/b2g.tar.gz: $(addprefix $(TARGET_OUT_STATIC_LIBRARIES)/,$(GECKO_LIB_DEPS))
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
 	export GONK_PRODUCT="$(TARGET_DEVICE)" && \
 	export TARGET_TOOLS_PREFIX="$(abspath $(TARGET_TOOLS_PREFIX))" && \
