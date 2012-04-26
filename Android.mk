@@ -62,14 +62,13 @@ $(call intermediates-dir-for,APPS,framework-res,,COMMON)/package-export.apk:
 
 include $(CLEAR_VARS)
 GECKO_PATH := gecko
-GECKO_OBJDIR := $(LOCAL_PATH)/objdir-gecko
+GECKO_OBJDIR := $(TARGET_OUT_INTERMEDIATES)/objdir-gecko
 MOZCONFIG_PATH := $(LOCAL_PATH)/default-gecko-config
 UNICODE_HEADER_PATH := $(abspath $(LOCAL_PATH)/Unicode.h)
 
 LOCAL_MODULE := gecko
 LOCAL_MODULE_CLASS := DATA
 LOCAL_MODULE_TAGS := optional eng
-LOCAL_SRC_FILES := b2g.tar.gz
 LOCAL_MODULE_PATH := $(TARGET_OUT)
 include $(BUILD_PREBUILT)
 
@@ -88,8 +87,9 @@ GECKO_LIB_DEPS := \
 	libstagefright.so \
 	libstagefright_omx.so
 
-.PHONY: $(LOCAL_PATH)/b2g.tar.gz
-$(LOCAL_PATH)/b2g.tar.gz: $(addprefix $(TARGET_OUT_STATIC_LIBRARIES)/,$(GECKO_LIB_DEPS))
+
+.PHONY: $(LOCAL_BUILT_MODULE)
+$(LOCAL_BUILT_MODULE): $(addprefix $(TARGET_OUT_STATIC_LIBRARIES)/,$(GECKO_LIB_DEPS))
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
 	export GONK_PRODUCT="$(TARGET_DEVICE)" && \
 	export TARGET_TOOLS_PREFIX="$(abspath $(TARGET_TOOLS_PREFIX))" && \
@@ -102,5 +102,4 @@ $(LOCAL_PATH)/b2g.tar.gz: $(addprefix $(TARGET_OUT_STATIC_LIBRARIES)/,$(GECKO_LI
 	echo $(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
 	$(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
 	$(MAKE) -C $(GECKO_OBJDIR) package && \
-	cp $(GECKO_OBJDIR)/dist/b2g-*.tar.gz $@
-
+	mkdir -p $(@D) && cp $(GECKO_OBJDIR)/dist/b2g-*.tar.gz $@
