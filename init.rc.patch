@@ -1,0 +1,13 @@
+diff --git a/rootdir/init.rc b/rootdir/init.rc
+index 236c97b..fe9f5c5 100644
+--- a/rootdir/init.rc
++++ b/rootdir/init.rc
+@@ -98,6 +98,8 @@ on fs
+ # mount mtd partitions
+     # Mount /system rw first to give the filesystem a chance to save a checkpoint
+     mount yaffs2 mtd@system /system
++    chmod 0755 /system/b2g/b2g
++    chmod 0755 /system/b2g/updater
+     mount yaffs2 mtd@system /system ro remount
+     mount yaffs2 mtd@userdata /data nosuid nodev
+     mount yaffs2 mtd@cache /cache nosuid nodev
