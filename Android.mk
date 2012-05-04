@@ -66,7 +66,9 @@ $(call intermediates-dir-for,APPS,framework-res,,COMMON)/package-export.apk:
 
 include $(CLEAR_VARS)
 GECKO_PATH := gecko
+ifeq (,$(GECKO_OBJDIR))
 GECKO_OBJDIR := $(TARGET_OUT_INTERMEDIATES)/objdir-gecko
+endif
 MOZCONFIG_PATH := $(LOCAL_PATH)/default-gecko-config
 UNICODE_HEADER_PATH := $(abspath $(LOCAL_PATH)/Unicode.h)
 
