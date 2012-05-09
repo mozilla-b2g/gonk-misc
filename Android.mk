@@ -98,6 +98,7 @@ GECKO_LIB_DEPS := \
 $(LOCAL_BUILT_MODULE): $(addprefix $(TARGET_OUT_STATIC_LIBRARIES)/,$(GECKO_LIB_DEPS))
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
 	export GONK_PRODUCT="$(TARGET_DEVICE)" && \
+	export TARGET_ARCH="$(TARGET_ARCH)" && \
 	export TARGET_TOOLS_PREFIX="$(abspath $(TARGET_TOOLS_PREFIX))" && \
 	export GONK_PATH="$(abspath .)" && \
 	export GECKO_OBJDIR="$(abspath $(GECKO_OBJDIR))" && \

@@ -4,12 +4,13 @@ mk_add_options MOZ_OBJDIR="$GECKO_OBJDIR"
 # hard-coding this sucks
 mk_add_options MOZ_MAKE_FLAGS="-s $MAKE_FLAGS"
 
-# XXX need a plan for toolchain and multi-dev-platform support
-gonk="$GONK_PATH"
-sys=`uname -s | tr "[[:upper:]]" "[[:lower:]]"`
-
+if [ "$TARGET_ARCH" = "x86" ]; then
+ac_add_options --target=i686-android-linux
+else
 ac_add_options --target=arm-android-eabi
-ac_add_options --with-gonk="$gonk"
+ac_add_options --enable-profiling
+fi
+ac_add_options --with-gonk="$GONK_PATH"
 ac_add_options --with-gonk-toolchain-prefix="$TARGET_TOOLS_PREFIX"
 ac_add_options --with-endian=little
 
@@ -17,7 +18,6 @@ ac_add_options --enable-application=b2g
 ac_add_options --disable-elf-hack
 
 ac_add_options --enable-debug-symbols
-ac_add_options --enable-profiling
 ac_add_options --with-ccache
 ac_add_options --enable-marionette
 
