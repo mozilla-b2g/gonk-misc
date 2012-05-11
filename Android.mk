@@ -111,3 +111,7 @@ $(LOCAL_BUILT_MODULE): $(addprefix $(TARGET_OUT_STATIC_LIBRARIES)/,$(GECKO_LIB_D
 	$(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
 	$(MAKE) -C $(GECKO_OBJDIR) package && \
 	mkdir -p $(@D) && cp $(GECKO_OBJDIR)/dist/b2g-*.tar.gz $@
+
+# $(call all-subdir-makefiles) doesn't work once you've included other
+# makefiles, so we need to include the subdirectories explicitly
+include $(LOCAL_PATH)/ueventmon/Android.mk

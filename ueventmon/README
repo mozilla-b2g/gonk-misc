@@ -1,0 +1,6 @@
+This is an android command line utility for watching uevents from the kernel.
+
+It originated from git://gitorious.org/android-goodies/ueventmon.git
+
+I tried to contact the author and got no response, so I've created a fork to put
+my improvements in.
