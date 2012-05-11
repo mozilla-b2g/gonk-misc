@@ -1,0 +1,10 @@
+LOCAL_PATH:= $(call my-dir)
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES:= ueventmon.c
+LOCAL_SHARED_LIBRARIES += libc libcutils
+
+LOCAL_MODULE_TAGS := eng
+LOCAL_MODULE := ueventmon
+LOCAL_MODULE_PATH := $(TARGET_OUT_OPTIONAL_EXECUTABLES)
+include $(BUILD_EXECUTABLE)
