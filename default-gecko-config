@@ -20,6 +20,10 @@ ac_add_options --enable-application=b2g
 ac_add_options --disable-elf-hack
 
 ac_add_options --enable-debug-symbols
+if [ "${B2G_DEBUG:-0}" != "0" ]; then
+ac_add_options --enable-debug
+fi
+
 ac_add_options --with-ccache
 ac_add_options --enable-marionette
 
