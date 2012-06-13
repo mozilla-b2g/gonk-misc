@@ -91,11 +91,13 @@ GECKO_LIB_DEPS := \
 	liblog.so \
 	libmedia.so \
 	libstagefright.so \
-	libstagefright_omx.so
-
+	libstagefright_omx.so \
+	libdbus.so \
+	libsensorservice.so \
+	libsysutils.so \
 
 .PHONY: $(LOCAL_BUILT_MODULE)
-$(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addprefix $(TARGET_OUT_STATIC_LIBRARIES)/,$(GECKO_LIB_DEPS))
+$(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addprefix $(TARGET_OUT_SHARED_LIBRARIES)/,$(GECKO_LIB_DEPS))
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
 	export GONK_PRODUCT="$(TARGET_DEVICE)" && \
 	export TARGET_ARCH="$(TARGET_ARCH)" && \
