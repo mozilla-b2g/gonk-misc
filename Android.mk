@@ -60,6 +60,27 @@ $(call intermediates-dir-for,APPS,framework-res,,COMMON)/package-export.apk:
 	touch `dirname $@`/dummy
 	zip $@ `dirname $@`/dummy
 
+
+ifneq (,$(realpath .repo/manifest.xml))
+#
+# Include a copy of the repo manifest that has the revisions used
+#
+include $(CLEAR_VARS)
+LOCAL_MODULE       := sources.xml
+LOCAL_MODULE_TAGS  := optional eng
+LOCAL_MODULE_CLASS := DATA
+LOCAL_MODULE_PATH  := $(TARGET_OUT)
+
+ADD_REVISION := $(abspath $(LOCAL_PATH)/add-revision.py)
+
+include $(BUILD_PREBUILT)
+
+$(LOCAL_BUILT_MODULE): .repo/manifest.xml
+	mkdir -p $(@D)
+	python $(ADD_REVISION) --b2g-path . \
+		--tags $< --force --output $@
+endif
+
 #
 # Gecko glue
 #
