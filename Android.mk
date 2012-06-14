@@ -61,6 +61,34 @@ $(call intermediates-dir-for,APPS,framework-res,,COMMON)/package-export.apk:
 	zip $@ `dirname $@`/dummy
 
 #
+# Include a copy of the repo manifest that has the revisions used
+#
+include $(CLEAR_VARS)
+LOCAL_MODULE       := source_manifest
+LOCAL_MODULE_TAGS  := optional eng
+LOCAL_MODULE_CLASS := DATA
+LOCAL_MODULE_PATH  := $(TARGET_OUT)
+
+ADD_REVISION := $(abspath $(LOCAL_PATH)/add-revision.py)
+B2G_PATH := $(CURDIR)
+MANIFEST_FILE := $(B2G_PATH)/.repo/manifest.xml
+
+include $(BUILD_PREBUILT)
+
+.PHONY: $(LOCAL_BUILT_MODULE)
+$(LOCAL_BUILT_MODULE): $(MANIFEST_FILE)
+	mkdir -p $(@D)
+	python $(ADD_REVISION) -b2g-path $(B2G_PATH) \
+		$< --force --output manifest-rev.xml
+	python $(ADD_REVISION) --b2g-path $(B2G_PATH) \
+		--tags $< --force --output manifest-tag.xml
+	tar cf $@ manifest-tag.xml manifest-rev.xml
+
+$(LOCAL_INSTALLED_MODULE):
+	rm -rf $(addprefix $(TARGET_OUT)/,manifest-rev.xml manifest-tag.xml)
+	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
+
+#
 # Gecko glue
 #
 
