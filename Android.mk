@@ -60,6 +60,8 @@ $(call intermediates-dir-for,APPS,framework-res,,COMMON)/package-export.apk:
 	touch `dirname $@`/dummy
 	zip $@ `dirname $@`/dummy
 
+
+ifneq (,$(realpath .repo/manifest.xml))
 #
 # Include a copy of the repo manifest that has the revisions used
 #
@@ -84,6 +86,7 @@ $(LOCAL_BUILT_MODULE): .repo/manifest.xml
 $(LOCAL_INSTALLED_MODULE):
 	rm -rf $(addprefix $(TARGET_OUT)/,manifest-rev.xml manifest-tag.xml)
 	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
+endif
 
 #
 # Gecko glue
