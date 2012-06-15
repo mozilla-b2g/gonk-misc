@@ -77,7 +77,7 @@ include $(BUILD_PREBUILT)
 
 $(LOCAL_BUILT_MODULE): $(MANIFEST_FILE)
 	mkdir -p $(@D)
-	python $(ADD_REVISION) -b2g-path $(B2G_PATH) \
+	python $(ADD_REVISION) --b2g-path $(B2G_PATH) \
 		$< --force --output manifest-rev.xml
 	python $(ADD_REVISION) --b2g-path $(B2G_PATH) \
 		--tags $< --force --output manifest-tag.xml
