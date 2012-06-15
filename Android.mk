@@ -70,16 +70,14 @@ LOCAL_MODULE_CLASS := DATA
 LOCAL_MODULE_PATH  := $(TARGET_OUT)
 
 ADD_REVISION := $(abspath $(LOCAL_PATH)/add-revision.py)
-B2G_PATH := $(CURDIR)
-MANIFEST_FILE := $(B2G_PATH)/.repo/manifest.xml
 
 include $(BUILD_PREBUILT)
 
-$(LOCAL_BUILT_MODULE): $(MANIFEST_FILE)
+$(LOCAL_BUILT_MODULE): .repo/manifest.xml
 	mkdir -p $(@D)
-	python $(ADD_REVISION) --b2g-path $(B2G_PATH) \
+	python $(ADD_REVISION) --b2g-path . \
 		$< --force --output manifest-rev.xml
-	python $(ADD_REVISION) --b2g-path $(B2G_PATH) \
+	python $(ADD_REVISION) --b2g-path . \
 		--tags $< --force --output manifest-tag.xml
 	tar cf $@ manifest-tag.xml manifest-rev.xml
 
