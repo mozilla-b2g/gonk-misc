@@ -75,7 +75,6 @@ MANIFEST_FILE := $(B2G_PATH)/.repo/manifest.xml
 
 include $(BUILD_PREBUILT)
 
-.PHONY: $(LOCAL_BUILT_MODULE)
 $(LOCAL_BUILT_MODULE): $(MANIFEST_FILE)
 	mkdir -p $(@D)
 	python $(ADD_REVISION) -b2g-path $(B2G_PATH) \
