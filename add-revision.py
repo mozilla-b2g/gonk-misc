@@ -37,7 +37,7 @@ def find_tag(path):
     """Given a path, use Git to figure out if there is a local
     or annotated tag for HEAD and return it as a string"""
     # Should verify that describe will only ever print the tag to stdout
-    p_tag = git_op(['git', 'describe', '--exact-match', '--tags',
+    p_tag = git_op(['git', 'describe', '--exact-match',
                  'HEAD'], path=path)
     if len(p_tag) > 0:
         return p_tag
@@ -63,13 +63,10 @@ def find_ref(path):
 def add_revision(man_filename, b2g_root, output, force=False, tags=False):
     """Take a string that is a filename to the source manifest, the root
     of the repository tree and write a copy of the xml manifest to the file
-    'output' that has revisions, and tags if tags is set to true.  The force
-    attribute can be used to overwrite existing revision attributes in
-    the xml"""
-    if tags:
-        find_func = find_ref
-    else:
-        find_func = find_rev
+    'output' that has revisions.  If tags is set to true, prepend each project
+    node with a comment node that contains the name of the repository and the
+    tag for that repository.  Specifying force=True will cause revisions in the
+    original manifest to be overwritten with computed ones"""
     doc = xml.dom.minidom.parse(man_filename)
     for project in doc.getElementsByTagName("project"):
         if project.getAttribute('revision') and not force:
@@ -77,7 +74,13 @@ def add_revision(man_filename, b2g_root, output, force=False, tags=False):
         else:
             manifest_path = project.getAttribute('path')
             fs_path = os.path.join(b2g_root, manifest_path)
-            project.setAttribute('revision', find_func(fs_path))
+            commit_id = find_rev(fs_path)
+            project.setAttribute('revision', commit_id)
+            parentNode = project.parentNode
+            tag = find_ref(fs_path)
+            if tags and tag != commit_id:
+                comment = " Information: %s is tagged with %s " % (project.getAttribute('name'), tag)
+                parentNode.insertBefore(doc.createComment(comment), project)
     if hasattr(output, 'write'):
         doc.writexml(output)
     else:
