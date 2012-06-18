@@ -66,7 +66,7 @@ ifneq (,$(realpath .repo/manifest.xml))
 # Include a copy of the repo manifest that has the revisions used
 #
 include $(CLEAR_VARS)
-LOCAL_MODULE       := source_manifest
+LOCAL_MODULE       := sources.xml
 LOCAL_MODULE_TAGS  := optional eng
 LOCAL_MODULE_CLASS := DATA
 LOCAL_MODULE_PATH  := $(TARGET_OUT)
@@ -78,14 +78,7 @@ include $(BUILD_PREBUILT)
 $(LOCAL_BUILT_MODULE): .repo/manifest.xml
 	mkdir -p $(@D)
 	python $(ADD_REVISION) --b2g-path . \
-		$< --force --output manifest-rev.xml
-	python $(ADD_REVISION) --b2g-path . \
-		--tags $< --force --output manifest-tag.xml
-	tar cf $@ manifest-tag.xml manifest-rev.xml
-
-$(LOCAL_INSTALLED_MODULE):
-	rm -rf $(addprefix $(TARGET_OUT)/,manifest-rev.xml manifest-tag.xml)
-	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
+		--tags $< --force --output $@
 endif
 
 #
