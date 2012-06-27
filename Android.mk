@@ -117,6 +117,10 @@ GECKO_LIB_DEPS := \
 	libsensorservice.so \
 	libsysutils.so \
 
+$(TARGET_OUT_INTERMEDIATES)/STATIC_LIBRARIES/libxpcomglue_s_intermediates/libxpcomglue_s.a: $(LOCAL_BUILT_MODULE)
+$(TARGET_OUT_INTERMEDIATES)/SHARED_LIBRARIES/libxpcom_intermediates/libxpcom.so: $(LOCAL_BUILT_MODULE)
+$(TARGET_OUT_INTERMEDIATES)/STATIC_LIBRARIES/libmozalloc_intermediates/libmozalloc.a: $(LOCAL_BUILT_MODULE)
+
 .PHONY: $(LOCAL_BUILT_MODULE)
 $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addprefix $(TARGET_OUT_SHARED_LIBRARIES)/,$(GECKO_LIB_DEPS))
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
@@ -134,4 +138,13 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
 	$(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
 	rm -f $(GECKO_OBJDIR)/dist/b2g-*.tar.gz && \
 	$(MAKE) -C $(GECKO_OBJDIR) package && \
-	mkdir -p $(@D) && cp $(GECKO_OBJDIR)/dist/b2g-*.tar.gz $@
+	mkdir -p $(@D) && cp $(GECKO_OBJDIR)/dist/b2g-*.tar.gz $@ && \
+	mkdir -p $(TARGET_OUT_INTERMEDIATES)/STATIC_LIBRARIES/libxpcomglue_s_intermediates && \
+	cp $(GECKO_OBJDIR)/dist/lib/libxpcomglue_s.a $(TARGET_OUT_INTERMEDIATES)/STATIC_LIBRARIES/libxpcomglue_s_intermediates/libxpcomglue_s.a && \
+	cp $(GECKO_OBJDIR)/dist/lib/libxpcomglue_s.a $(TARGET_OUT_INTERMEDIATES)/lib/libxpcomglue_s.a && \
+	mkdir -p $(TARGET_OUT_INTERMEDIATES)/SHARED_LIBRARIES/libxpcom_intermediates && \
+	cp $(GECKO_OBJDIR)/dist/lib/libxpcom.so $(TARGET_OUT_INTERMEDIATES)/SHARED_LIBRARIES/libxpcom_intermediates/libxpcom.so && \
+	cp $(GECKO_OBJDIR)/dist/lib/libxpcom.so $(TARGET_OUT_INTERMEDIATES)/lib/libxpcom.so && \
+	mkdir -p $(TARGET_OUT_INTERMEDIATES)/STATIC_LIBRARIES/libmozalloc_intermediates && \
+	cp $(GECKO_OBJDIR)/dist/lib/libmozalloc.a $(TARGET_OUT_INTERMEDIATES)/STATIC_LIBRARIES/libmozalloc_intermediates/libmozalloc.a
+	cp $(GECKO_OBJDIR)/dist/lib/libmozalloc.a $(TARGET_OUT_INTERMEDIATES)/lib/libmozalloc.a
