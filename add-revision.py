@@ -33,12 +33,15 @@ def git_op(args, path):
         raise MissingRepositoryException("Missing the %s repository" % path)
     return cmd(args, cwd=path)
 
-def find_tag(path):
+def find_tag(path, only_annotated=False):
     """Given a path, use Git to figure out if there is a local
     or annotated tag for HEAD and return it as a string"""
     # Should verify that describe will only ever print the tag to stdout
-    p_tag = git_op(['git', 'describe', '--exact-match',
-                 'HEAD'], path=path)
+    cmd = ['git', 'describe', '--exact-match']
+    if not only_annotated:
+        cmd.append('--tags')
+    cmd.append('HEAD')
+    p_tag = git_op(cmd, path=path)
     if len(p_tag) > 0:
         return p_tag
     else:
@@ -50,17 +53,17 @@ def find_rev(path):
     # Should verify that rev-parse will only ever print the rev to stdout
     return git_op(['git', 'rev-parse', 'HEAD'], path=path)
 
-def find_ref(path):
+def find_ref(path, only_annotated=False):
     """Given a repository's path, return the newest tag for HEAD if the commit has
     been tagged, or the commit id if it hasn't"""
-    tag=find_tag(path)
+    tag=find_tag(path, only_annotated)
     rev=find_rev(path)
     if tag:
         return tag
     else:
         return rev
 
-def add_revision(man_filename, b2g_root, output, force=False, tags=False):
+def add_revision(man_filename, b2g_root, output, force=False, tags=False, only_annotated=False):
     """Take a string that is a filename to the source manifest, the root
     of the repository tree and write a copy of the xml manifest to the file
     'output' that has revisions.  If tags is set to true, prepend each project
@@ -77,7 +80,7 @@ def add_revision(man_filename, b2g_root, output, force=False, tags=False):
             commit_id = find_rev(fs_path)
             project.setAttribute('revision', commit_id)
             parentNode = project.parentNode
-            tag = find_ref(fs_path)
+            tag = find_ref(fs_path, only_annotated)
             if tags and tag != commit_id:
                 comment = " Information: %s is tagged with %s " % (project.getAttribute('name'), tag)
                 parentNode.insertBefore(doc.createComment(comment), project)
@@ -104,6 +107,9 @@ def main():
     parser.add_option("-t", "--tags", dest="tags",
                        help="attempt to resolve commit ids to tags",
                        action="store_true")
+    parser.add_option("--only-annotated", dest="only_annotated",
+                       help="only use annotated tags when resolving tags",
+                       action="store_true")
     (options, args) = parser.parse_args()
     if options.output and options.stdio:
         parser.error("use one of --output, -o or --stdio")
@@ -120,7 +126,8 @@ def main():
                  options.b2g_path,
                  sys.stdout if options.stdio else options.output,
                  options.force,
-                 options.tags)
+                 options.tags,
+                 only_annotated=options.only_annotated)
 
 if __name__=="__main__":
     main()
