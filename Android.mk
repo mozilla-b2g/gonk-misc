@@ -41,15 +41,6 @@ LOCAL_SRC_FILES    := fakeperm.cpp
 LOCAL_SHARED_LIBRARIES := libbinder libutils
 include $(BUILD_EXECUTABLE)
 
-
-include $(CLEAR_VARS)
-LOCAL_MODULE       := mountvol.sh
-LOCAL_MODULE_TAGS  := optional eng
-LOCAL_MODULE_CLASS := EXECUTABLES
-LOCAL_SRC_FILES    := mountvol.sh
-LOCAL_MODULE_PATH  := $(TARGET_OUT_EXECUTABLES)
-include $(BUILD_PREBUILT)
-
 $(OUT_DOCS)/api-stubs-timestamp:
 	mkdir -p `dirname $@`
 	touch $@
