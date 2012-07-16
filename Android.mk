@@ -95,6 +95,15 @@ $(LOCAL_INSTALLED_MODULE):
 	rm -rf $(TARGET_OUT)/b2g
 	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
 
+# Target to create Gecko update package (MAR)
+UPDATE_PACKAGE_TARGET := $(GECKO_OBJDIR)/dist/b2g/b2g-gecko-update.mar
+MAR := $(GECKO_OBJDIR)/dist/host/bin/mar
+MAKE_FULL_UPDATE := $(GECKO_PATH)/tools/update-packaging/make_full_update.sh
+.PHONY: gecko-update-full
+gecko-update-full:
+	MAR=$(MAR) $(MAKE_FULL_UPDATE) $(UPDATE_PACKAGE_TARGET) $(GECKO_OBJDIR)/dist/b2g
+	sha512sum $(UPDATE_PACKAGE_TARGET)
+
 GECKO_MAKE_FLAGS ?= -j16
 GECKO_LIB_DEPS := \
 	libm.so \
