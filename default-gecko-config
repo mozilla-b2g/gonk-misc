@@ -1,3 +1,12 @@
+# Options that should be different between release and enginering builds
+if [ "$TARGET_BUILD_VARIANT" == "eng" ]; then
+# Engineering options only
+ac_add_options --enable-marionette
+else
+# Non-engineering (e.g. release) options
+true
+fi
+
 mk_add_options MOZ_OBJDIR="$GECKO_OBJDIR"
 
 # XXX our build system doesn't seem to respect toplevel -j ...
@@ -24,7 +33,6 @@ ac_add_options --enable-debug
 fi
 
 ac_add_options --with-ccache
-ac_add_options --enable-marionette
 
 # The way we use jemalloc with bionic causes two heaps to be created,
 # and external-to-gecko dso's end up using the bionic malloc.  This is
