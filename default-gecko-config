@@ -1,7 +1,7 @@
 # Options that should be different between release and enginering builds
 if [ "$TARGET_BUILD_VARIANT" == "eng" ]; then
 # Engineering options only
-ac_add_options --enable-marionette
+export ENABLE_MARIONETTE=1
 else
 # Non-engineering (e.g. release) options
 true
