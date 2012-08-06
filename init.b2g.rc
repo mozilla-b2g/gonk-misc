@@ -1,13 +1,8 @@
-on early-init
-    export TMPDIR /data/local/tmp
-    export LD_LIBRARY_PATH /vendor/lib:/system/lib:/system/b2g
-    export GRE_HOME /system/b2g
-
 service fakeperm /system/bin/fakeperm
     class main
     user root
 
-service b2g /system/b2g/b2g
+service b2g /system/bin/b2g.sh
     class main
     onrestart restart media
 
