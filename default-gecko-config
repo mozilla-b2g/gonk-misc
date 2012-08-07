@@ -27,6 +27,10 @@ if [ "${B2G_NOOPT:-0}" != "0" ]; then
 ac_add_options --disable-optimize
 fi
 
+if [ "${B2G_PROF:-0}" != "0" ]; then
+STRIP_FLAGS="--strip-debug"
+fi
+
 ac_add_options --with-ccache
 ac_add_options --enable-marionette
 
