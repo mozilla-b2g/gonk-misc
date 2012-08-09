@@ -145,6 +145,7 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
 	export TARGET_ARCH="$(TARGET_ARCH)" && \
 	export HOST_OS="$(HOST_OS)" && \
 	export TARGET_TOOLS_PREFIX="$(abspath $(TARGET_TOOLS_PREFIX))" && \
+	export TARGET_BUILD_VARIANT=$(TARGET_BUILD_VARIANT) && \
 	export GONK_PATH="$(abspath .)" && \
 	export GECKO_OBJDIR="$(abspath $(GECKO_OBJDIR))" && \
 	export USE_CACHE=$(USE_CCACHE) && \
