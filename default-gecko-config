@@ -16,7 +16,6 @@ ac_add_options --with-gonk="$GONK_PATH"
 ac_add_options --with-gonk-toolchain-prefix="$TARGET_TOOLS_PREFIX"
 
 ac_add_options --enable-application=b2g
-ac_add_options --disable-elf-hack
 
 ac_add_options --enable-debug-symbols
 if [ "${B2G_DEBUG:-0}" != "0" ]; then
