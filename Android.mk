@@ -151,6 +151,7 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
 	export MAKE_FLAGS="$(GECKO_MAKE_FLAGS)" && \
 	export MOZCONFIG="$(abspath $(MOZCONFIG_PATH))" && \
 	export EXTRA_INCLUDE="-include $(UNICODE_HEADER_PATH)" && \
+	export DISABLE_JEMALLOC="$(DISABLE_JEMALLOC)" && \
 	echo $(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
 	$(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
 	rm -f $(GECKO_OBJDIR)/dist/b2g-*.tar.gz && \
