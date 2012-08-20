@@ -47,6 +47,14 @@ LOCAL_MODULE_PATH  := $(TARGET_OUT_EXECUTABLES)
 include $(BUILD_PREBUILT)
 
 include $(CLEAR_VARS)
+LOCAL_MODULE       := b2g-updater.sh
+LOCAL_MODULE_TAGS  := optional eng
+LOCAL_MODULE_CLASS := DATA
+LOCAL_SRC_FILES    := b2g-updater.sh
+LOCAL_MODULE_PATH  := $(TARGET_OUT_EXECUTABLES)
+include $(BUILD_PREBUILT)
+
+include $(CLEAR_VARS)
 LOCAL_MODULE       := httpd.conf
 LOCAL_MODULE_TAGS  := optional eng
 LOCAL_MODULE_CLASS := ETC
