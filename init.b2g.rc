@@ -12,3 +12,8 @@ service rilproxy /system/bin/rilproxy
     socket rilproxyd stream 660 root system
     user root
     group radio
+
+service b2g-updater /system/bin/b2g-updater.sh
+    class main
+    disabled
+    oneshot
