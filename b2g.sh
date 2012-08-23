@@ -5,5 +5,5 @@ export LD_PRELOAD=/system/b2g/libmozglue.so
 export GRE_HOME=/system/b2g
 
 mkdir -p $TMPDIR
-chmod 777 $TMPDIR
+chmod 1777 $TMPDIR
 exec /system/b2g/b2g
