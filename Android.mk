@@ -113,10 +113,7 @@ include $(BUILD_PREBUILT)
 
 $(LOCAL_INSTALLED_MODULE):
 	@echo Install dir: $(TARGET_OUT)/b2g
-	mv $(TARGET_OUT)/b2g/webapps $(TARGET_OUT)
 	rm -rf $(TARGET_OUT)/b2g
-	mkdir -p $(TARGET_OUT)/b2g
-	mv $(TARGET_OUT)/webapps $(TARGET_OUT)/b2g
 	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
 
 # Target to create Gecko update package (MAR)
