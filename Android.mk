@@ -29,7 +29,6 @@ $(LOCAL_BUILT_MODULE):
 	patch $@ gonk-misc/init.rc.patch
 endif
 
-
 include $(CLEAR_VARS)
 LOCAL_MODULE       := init.b2g.rc
 LOCAL_MODULE_TAGS  := optional eng
@@ -111,19 +110,39 @@ LOCAL_MODULE_TAGS := optional eng
 LOCAL_MODULE_PATH := $(TARGET_OUT)
 include $(BUILD_PREBUILT)
 
+PRESERVE_B2G_WEBAPPS := 0
+# In user (production) builds, gaia goes in $(TARGET_OUT)/b2g/webapps
+# This flag helps us preserve the directory when cleaning out $(TARGET_OUT)/b2g
+ifneq ($(filter user userdebug, $(TARGET_BUILD_VARIANT)),)
+PRESERVE_B2G_WEBAPPS := 1
+endif
+
 $(LOCAL_INSTALLED_MODULE):
 	@echo Install dir: $(TARGET_OUT)/b2g
+
+ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
+	mv $(TARGET_OUT)/b2g/webapps $(TARGET_OUT)
+endif
+
 	rm -rf $(TARGET_OUT)/b2g
+	mkdir -p $(TARGET_OUT)/b2g
+
+ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
+	mv $(TARGET_OUT)/webapps $(TARGET_OUT)/b2g
+endif
+
 	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
 
 # Target to create Gecko update package (MAR)
-UPDATE_PACKAGE_TARGET := $(GECKO_OBJDIR)/dist/b2g/b2g-gecko-update.mar
+DIST_B2G_UPDATE_DIR := $(GECKO_OBJDIR)/dist/b2g-update
+UPDATE_PACKAGE_TARGET := $(DIST_B2G_UPDATE_DIR)/b2g-gecko-update.mar
 MAR := $(GECKO_OBJDIR)/dist/host/bin/mar
 MAKE_FULL_UPDATE := $(GECKO_PATH)/tools/update-packaging/make_full_update.sh
 .PHONY: gecko-update-full
 gecko-update-full:
-	MAR=$(MAR) $(MAKE_FULL_UPDATE) $(UPDATE_PACKAGE_TARGET) $(GECKO_OBJDIR)/dist/b2g
-	sha512sum $(UPDATE_PACKAGE_TARGET)
+	mkdir -p $(DIST_B2G_UPDATE_DIR)
+	MAR=$(MAR) $(MAKE_FULL_UPDATE) $(UPDATE_PACKAGE_TARGET) $(TARGET_OUT)/b2g
+	shasum -a 512 $(UPDATE_PACKAGE_TARGET)
 
 GECKO_MAKE_FLAGS ?= -j16
 GECKO_LIB_DEPS := \
