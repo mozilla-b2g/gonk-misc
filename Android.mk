@@ -120,6 +120,19 @@ $(LOCAL_INSTALLED_MODULE):
 UPDATE_PACKAGE_TARGET := $(GECKO_OBJDIR)/dist/b2g/b2g-gecko-update.mar
 MAR := $(GECKO_OBJDIR)/dist/host/bin/mar
 MAKE_FULL_UPDATE := $(GECKO_PATH)/tools/update-packaging/make_full_update.sh
+
+# Floating point operations hardware support
+ARCH_ARM_VFP := toolchain-default 
+ifeq ($(ARCH_ARM_HAVE_VFP), true)
+ARCH_ARM_VFP := vfp
+endif
+ifeq ($(ARCH_ARM_HAVE_VFP_D32), true)
+ARCH_ARM_VFP := vfpv3
+endif
+ifeq ($(ARCH_ARM_HAVE_NEON), true)
+ARCH_ARM_VFP := neon
+endif
+
 .PHONY: gecko-update-full
 gecko-update-full:
 	MAR=$(MAR) $(MAKE_FULL_UPDATE) $(UPDATE_PACKAGE_TARGET) $(GECKO_OBJDIR)/dist/b2g
@@ -138,6 +151,7 @@ GECKO_LIB_DEPS := \
 	libsensorservice.so \
 	libsysutils.so \
 
+
 .PHONY: $(LOCAL_BUILT_MODULE)
 $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addprefix $(TARGET_OUT_SHARED_LIBRARIES)/,$(GECKO_LIB_DEPS))
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
@@ -152,6 +166,7 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
 	export MOZCONFIG="$(abspath $(MOZCONFIG_PATH))" && \
 	export EXTRA_INCLUDE="-include $(UNICODE_HEADER_PATH)" && \
 	export DISABLE_JEMALLOC="$(DISABLE_JEMALLOC)" && \
+	export ARCH_ARM_VFP="$(ARCH_ARM_VFP)" && \
 	echo $(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
 	$(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
 	rm -f $(GECKO_OBJDIR)/dist/b2g-*.tar.gz && \
