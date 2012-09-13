@@ -68,6 +68,14 @@ LOCAL_MODULE_CLASS := EXECUTABLES
 LOCAL_SRC_FILES    := b2g-ps
 include $(BUILD_PREBUILT)
 
+include $(CLEAR_VARS)
+LOCAL_MODULE       := killer
+LOCAL_MODULE_TAGS  := optional eng
+LOCAL_MODULE_CLASS := EXECUTABLES
+LOCAL_SRC_FILES    := killer.cpp
+LOCAL_SHARED_LIBRARIES :=
+include $(BUILD_EXECUTABLE)
+
 $(OUT_DOCS)/api-stubs-timestamp:
 	mkdir -p `dirname $@`
 	touch $@
