@@ -93,7 +93,7 @@ int main(int argc, char** argv)
    * this out, we can just use malloc.
    */
 
-  int* pids = (int*) malloc(sizeof(int) * argc);
+  int* pids = new int[argc];
   int numPids = 0;
   for (int i = 2; i < argc; i++) {
     char* endptr = NULL;
