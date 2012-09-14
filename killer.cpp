@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <signal.h>
+#include <malloc.h>
 
 using namespace std;
 
@@ -47,16 +48,6 @@ void usage(int argc, char** argv)
   fprintf(stderr, "will send signal SIGRTMIN + 8 to process 123.\n\n");
   fprintf(stderr, "(We don't parse parse any friendly signal names other than ");
   fprintf(stderr, "\"SIGRT\" at the moment.)\n");
-}
-
-void sendKill(int signum, const int* pids, int numPids)
-{
-  for (int i = 0; i < numPids; i++) {
-    if (kill(pids[i], signum)) {
-      fprintf(stderr, "Failed to send signal %d to process %d", signum, pids[i]);
-      perror("");
-    }
-  }
 }
 
 int main(int argc, char** argv)
@@ -99,10 +90,10 @@ int main(int argc, char** argv)
 
   /*
    * For some reason <vector> isn't in our include path.  Rather than figure
-   * this out, let's just use a big array.
+   * this out, we can just use malloc.
    */
 
-  int pids[4096];
+  int* pids = (int*) malloc(sizeof(int) * argc);
   int numPids = 0;
   for (int i = 2; i < argc; i++) {
     char* endptr = NULL;
@@ -116,6 +107,11 @@ int main(int argc, char** argv)
     numPids++;
   }
 
-  sendKill(signum, pids, numPids);
+  for (int i = 0; i < numPids; i++) {
+    if (kill(pids[i], signum)) {
+      fprintf(stderr, "Failed to send signal %d to process %d", signum, pids[i]);
+      perror("");
+    }
+  }
   return 0;
 }
