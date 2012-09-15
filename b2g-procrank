@@ -1,0 +1,37 @@
+#!/system/bin/sh
+#
+# procrank output looks something like:
+#
+#  PID      Vss      Rss      Pss      Uss  cmdline
+#  106  116248K  102028K   93063K   85636K  /system/b2g/b2g
+#  409   49056K   37676K   28768K   21372K  /system/b2g/plugin-container
+#  110    3720K    3712K    3139K    3032K  /system/bin/rild
+#  112    5076K    5076K    2664K    1768K  /system/bin/mediaserver
+#...
+#   99     276K     272K      99K      92K  /system/bin/servicemanager
+#                          ------   ------  ------
+#                         136259K  118928K  TOTAL
+
+spaces="                "
+
+procrank "$@" | (
+  IFS= read header;
+  echo "Application      ${header}"
+  while IFS= read line; do
+    if [ "${line/*b2g*/b2g}" = "b2g" ]; then
+      echo "${line}" | (
+        read pid rest;
+        comm="$(cat /proc/${pid}/comm)${spaces}"
+        echo "${comm:0:16} ${line}"
+      )
+    else
+      sep=$(echo ${line})
+      if [ "${sep:0:1}" = "-" ]; then
+        echo "${spaces} ${line}"
+        IFS= read line
+        echo "${spaces} ${line}"
+      fi
+    fi
+  done
+)
+
