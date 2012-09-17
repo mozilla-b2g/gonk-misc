@@ -137,6 +137,9 @@ PRESERVE_B2G_WEBAPPS := 0
 # This flag helps us preserve the directory when cleaning out $(TARGET_OUT)/b2g
 ifneq ($(filter user userdebug, $(TARGET_BUILD_VARIANT)),)
 PRESERVE_B2G_WEBAPPS := 1
+B2G_UPDATER ?= 1
+else
+B2G_UPDATER ?= 0
 endif
 
 $(LOCAL_INSTALLED_MODULE):
@@ -193,6 +196,7 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
 	export MOZCONFIG="$(abspath $(MOZCONFIG_PATH))" && \
 	export EXTRA_INCLUDE="-include $(UNICODE_HEADER_PATH)" && \
 	export DISABLE_JEMALLOC="$(DISABLE_JEMALLOC)" && \
+	export B2G_UPDATER="$(B2G_UPDATER)" && \
 	echo $(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
 	$(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
 	rm -f $(GECKO_OBJDIR)/dist/b2g-*.tar.gz && \

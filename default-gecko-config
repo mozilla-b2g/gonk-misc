@@ -42,8 +42,11 @@ if [ "$HOST_OS" != "linux" ]; then
 ac_add_options --disable-crashreporter
 fi
 
+if [ "${B2G_UPDATER:-0}" != "0" ]; then
 ac_add_options --enable-updater
 #ac_add_options --enable-update-channel=nightly
+fi
+
 ac_add_options --enable-update-packaging
 
 ac_add_options --enable-media-plugins
