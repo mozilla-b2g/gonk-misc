@@ -1,0 +1,12 @@
+#!/system/bin/sh
+# ps output is: user pid ppid vss rss wchan eip state cmdline
+
+ps | while read line; do
+  if [ "${line/*b2g*/b2g}" = "b2g" ]; then
+    echo ${line} | (
+      read user pid rest;
+      comm="$(cat /proc/${pid}/comm)                "
+      echo "${comm:0:16} ${line}"
+    )
+  fi
+done

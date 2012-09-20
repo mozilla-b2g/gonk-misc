@@ -16,7 +16,6 @@ ac_add_options --with-gonk="$GONK_PATH"
 ac_add_options --with-gonk-toolchain-prefix="$TARGET_TOOLS_PREFIX"
 
 ac_add_options --enable-application=b2g
-ac_add_options --disable-elf-hack
 
 ac_add_options --enable-debug-symbols
 if [ "${B2G_DEBUG:-0}" != "0" ]; then
@@ -29,17 +28,15 @@ fi
 
 if [ "${B2G_PROF:-0}" != "0" ]; then
 STRIP_FLAGS="--strip-debug"
+ac_add_options --disable-elf-hack
 fi
 
 ac_add_options --with-ccache
-ac_add_options --enable-marionette
+ENABLE_MARIONETTE=1
 
-# The way we use jemalloc with bionic causes two heaps to be created,
-# and external-to-gecko dso's end up using the bionic malloc.  This is
-# a never-ending source of mismatched allocator pain.  Until we figure
-# out a way to fully replace malloc/free (possibly by integrating
-# jemalloc into bionic), just use bionic malloc.
+if [ "${DISABLE_JEMALLOC:-0}" != "0" ]; then
 ac_add_options --disable-jemalloc
+fi
 
 if [ "$HOST_OS" != "linux" ]; then
 ac_add_options --disable-crashreporter
@@ -55,3 +52,5 @@ ac_add_options --enable-b2g-camera
 
 # Enable dump() from JS.
 export CXXFLAGS="-DMOZ_ENABLE_JS_DUMP $EXTRA_INCLUDE"
+
+ac_add_options --with-fpu="$ARCH_ARM_VFP"
