@@ -146,12 +146,17 @@ ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
 	mv $(TARGET_OUT)/b2g/webapps $(TARGET_OUT)
 endif
 
+# We need to keep b2g/profile
+	mv $(TARGET_OUT)/b2g/profile $(TARGET_OUT)
+
 	rm -rf $(TARGET_OUT)/b2g
 	mkdir -p $(TARGET_OUT)/b2g
 
 ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
 	mv $(TARGET_OUT)/webapps $(TARGET_OUT)/b2g
 endif
+
+	mv $(TARGET_OUT)/profile $(TARGET_OUT)/b2g
 
 	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
 
@@ -162,7 +167,7 @@ MAR := $(GECKO_OBJDIR)/dist/host/bin/mar
 MAKE_FULL_UPDATE := $(GECKO_PATH)/tools/update-packaging/make_full_update.sh
 
 # Floating point operations hardware support
-ARCH_ARM_VFP := toolchain-default 
+ARCH_ARM_VFP := toolchain-default
 ifeq ($(ARCH_ARM_HAVE_VFP), true)
 ARCH_ARM_VFP := vfp
 endif
