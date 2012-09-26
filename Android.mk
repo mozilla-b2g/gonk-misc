@@ -159,7 +159,7 @@ endif
 	mkdir -p $(TARGET_OUT)/b2g/defaults/pref
 # rename user_pref() to pref() in user.js
 	sed s/user_pref\(/pref\(/ $(TARGET_OUT)/user.js > $(TARGET_OUT)/b2g/defaults/pref/user.js
-        rm $(TARGET_OUT)/user.js
+	rm $(TARGET_OUT)/user.js
 	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
 
 # Target to create Gecko update package (MAR)
