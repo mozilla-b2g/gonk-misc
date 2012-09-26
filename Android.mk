@@ -146,8 +146,8 @@ ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
 	mv $(TARGET_OUT)/b2g/webapps $(TARGET_OUT)
 endif
 
-# We need to keep b2g/profile
-	mv $(TARGET_OUT)/b2g/profile $(TARGET_OUT)
+# We need to keep user.js around
+	mv $(TARGET_OUT)/b2g/user.js $(TARGET_OUT)
 
 	rm -rf $(TARGET_OUT)/b2g
 	mkdir -p $(TARGET_OUT)/b2g
@@ -156,8 +156,10 @@ ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
 	mv $(TARGET_OUT)/webapps $(TARGET_OUT)/b2g
 endif
 
-	mv $(TARGET_OUT)/profile $(TARGET_OUT)/b2g
-
+	mkdir -p $(TARGET_OUT)/b2g/defaults/pref
+# rename user_pref() to pref() in user.js
+	sed s/user_pref\(/pref\(/ $(TARGET_OUT)/user.js > $(TARGET_OUT)/b2g/defaults/pref/user.js
+        rm $(TARGET_OUT)/user.js
 	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
 
 # Target to create Gecko update package (MAR)
