@@ -198,9 +198,11 @@ GECKO_LIB_DEPS := \
 	libsensorservice.so \
 	libsysutils.so \
 
-
 .PHONY: $(LOCAL_BUILT_MODULE)
 $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addprefix $(TARGET_OUT_SHARED_LIBRARIES)/,$(GECKO_LIB_DEPS))
+	(echo "export GECKO_OBJDIR=$(abspath $(GECKO_OBJDIR))"; \
+	echo "export TARGET_TOOLS_PREFIX=$(abspath $(TARGET_TOOLS_PREFIX))"; \
+	echo "export PRODUCT_OUT=$(abspath $(PRODUCT_OUT))" ) > .var.profile
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
 	export GONK_PRODUCT="$(TARGET_DEVICE)" && \
 	export TARGET_ARCH="$(TARGET_ARCH)" && \
