@@ -142,15 +142,12 @@ else
 B2G_UPDATER ?= 0
 endif
 
-$(LOCAL_INSTALLED_MODULE):
+$(LOCAL_INSTALLED_MODULE): gaia/profile.tar.gz
 	@echo Install dir: $(TARGET_OUT)/b2g
 
 ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
 	mv $(TARGET_OUT)/b2g/webapps $(TARGET_OUT)
 endif
-
-# We need to keep user.js around
-	mv $(TARGET_OUT)/b2g/user.js $(TARGET_OUT)
 
 	rm -rf $(TARGET_OUT)/b2g
 	mkdir -p $(TARGET_OUT)/b2g
@@ -161,8 +158,7 @@ endif
 
 	mkdir -p $(TARGET_OUT)/b2g/defaults/pref
 # rename user_pref() to pref() in user.js
-	sed s/user_pref\(/pref\(/ $(TARGET_OUT)/user.js > $(TARGET_OUT)/b2g/defaults/pref/user.js
-	rm $(TARGET_OUT)/user.js
+	sed s/user_pref\(/pref\(/ $(GAIA_PATH)/profile/user.js > $(TARGET_OUT)/b2g/defaults/pref/user.js
 	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
 
 # Target to create Gecko update package (MAR)
