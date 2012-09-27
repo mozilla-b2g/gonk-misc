@@ -142,7 +142,7 @@ else
 B2G_UPDATER ?= 0
 endif
 
-$(LOCAL_INSTALLED_MODULE): gaia/profile.tar.gz
+$(LOCAL_INSTALLED_MODULE): $(LOCAL_BUILT_MODULE) gaia/profile.tar.gz
 	@echo Install dir: $(TARGET_OUT)/b2g
 
 ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
