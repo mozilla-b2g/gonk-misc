@@ -26,7 +26,7 @@ if [ "${B2G_NOOPT:-0}" != "0" ]; then
 ac_add_options --disable-optimize
 fi
 
-if [ "${B2G_PROF:-0}" != "0" ]; then
+if [ "${B2G_PROF:-1}" != "0" ]; then
 STRIP_FLAGS="--strip-debug"
 ac_add_options --disable-elf-hack
 fi
