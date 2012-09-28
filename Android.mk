@@ -133,6 +133,8 @@ LOCAL_MODULE_PATH := $(TARGET_OUT)
 include $(BUILD_PREBUILT)
 
 PRESERVE_B2G_WEBAPPS := 0
+B2G_UPDATE_CHANNEL ?= nightly
+
 # In user (production) builds, gaia goes in $(TARGET_OUT)/b2g/webapps
 # This flag helps us preserve the directory when cleaning out $(TARGET_OUT)/b2g
 ifneq ($(filter user userdebug, $(TARGET_BUILD_VARIANT)),)
@@ -216,6 +218,7 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
 	export EXTRA_INCLUDE="-include $(UNICODE_HEADER_PATH)" && \
 	export DISABLE_JEMALLOC="$(DISABLE_JEMALLOC)" && \
 	export B2G_UPDATER="$(B2G_UPDATER)" && \
+	export B2G_UPDATE_CHANNEL="$(B2G_UPDATE_CHANNEL)" && \
 	export ARCH_ARM_VFP="$(ARCH_ARM_VFP)" && \
 	echo $(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
 	$(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
