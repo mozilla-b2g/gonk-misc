@@ -44,8 +44,6 @@ fi
 
 ac_add_options --enable-update-packaging
 
-ac_add_options --enable-media-plugins
-ac_add_options --enable-omx-plugin
 ac_add_options --enable-b2g-camera
 
 # Enable dump() from JS.
