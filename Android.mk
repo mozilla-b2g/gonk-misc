@@ -208,6 +208,7 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
 	export GONK_PRODUCT="$(TARGET_DEVICE)" && \
 	export TARGET_ARCH="$(TARGET_ARCH)" && \
+	export TARGET_BUILD_VARIANT="$(TARGET_BUILD_VARIANT)" && \
 	export HOST_OS="$(HOST_OS)" && \
 	export TARGET_TOOLS_PREFIX="$(abspath $(TARGET_TOOLS_PREFIX))" && \
 	export GONK_PATH="$(abspath .)" && \
