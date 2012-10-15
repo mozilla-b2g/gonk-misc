@@ -11,7 +11,7 @@ mk_add_options MOZ_MAKE_FLAGS="-s $MAKE_FLAGS"
 if [ "$TARGET_ARCH" = "x86" ]; then
 ac_add_options --target=i686-android-linux
 else
-ac_add_options --target=arm-android-eabi
+ac_add_options --target=arm-linux-androideabi
 # Disabled for now since this disables enough stripping that our
 # system.img on the sgs2 exceeds 100MB and heimdall fails to work right.
 #ac_add_options --enable-profiling
