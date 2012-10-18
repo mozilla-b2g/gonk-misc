@@ -93,6 +93,23 @@ $(call intermediates-dir-for,APPS,framework-res,,COMMON)/package-export.apk:
 	touch `dirname $@`/dummy
 	zip $@ `dirname $@`/dummy
 
+include $(CLEAR_VARS)
+LOCAL_MODULE       := buildid.txt
+LOCAL_MODULE_TAGS  := optional eng
+LOCAL_MODULE_CLASS := DATA
+LOCAL_MODULE_PATH  := $(TARGET_OUT)
+
+include $(BUILD_PREBUILT)
+
+# We want a new buildid *every* build
+.PHONY: $(LOCAL_BUILT_MODULE)
+$(LOCAL_BUILT_MODULE):
+	mkdir -p $(@D)
+ifeq (,$(GONK_BUILDID))
+	echo $$(date "+%Y%m%d%H%M%S") > $@
+else
+	echo $(GONK_BUILDID) > $@
+endif
 
 ifneq (,$(realpath .repo/manifest.xml))
 #
