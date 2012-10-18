@@ -1,4 +1,4 @@
-if [ "$TARGET_BUILD_VARIANT" = "eng" ] ; then
+if [ "$TARGET_BUILD_VARIANT" != "user" ] ; then
 ENABLE_MARIONETTE=1
 fi
 
