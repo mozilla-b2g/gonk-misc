@@ -161,6 +161,7 @@ endif
 	mkdir -p $(TARGET_OUT)/b2g/defaults/pref
 # rename user_pref() to pref() in user.js
 	sed s/user_pref\(/pref\(/ $(GAIA_PATH)/profile/user.js > $(TARGET_OUT)/b2g/defaults/pref/user.js
+	cp $(GAIA_PATH)/build/settings.json $(TARGET_OUT)/b2g/defaults/settings.json
 	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
 
 # Target to create Gecko update package (MAR)
