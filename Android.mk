@@ -63,21 +63,21 @@ include $(BUILD_EXECUTABLE)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE       := b2g-ps
-LOCAL_MODULE_TAGS  := optional eng
+LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := EXECUTABLES
 LOCAL_SRC_FILES    := b2g-ps
 include $(BUILD_PREBUILT)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE       := b2g-procrank
-LOCAL_MODULE_TAGS  := optional eng
+LOCAL_MODULE_TAGS  := debug	# should match system/extras/procrank/Android.mk
 LOCAL_MODULE_CLASS := EXECUTABLES
 LOCAL_SRC_FILES    := b2g-procrank
 include $(BUILD_PREBUILT)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE       := killer
-LOCAL_MODULE_TAGS  := optional eng
+LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := EXECUTABLES
 LOCAL_SRC_FILES    := killer.cpp
 LOCAL_SHARED_LIBRARIES :=
