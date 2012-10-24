@@ -4,11 +4,13 @@ HTTP := android
 
 PRODUCT_PACKAGES += \
 	b2g.sh \
+	b2g-ps \
 	fakeperm \
 	gaia \
 	gecko \
 	init.rc \
 	init.b2g.rc \
+	killer \
 	rilproxy \
 	sources.xml \
 	OpenSans-BoldItalic.ttf \
