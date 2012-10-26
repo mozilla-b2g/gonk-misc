@@ -80,6 +80,7 @@ LOCAL_MODULE       := killer
 LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := EXECUTABLES
 LOCAL_SRC_FILES    := killer.cpp
+LOCAL_FORCE_STATIC_EXECUTABLE := true	# since this is setuid root
 LOCAL_SHARED_LIBRARIES :=
 include $(BUILD_EXECUTABLE)
 
