@@ -236,6 +236,11 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
 	$(MAKE) -C $(GECKO_OBJDIR) package && \
 	mkdir -p $(@D) && cp $(GECKO_OBJDIR)/dist/b2g-*.tar.gz $@
 
+MAKE_SYM_STORE_PATH := \
+  $(abspath $(PRODUCT_OUT)/symbols) \
+  $(abspath $(GECKO_OBJDIR)/dist/bin) \
+  $(NULL)
+
 .PHONY: buildsymbols uploadsymbols
 buildsymbols uploadsymbols:
-	$(MAKE) -C $(GECKO_OBJDIR) $@
+	$(MAKE) -C $(GECKO_OBJDIR) $@ MAKE_SYM_STORE_PATH="$(MAKE_SYM_STORE_PATH)"
