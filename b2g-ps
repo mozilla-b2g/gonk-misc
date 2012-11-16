@@ -1,5 +1,5 @@
 #!/system/bin/sh
-# ps output is: user pid ppid vss rss wchan eip state cmdline
+# ps -p -P output is: Application      USER     PID   PPID  VSIZE  RSS   PRIO  NICE  RTPRI SCHED  PCY  WCHAN    PC         NAME
 #
 # b2g-ps is essentially a filtered ps. It only shows the b2g apps and also
 # prepends each line with the name of the process.
@@ -9,7 +9,7 @@ if [ "$1" == "--oom" ]; then
   report_oom=1
 fi
 
-toolbox ps | (
+toolbox ps -p -P | (
   IFS= read header
   new_hdr="Application     "
   if [ "${report_oom}" == "1" ]; then
