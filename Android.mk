@@ -241,6 +241,10 @@ MAKE_SYM_STORE_PATH := \
   $(abspath $(GECKO_OBJDIR)/dist/bin) \
   $(NULL)
 
+# Override the defaults so we don't try to strip
+# system libraries.
+MAKE_SYM_STORE_ARGS := --vcs-info
+
 .PHONY: buildsymbols uploadsymbols
 buildsymbols uploadsymbols:
-	$(MAKE) -C $(GECKO_OBJDIR) $@ MAKE_SYM_STORE_PATH="$(MAKE_SYM_STORE_PATH)"
+	$(MAKE) -C $(GECKO_OBJDIR) $@ MAKE_SYM_STORE_PATH="$(MAKE_SYM_STORE_PATH)" MAKE_SYM_STORE_ARGS="$(MAKE_SYM_STORE_ARGS)"
