@@ -12,9 +12,6 @@ if [ "$TARGET_ARCH" = "x86" ]; then
 ac_add_options --target=i686-android-linux
 else
 ac_add_options --target=arm-linux-androideabi
-# Disabled for now since this disables enough stripping that our
-# system.img on the sgs2 exceeds 100MB and heimdall fails to work right.
-#ac_add_options --enable-profiling
 fi
 ac_add_options --with-gonk="$GONK_PATH"
 ac_add_options --with-gonk-toolchain-prefix="$TARGET_TOOLS_PREFIX"
@@ -30,13 +27,20 @@ if [ "${B2G_NOOPT:-0}" != "0" ]; then
 ac_add_options --disable-optimize
 fi
 
+if [ "${B2G_PROFILING:-0}" != "0" ]; then
+ac_add_options --enable-profiling
+fi
+
 ac_add_options --with-ccache
 
 if [ "${DISABLE_JEMALLOC:-0}" != "0" ]; then
 ac_add_options --disable-jemalloc
 fi
 
-if [ "$HOST_OS" != "linux" ]; then
+# If profiling is enabled we must disable the crash reporter as both facilities
+# install a handler for the same signal. We will be able to remove this
+# limitation when we won't be depending anymore on libunwind for profiling.
+if [ "$HOST_OS" != "linux" ] || [ "${B2G_PROFILING:-0}" != "0" ]; then
 ac_add_options --disable-crashreporter
 fi
 
