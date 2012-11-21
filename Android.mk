@@ -145,12 +145,6 @@ else
 B2G_UPDATER ?= 0
 endif
 
-ifeq ($(TARGET_BUILD_VARIANT),user)
-ENABLE_CONSOLE=
-else
-ENABLE_CONSOLE=--console
-endif
-
 $(LOCAL_INSTALLED_MODULE): $(LOCAL_BUILT_MODULE) gaia/profile.tar.gz
 	@echo Install dir: $(TARGET_OUT)/b2g
 
@@ -168,7 +162,7 @@ endif
 	mkdir -p $(TARGET_OUT)/b2g/defaults/pref
 # rename user_pref() to pref() in user.js
 	sed s/user_pref\(/pref\(/ $(GAIA_PATH)/profile/user.js > $(TARGET_OUT)/b2g/defaults/pref/user.js
-	python $(GAIA_PATH)/build/settings.py $(ENABLE_CONSOLE) --wallpaper $(GAIA_PATH)/build/wallpaper.jpg --output $(TARGET_OUT)/b2g/defaults/settings.json
+	cp $(GAIA_PATH)/profile/settings.json $(TARGET_OUT)/b2g/defaults/settings.json
 
 	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
 
