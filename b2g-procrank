@@ -12,26 +12,59 @@
 #                          ------   ------  ------
 #                         136259K  118928K  TOTAL
 
-spaces="                "
+report_oom=0
 
-procrank "$@" | (
+for arg in "$@"
+  do
+    case "$arg" in
+      "--oom")
+        report_oom=1
+      ;;
+    *)
+        args="${args} ${arg}"
+      ;;
+    esac
+  done
+
+procrank $args | (
   IFS= read header;
-  echo "Application      ${header}"
+
+  new_hdr="APPLICATION     "
+  new_ftr="                "
+  if [ "${report_oom}" == "1" ]; then
+    new_hdr="${new_hdr}  OOM_ADJ  OOM_SCORE  OOM_SCORE_ADJ"
+    new_ftr="${new_ftr}                                   "
+  fi
+  echo "${new_hdr} ${header}"
+
   while IFS= read line; do
     if [ "${line/*b2g*/b2g}" = "b2g" ]; then
       echo "${line}" | (
         read pid rest;
-        comm="$(cat /proc/${pid}/comm)${spaces}"
-        echo "${comm:0:16} ${line}"
+        comm="$(cat /proc/${pid}/comm)                "
+        new_fields="${comm:0:16}"
+        if [ "${report_oom}" == "1" ]; then
+          oom_adj="   $(cat /proc/${pid}/oom_adj)    "
+          oom_score="   $(cat /proc/${pid}/oom_score)      "
+          oom_score_adj="    $(cat /proc/${pid}/oom_score_adj)         "
+          new_fields="${new_fields}  ${oom_adj:0:7}  ${oom_score:0:9}  ${oom_score_adj:0:12} "
+        fi
+        echo "${new_fields} ${line}"
       )
     else
       sep=$(echo ${line})
       if [ "${sep:0:1}" = "-" ]; then
-        echo "${spaces} ${line}"
+        echo "${new_ftr} ${line}"
         IFS= read line
-        echo "${spaces} ${line}"
+        echo "${new_ftr} ${line}"
       fi
     fi
   done
 )
 
+if [ "${report_oom}" == "1" ]; then
+  echo
+  echo "/sys/module/lowmemorykiller/parameters/minfree:         $(cat /sys/module/lowmemorykiller/parameters/minfree)"
+  echo "/sys/module/lowmemorykiller/parameters/adj:             $(cat /sys/module/lowmemorykiller/parameters/adj)"
+  echo "/sys/module/lowmemorykiller/parameters/notify_trigger:  $(cat /sys/module/lowmemorykiller/parameters/notify_trigger)"
+fi
