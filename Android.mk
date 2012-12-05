@@ -139,10 +139,14 @@ B2G_UPDATE_CHANNEL ?= nightly
 # In user (production) builds, gaia goes in $(TARGET_OUT)/b2g/webapps
 # This flag helps us preserve the directory when cleaning out $(TARGET_OUT)/b2g
 ifneq ($(filter user userdebug, $(TARGET_BUILD_VARIANT)),)
-PRESERVE_B2G_WEBAPPS := 1
+B2G_SYSTEM_APPS := 1
 B2G_UPDATER ?= 1
 else
 B2G_UPDATER ?= 0
+endif
+
+ifeq ($(B2G_SYSTEM_APPS),1)
+PRESERVE_B2G_WEBAPPS := 1
 endif
 
 $(LOCAL_INSTALLED_MODULE): $(LOCAL_BUILT_MODULE) gaia/profile.tar.gz
