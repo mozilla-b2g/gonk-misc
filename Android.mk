@@ -246,3 +246,12 @@ MAKE_SYM_STORE_ARGS := --vcs-info
 .PHONY: buildsymbols uploadsymbols
 buildsymbols uploadsymbols:
 	$(MAKE) -C $(GECKO_OBJDIR) $@ MAKE_SYM_STORE_PATH="$(MAKE_SYM_STORE_PATH)" MAKE_SYM_STORE_ARGS="$(MAKE_SYM_STORE_ARGS)"
+
+package-tests: gaia-tests-zip
+
+TEST_DIR=$(PRODUCT_OUT)/tests
+.PHONY: package-tests
+package-tests:
+	rm -rf $(TEST_DIR)
+	mkdir $(TEST_DIR)
+	cp gaia/gaia-tests.zip $(TEST_DIR)
