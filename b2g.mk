@@ -29,6 +29,11 @@ PRODUCT_PACKAGES += \
 	MozTT-Bold.ttf \
 	$(NULL)
 
+ifeq ($(ENABLE_DEFAULT_BOOTANIMATION),true)
+PRODUCT_COPY_FILES += \
+	gonk-misc/bootanimation.zip:system/media/bootanimation.zip 
+endif
+
 ifeq ($(ENABLE_LIBRECOVERY),true)
 PRODUCT_PACKAGES += \
   librecovery
