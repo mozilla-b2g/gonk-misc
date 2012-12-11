@@ -8,7 +8,7 @@ LD_PRELOAD="/system/b2g/libmozglue.so"
 if [ -f "/system/b2g/libdmd.so" ]; then
   echo "Running with DMD."
   LD_PRELOAD="/system/b2g/libdmd.so $LD_PRELOAD"
-  export DMD="sample-below=4096"
+  export DMD="--sample-below=4096"
 fi
 export LD_PRELOAD
 
