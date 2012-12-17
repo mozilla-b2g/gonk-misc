@@ -253,9 +253,10 @@ buildsymbols uploadsymbols:
 
 package-tests: gaia-tests-zip
 
-TEST_DIR=$(PRODUCT_OUT)/tests
+TEST_DIR=$(abspath $(PRODUCT_OUT)/tests)
 .PHONY: package-tests
 package-tests:
 	rm -rf $(TEST_DIR)
 	mkdir $(TEST_DIR)
 	cp gaia/gaia-tests.zip $(TEST_DIR)
+	cd $(GECKO_PATH)/testing && zip -r $(TEST_DIR)/gaia-tests.zip marionette/client/*
