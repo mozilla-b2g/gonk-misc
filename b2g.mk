@@ -13,16 +13,6 @@ PRODUCT_PACKAGES += \
 	killer \
 	rilproxy \
 	sources.xml \
-	OpenSans-BoldItalic.ttf \
-	OpenSans-Bold.ttf \
-	OpenSans-ExtraBoldItalic.ttf \
-	OpenSans-ExtraBold.ttf \
-	OpenSans-Italic.ttf \
-	OpenSans-LightItalic.ttf \
-	OpenSans-Light.ttf \
-	OpenSans-Regular.ttf \
-	OpenSans-SemiboldItalic.ttf \
-	OpenSans-Semibold.ttf \
 	MozTT-Light.ttf \
 	MozTT-Regular.ttf \
 	MozTT-Medium.ttf \
