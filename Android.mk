@@ -149,7 +149,17 @@ ifeq ($(B2G_SYSTEM_APPS),1)
 PRESERVE_B2G_WEBAPPS := 1
 endif
 
-$(LOCAL_INSTALLED_MODULE): $(LOCAL_BUILT_MODULE) gaia/profile.tar.gz
+ifeq ($(ENABLE_GLOBAL_PRELINK),1)
+APRIORI := $(HOST_OUT_EXECUTABLES)/apriori$(HOST_EXECUTABLE_SUFFIX)
+PRELINK_MAP := $(abspath $(LOCAL_PATH)/prelink.map)
+ifeq ($(MOZ_DMD),1)
+PRELOAD_LIBS := -Dlibmozglue.so -Dlibdmd.so
+else
+PRELOAD_LIBS := -Dlibmozglue.so
+endif
+endif
+
+$(LOCAL_INSTALLED_MODULE): $(LOCAL_BUILT_MODULE) gaia/profile.tar.gz $(APRIORI) $(PRELINK_MAP)
 	@echo Install dir: $(TARGET_OUT)/b2g
 
 ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
@@ -169,6 +179,15 @@ endif
 	cp $(GAIA_PATH)/profile/settings.json $(TARGET_OUT)/b2g/defaults/settings.json
 
 	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
+
+ifeq ($(ENABLE_GLOBAL_PRELINK),1)
+	$(APRIORI)  \
+		$(PRELOAD_LIBS) \
+		-L$(TARGET_OUT_SHARED_LIBRARIES) \
+		-L$(TARGET_OUT)/b2g \
+		-p $(PRELINK_MAP) \
+		`find $(TARGET_OUT)/b2g -name "lib*.so"`
+endif
 
 # Target to create Gecko update package (MAR)
 DIST_B2G_UPDATE_DIR := $(GECKO_OBJDIR)/dist/b2g-update
