@@ -170,11 +170,10 @@ endif
 
 	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
 
-# Target to create Gecko update package (MAR)
 DIST_B2G_UPDATE_DIR := $(GECKO_OBJDIR)/dist/b2g-update
 UPDATE_PACKAGE_TARGET := $(DIST_B2G_UPDATE_DIR)/b2g-gecko-update.mar
-MAR := $(GECKO_OBJDIR)/dist/host/bin/mar
-MAKE_FULL_UPDATE := $(GECKO_PATH)/tools/update-packaging/make_full_update.sh
+UPDATE_INCREMENTAL_TARGET := $(DIST_B2G_UPDATE_DIR)/b2g-gecko-update-incremental.mar
+BUILD_GECKO_MAR := tools/update-tools/build-gecko-mar.py
 
 # Floating point operations hardware support
 ARCH_ARM_VFP := toolchain-default
@@ -188,11 +187,37 @@ ifeq ($(ARCH_ARM_HAVE_NEON), true)
 ARCH_ARM_VFP := neon
 endif
 
+# Targets for creating full and incremental Gecko update packages (MAR)
+
 .PHONY: gecko-update-full
-gecko-update-full:
+gecko-update-full: $(UPDATE_PACKAGE_TARGET)
+
+$(UPDATE_PACKAGE_TARGET): $(TARGET_OUT)/b2g
 	mkdir -p $(DIST_B2G_UPDATE_DIR)
-	MAR=$(MAR) $(MAKE_FULL_UPDATE) $(UPDATE_PACKAGE_TARGET) $(TARGET_OUT)/b2g
+	$(BUILD_GECKO_MAR) --dir=$(TARGET_OUT)/b2g $(UPDATE_PACKAGE_TARGET)
 	shasum -a 512 $(UPDATE_PACKAGE_TARGET)
+
+.PHONY: gecko-update-incremental
+
+ifeq ($(GECKO_UPDATE_TO_MAR),)
+GECKO_UPDATE_TO_MAR := $(UPDATE_PACKAGE_TARGET)
+endif
+
+GECKO_UPDATE_WORK_DIR := \
+	$(call intermediates-dir-for,PACKAGING,gecko_update_incremental)
+GECKO_UPDATE_FROM_DIR := $(GECKO_UPDATE_WORK_DIR)/update_from
+GECKO_UPDATE_TO_DIR := $(GECKO_UPDATE_WORK_DIR)/update_to
+
+gecko-update-incremental: $(GECKO_UPDATE_TO_MAR)
+ifeq ($(GECKO_UPDATE_FROM_MAR),)
+	$(error GECKO_UPDATE_FROM_MAR not provided)
+endif
+	@echo "Building incremental gecko update"
+	@echo "From MAR: $(GECKO_UPDATE_FROM_MAR)"
+	@echo "To MAR:   $(GECKO_UPDATE_TO_MAR)"
+	$(BUILD_GECKO_MAR) --from=$(GECKO_UPDATE_FROM_MAR) \
+		--to=$(GECKO_UPDATE_TO_MAR) $(UPDATE_INCREMENTAL_TARGET)
+	shasum -a 512 $(UPDATE_INCREMENTAL_TARGET)
 
 GECKO_MAKE_FLAGS ?= -j16
 GECKO_LIB_DEPS := \
