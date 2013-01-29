@@ -9,5 +9,5 @@ service b2g /system/bin/b2g.sh
 service rilproxy /system/bin/rilproxy
     class main
     socket rilproxy stream 660 root system
-    user radio
+    user root
     group radio
