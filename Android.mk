@@ -159,7 +159,7 @@ PRELOAD_LIBS := -Dlibmozglue.so
 endif
 endif
 
-$(LOCAL_INSTALLED_MODULE): $(LOCAL_BUILT_MODULE) $(GAIA_PATH)/profile.tar.gz $(APRIORI) $(PRELINK_MAP)
+$(LOCAL_INSTALLED_MODULE): $(LOCAL_BUILT_MODULE) gaia/profile.tar.gz $(APRIORI) $(PRELINK_MAP)
 	@echo Install dir: $(TARGET_OUT)/b2g
 
 ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
@@ -277,5 +277,5 @@ TEST_DIR=$(abspath $(PRODUCT_OUT)/tests)
 package-tests:
 	rm -rf $(TEST_DIR)
 	mkdir $(TEST_DIR)
-	cp $(GAIA_PATH)/gaia-tests.zip $(TEST_DIR)
+	cp gaia/gaia-tests.zip $(TEST_DIR)
 	cd $(GECKO_PATH)/testing && zip -r $(TEST_DIR)/gaia-tests.zip marionette/client/* mozbase/*
