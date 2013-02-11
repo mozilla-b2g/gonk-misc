@@ -11,3 +11,6 @@ service rilproxy /system/bin/rilproxy
     socket rilproxy stream 660 root system
     user root
     group radio
+
+on boot
+    exec /system/bin/rm -r /data/local/tmp
