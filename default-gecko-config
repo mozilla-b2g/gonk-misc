@@ -50,7 +50,7 @@ ac_add_options --enable-update-packaging
 ac_add_options --enable-b2g-camera
 
 # Enable dump() from JS.
-export CXXFLAGS="-DMOZ_ENABLE_JS_DUMP $EXTRA_INCLUDE"
+export CXXFLAGS="-DMOZ_ENABLE_JS_DUMP $EXTRA_INCLUDE ${CXXFLAGS}"
 
 ac_add_options --with-fpu="$ARCH_ARM_VFP"
 
