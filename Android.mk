@@ -109,10 +109,12 @@ ADD_REVISION := $(abspath $(LOCAL_PATH)/add-revision.py)
 
 include $(BUILD_PREBUILT)
 
-$(LOCAL_BUILT_MODULE): .repo/manifest.xml
+# Don't use dependencies on .repo/manifest.xml, since the result can
+# change even when .repo/manifest.xml doesn't.
+$(LOCAL_BUILT_MODULE): FORCE
 	mkdir -p $(@D)
 	python $(ADD_REVISION) --b2g-path . \
-		--tags $< --force --output $@
+		--tags .repo/manifest.xml --force --output $@
 endif
 
 #
