@@ -161,6 +161,11 @@ PRELOAD_LIBS := -Dlibmozglue.so
 endif
 endif
 
+GAIA_PATH ?= $(abspath $(LOCAL_PATH)/../gaia)
+ifeq (,$(wildcard $(GAIA_PATH)))
+$(error GAIA_PATH is not defined)
+endif
+
 $(LOCAL_INSTALLED_MODULE): $(LOCAL_BUILT_MODULE) gaia/profile.tar.gz $(APRIORI) $(PRELINK_MAP)
 	@echo Install dir: $(TARGET_OUT)/b2g
 
