@@ -1,8 +1,13 @@
 diff --git a/rootdir/init.rc b/rootdir/init.rc
-index 236c97b..fe9f5c5 100644
+index 064f514..88ad2a9 100755
 --- a/rootdir/init.rc
 +++ b/rootdir/init.rc
-@@ -98,6 +98,9 @@ on fs
+@@ -99,16 +99,19 @@ loglevel 3
+ # Allow everybody to read the xt_qtaguid resource tracking misc dev.
+ # This is needed by any process that uses socket tagging.
+     chmod 0644 /dev/xt_qtaguid
+ 
+ on fs
  # mount mtd partitions
      # Mount /system rw first to give the filesystem a chance to save a checkpoint
      mount yaffs2 mtd@system /system
@@ -11,4 +16,30 @@ index 236c97b..fe9f5c5 100644
 +    chmod 0755 /system/b2g/updater
      mount yaffs2 mtd@system /system ro remount
      mount yaffs2 mtd@userdata /data nosuid nodev
+     mount yaffs2 mtd@persist /persist nosuid nodev
      mount yaffs2 mtd@cache /cache nosuid nodev
+     mount yaffs2 mtd@persist /persist nosuid nodev
+ 
+ on emmc-fs
+ # mount mmc partitions
+@@ -213,16 +216,20 @@ on post-fs-data
+     chmod 0660 /sys/class/android_usb/android0/f_rndis/ethaddr
+ 
+ on boot
+ # basic network init
+     ifup lo
+     hostname localhost
+     domainname localdomain
+ 
++# set RLIMIT_NOFILE to increase soft limit from 1024(default) to 2048.
++# Hard limit keeps defult value(4096).
++    setrlimit 7 2048 4096
++
+ # set RLIMIT_NICE to allow priorities from 19 to -20
+     setrlimit 13 40 40
+ 
+ # Memory management.  Basic kernel parameters, and allow the high
+ # level system server to be able to adjust the kernel OOM driver
+ # paramters to match how it is managing things.
+     write /proc/sys/vm/overcommit_memory 1
+     write /proc/sys/vm/min_free_order_shift 4
