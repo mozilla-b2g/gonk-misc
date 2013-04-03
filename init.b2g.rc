@@ -14,3 +14,6 @@ service rilproxy /system/bin/rilproxy
 
 on boot
     exec /system/bin/rm -r /data/local/tmp
+    # set RLIMIT_NOFILE to increase soft limit from 1024(default) to 2048.
+    # Hard limit keeps default value(4096).
+    setrlimit 7 2048 4096
