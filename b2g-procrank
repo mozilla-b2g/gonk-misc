@@ -13,24 +13,31 @@
 #                         136259K  118928K  TOTAL
 
 report_oom=0
+report_nice=0
 
-for arg in "$@"
-  do
-    case "$arg" in
-      "--oom")
-        report_oom=1
+for arg in "$@" do
+  case "$arg" in
+    "--oom")
+      report_oom=1
       ;;
+    "--nice")
+      report_nice=1
+      ;; 
     *)
-        args="${args} ${arg}"
+      args="${args} ${arg}"
       ;;
-    esac
-  done
+  esac
+done
 
 procrank $args | (
   IFS= read header;
 
   new_hdr="APPLICATION     "
   new_ftr="                "
+  if [ "${report_nice}" == "1" ]; then
+    new_hdr="${new_hdr} NICE"
+    new_ftr="${new_ftr} "
+  fi
   if [ "${report_oom}" == "1" ]; then
     new_hdr="${new_hdr}  OOM_ADJ  OOM_SCORE  OOM_SCORE_ADJ"
     new_ftr="${new_ftr}                                   "
@@ -43,12 +50,21 @@ procrank $args | (
         read pid rest;
         comm="$(cat /proc/${pid}/comm)                "
         new_fields="${comm:0:16}"
+        if [ "${report_nice}" == "1" ]; then
+          # Process names are a pain in the ass, since they can have embedded spaces
+          # Fortunately, it's surrounded by parens, so we break the line based on closing
+          # paren, and then read in individual fields
+          trail=$(cat /proc/${pid}/stat | (IFS=')' read a b; echo -n $b))
+          nice="$(echo $trail | (read state ppid pgrp session tty_nr tpgid flags minflt cminflt majflt cmajflt utime stime cutime cstime prio nice rest; echo $nice))    "
+          new_fields="${new_fields} ${nice:0:4}"
+        fi
         if [ "${report_oom}" == "1" ]; then
           oom_adj="   $(cat /proc/${pid}/oom_adj)    "
           oom_score="   $(cat /proc/${pid}/oom_score)      "
           oom_score_adj="    $(cat /proc/${pid}/oom_score_adj)         "
           new_fields="${new_fields}  ${oom_adj:0:7}  ${oom_score:0:9}  ${oom_score_adj:0:12} "
         fi
+
         echo "${new_fields} ${line}"
       )
     else
