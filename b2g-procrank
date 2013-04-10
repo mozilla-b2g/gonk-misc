@@ -15,7 +15,7 @@
 report_oom=0
 report_nice=0
 
-for arg in "$@" do
+for arg in "$@"; do
   case "$arg" in
     "--oom")
       report_oom=1
