@@ -3,6 +3,7 @@ umask 0027
 export TMPDIR=/data/local/tmp
 mkdir -p $TMPDIR
 chmod 1777 $TMPDIR
+ulimit -n 4096
 
 if [ ! -d /system/b2g ]; then
 
