@@ -13,6 +13,10 @@ PRODUCT_PACKAGES += \
 	killer \
 	rilproxy \
 	sources.xml \
+	MozTT-Light.ttf \
+	MozTT-Regular.ttf \
+	MozTT-Medium.ttf \
+	MozTT-Bold.ttf \
 	$(NULL)
 
 ifeq ($(ENABLE_DEFAULT_BOOTANIMATION),true)
