@@ -279,3 +279,27 @@ package-tests:
 	mkdir $(TEST_DIR)
 	cp gaia/gaia-tests.zip $(TEST_DIR)
 	cd $(GECKO_PATH)/testing && zip -r $(TEST_DIR)/gaia-tests.zip marionette/client/* mozbase/*
+
+EMULATOR_FILES := \
+	.config \
+	load-config.sh \
+	run-emulator.sh \
+	$(HOST_OUT)/bin/adb \
+	$(HOST_OUT)/bin/emulator \
+	$(HOST_OUT)/bin/emulator-arm \
+	$(HOST_OUT)/bin/mksdcard \
+	$(HOST_OUT)/bin/qemu-android-x86 \
+	$(HOST_OUT)/lib \
+	$(HOST_OUT)/usr \
+	development/tools/emulator/skins \
+	prebuilts/qemu-kernel/arm/kernel-qemu-armv7 \
+	$(PRODUCT_OUT)/system/build.prop \
+	$(PRODUCT_OUT)/system.img \
+	$(PRODUCT_OUT)/userdata.img \
+	$(PRODUCT_OUT)/ramdisk.img
+EMULATOR_ARCHIVE:="$(OUT_DIR)/emulator.tar.gz"
+package-emulator: $(EMULATOR_ARCHIVE)
+$(EMULATOR_ARCHIVE): $(EMULATOR_FILES)
+	echo "Creating emulator archive at $@" && \
+	rm -f $@ && \
+	tar -cvzf $@ --transform 's,^,b2g-distro/,S' --show-transformed-names $^
