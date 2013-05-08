@@ -11,6 +11,7 @@ PRODUCT_PACKAGES += \
 	init.rc \
 	init.b2g.rc \
 	killer \
+	rild \
 	rilproxy \
 	sources.xml \
 	$(NULL)
