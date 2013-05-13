@@ -1,3 +1,5 @@
+. "$topsrcdir/b2g/config/mozconfigs/common"
+
 if [ "$TARGET_BUILD_VARIANT" != "user" ] ; then
 ENABLE_MARIONETTE=1
 ENABLE_TESTS=1
