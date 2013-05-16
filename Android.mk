@@ -177,9 +177,7 @@ ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
 endif
 
 	mkdir -p $(TARGET_OUT)/b2g/defaults/pref
-# rename user_pref() to pref() in user.js
-	sed s/user_pref\(/pref\(/ $(GAIA_PATH)/profile/user.js > $(TARGET_OUT)/b2g/defaults/pref/user.js
-	cp $(GAIA_PATH)/profile/settings.json $(TARGET_OUT)/b2g/defaults/settings.json
+	cp -r $(GAIA_PATH)/profile/defaults/* $(TARGET_OUT)/b2g/defaults/
 
 	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
 
