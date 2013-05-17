@@ -252,8 +252,8 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
 	export B2G_UPDATER="$(B2G_UPDATER)" && \
 	export B2G_UPDATE_CHANNEL="$(B2G_UPDATE_CHANNEL)" && \
 	export ARCH_ARM_VFP="$(ARCH_ARM_VFP)" && \
-	echo $(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
-	$(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
+	echo $(MAKE) -C $(GECKO_PATH) -f client.mk && \
+	$(MAKE) -C $(GECKO_PATH) -f client.mk && \
 	rm -f $(GECKO_OBJDIR)/dist/b2g-*.tar.gz && \
 	for LOCALE in $(MOZ_CHROME_MULTILOCALE); do \
           $(MAKE) -C $(GECKO_OBJDIR)/b2g/locales merge-$$LOCALE LOCALE_MERGEDIR=$(GECKO_OBJDIR)/b2g/locales/merge-$$LOCALE && \
