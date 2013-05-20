@@ -166,7 +166,10 @@ ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
 	mv $(TARGET_OUT)/b2g/webapps $(TARGET_OUT)
 endif
 
-	rm -rf $(TARGET_OUT)/b2g
+# Preserve the /system/b2g/distribution/ directory as its contents are not
+# populated as a part of this rule, and may even be populated before this
+# rule executes
+	rm -rf $(filter-out $(TARGET_OUT)/b2g/distribution,$(wildcard $(TARGET_OUT)/b2g/*))
 	mkdir -p $(TARGET_OUT)/b2g
 
 ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
