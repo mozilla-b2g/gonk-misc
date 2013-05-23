@@ -2,6 +2,10 @@ service fakeperm /system/bin/fakeperm
     class main
     user root
 
+service fakesched /system/bin/fakesched
+    class main
+    user root
+
 service b2g /system/bin/b2g.sh
     class main
     onrestart restart media

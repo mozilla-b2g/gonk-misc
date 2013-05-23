@@ -61,6 +61,19 @@ LOCAL_SRC_FILES    := fakeperm.cpp
 LOCAL_SHARED_LIBRARIES := libbinder libutils
 include $(BUILD_EXECUTABLE)
 
+ifneq ($(wildcard frameworks/av/services/audioflinger),)
+include $(CLEAR_VARS)
+LOCAL_MODULE       := fakesched
+LOCAL_MODULE_TAGS  := optional
+LOCAL_MODULE_CLASS := EXECUTABLES
+LOCAL_SRC_FILES    := fakesched.cpp
+LOCAL_SHARED_LIBRARIES := libbinder libutils
+LOCAL_STATIC_LIBRARIES := libscheduling_policy
+
+LOCAL_C_INCLUDES := frameworks/av/services/audioflinger
+include $(BUILD_EXECUTABLE)
+endif
+
 include $(CLEAR_VARS)
 LOCAL_MODULE       := b2g-ps
 LOCAL_MODULE_TAGS  := optional
