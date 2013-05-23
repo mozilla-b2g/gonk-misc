@@ -63,3 +63,6 @@ if [ "${ENABLE_GLOBAL_PRELINK:-0}" != 0 ]; then
 # Disable ELF_HACK on B2G for prelink.
 ac_add_options --disable-elf-hack
 fi
+
+export CFLAGS="$TARGET_EXTRA_GLOBAL_CFLAGS $CFLAGS"
+export CXXFLAGS="$TARGET_EXTRA_GLOBAL_CFLAGS $CXXFLAGS"
