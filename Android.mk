@@ -300,6 +300,8 @@ package-tests:
 	rm -rf $(TEST_DIR)
 	mkdir $(TEST_DIR)
 	cp gaia/gaia-tests.zip $(TEST_DIR)
+	$(MAKE) -C $(GECKO_OBJDIR) package-tests && \
+	cp $(GECKO_OBJDIR)/dist/*.tests.zip $(TEST_DIR)
 	cd $(GECKO_PATH)/testing && zip -r $(TEST_DIR)/gaia-tests.zip marionette/client/* mozbase/*
 
 EMULATOR_FILES := \
