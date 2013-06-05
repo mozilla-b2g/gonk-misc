@@ -14,6 +14,8 @@
 
 LOCAL_PATH:= $(call my-dir)
 
+include $(call all-subdir-makefiles)
+
 ifneq ($(TARGET_PROVIDES_B2G_INIT_RC),true)
 include $(CLEAR_VARS)
 LOCAL_MODULE       := init.rc
