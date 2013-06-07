@@ -45,11 +45,9 @@ void strip(std::string& str);
  * Convert a string to an int.
  *
  * If the conversion fails, return _default.
- *
- * TODO: Rename to str_to_int.
  */
-int strtoint(const char* str, int _default);
-int strtoint(const std::string& str, int _default);
+int str_to_int(const char* str, int _default);
+int str_to_int(const std::string& str, int _default);
 
 /**
  * Convert a string to an int and write it into *result.
@@ -57,5 +55,5 @@ int strtoint(const std::string& str, int _default);
  * If the conversion fails, return false and set *result to 0.  Otherwise,
  * return true.
  */
-bool strtoint(const char* str, int* result);
-bool strtoint(const std::string& str, int* result);
+bool str_to_int(const char* str, int* result);
+bool str_to_int(const std::string& str, int* result);

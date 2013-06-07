@@ -196,7 +196,7 @@ Process::threads()
   dirent *de;
   while ((de = readdir(tasks))) {
     int tid;
-    if (strtoint(de->d_name, &tid) && tid != pid()) {
+    if (str_to_int(de->d_name, &tid) && tid != pid()) {
       m_threads.push_back(new Thread(m_pid, tid));
     }
   }
@@ -239,7 +239,7 @@ Process::get_int_file(const char* name)
 
   char filename[128];
   snprintf(filename, sizeof(filename), "/proc/%d/%s", pid(), name);
-  
+
   int fd = open(filename, O_RDONLY);
   if (fd == -1) {
     return -1;
@@ -252,7 +252,7 @@ Process::get_int_file(const char* name)
   close(fd);
 
   buf[nread] = '\0';
-  return strtoint(buf, -1);
+  return str_to_int(buf, -1);
 }
 
 int

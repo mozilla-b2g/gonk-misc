@@ -63,7 +63,7 @@ void strip(string& str)
  *
  * If the conversion fails, return _default.
  */
-int strtoint(const char* str, int _default)
+int str_to_int(const char* str, int _default)
 {
   char* endptr = NULL;
 
@@ -76,9 +76,9 @@ int strtoint(const char* str, int _default)
   return _default;
 }
 
-int strtoint(const std::string& str, int _default)
+int str_to_int(const std::string& str, int _default)
 {
-  return strtoint(str.c_str(), _default);
+  return str_to_int(str.c_str(), _default);
 }
 
 /**
@@ -87,7 +87,7 @@ int strtoint(const std::string& str, int _default)
  * If the conversion fails, return false and set *result to 0.  Otherwise,
  * return true.
  */
-bool strtoint(const char* str, int* result)
+bool str_to_int(const char* str, int* result)
 {
   string tmp(str);
   strip(tmp);
@@ -97,8 +97,8 @@ bool strtoint(const char* str, int* result)
   return tmp.length() && !*endptr;
 }
 
-bool strtoint(const string& str, int* result)
+bool str_to_int(const string& str, int* result)
 {
-  return strtoint(str.c_str(), result);
+  return str_to_int(str.c_str(), result);
 }
 

@@ -162,7 +162,7 @@ void print_lmk_params()
 
   printf("Low-memory killer parameters:\n");
 
-  int notify_pages = strtoint(read_whole_file(LMK_DIR "notify_trigger"), -1);
+  int notify_pages = str_to_int(read_whole_file(LMK_DIR "notify_trigger"), -1);
   printf("  notify_trigger %d KB\n", pages_to_kb(notify_pages));
   printf("\n");
 
@@ -171,7 +171,7 @@ void print_lmk_params()
     stringstream ss(read_whole_file(LMK_DIR "adj"));
     string item;
     while (getline(ss, item, ',')) {
-      oom_adjs.push_back(strtoint(item, -1));
+      oom_adjs.push_back(str_to_int(item, -1));
     }
   }
 
@@ -180,7 +180,7 @@ void print_lmk_params()
     stringstream ss(read_whole_file(LMK_DIR "minfree"));
     string item;
     while (getline(ss, item, ',')) {
-      minfrees.push_back(pages_to_kb(strtoint(item, -1)));
+      minfrees.push_back(pages_to_kb(str_to_int(item, -1)));
     }
   }
 
