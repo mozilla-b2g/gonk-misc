@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
+/*
+ * b2g-info prints information about B2G processes on a phone to stdout.
+ *
+ * To build this file without rebuilding your whole tree, run
+ *
+ *   ./build.sh b2g-info
+ *
+ * Then push the executable from out/target/product/<NAME>/system/bin/b2g-info
+ * into /system/bin.
+ */
+
 #include "table.h"
 #include "process.h"
 #include "processlist.h"
