@@ -50,9 +50,8 @@ ProcessList::all_processes()
 
   dirent* de;
   while ((de = readdir(proc))) {
-    char* endptr = NULL;
-    long pid = strtol(de->d_name, &endptr, 10);
-    if (de->d_name && !*endptr) {
+    int pid;
+    if (str_to_int(de->d_name, &pid)) {
       m_all_processes.push_back(new Process(pid));
     }
   }
