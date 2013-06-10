@@ -46,7 +46,7 @@ static const char* cmd_name;
 /**
  * Prints the pids of B2G processes.
  */
-int
+void
 print_b2g_pids(bool main_process_only, bool child_processes_only)
 {
   assert(!(main_process_only && child_process_only));
@@ -64,8 +64,6 @@ print_b2g_pids(bool main_process_only, bool child_processes_only)
   }
 
   printf("\n");
-
-  return 0;
 }
 
 string
@@ -346,7 +344,8 @@ int main(int argc, const char** argv)
   }
 
   if (pids_only || main_pid_only || child_pids_only) {
-    return print_b2g_pids(main_pid_only, child_pids_only);
+    print_b2g_pids(main_pid_only, child_pids_only);
+    return 0;
   }
 
   return print_b2g_info(threads);
