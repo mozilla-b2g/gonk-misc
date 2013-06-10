@@ -103,9 +103,9 @@ Task::ensure_got_stat()
   char state;
   unsigned int flags;
   long unsigned int minflt, cminflt, majflt, cmajflt, utime, stime;
-  long int cutime, cstime, priority, nice;
+  long int cutime, cstime, priority, niceness;
   int nread =
-    fscanf(stat,
+    fscanf(stat_file,
            "%d "   // pid
            "%255[^)]) "// comm
            "%c "   // state
@@ -124,12 +124,12 @@ Task::ensure_got_stat()
            "%ld "  // cutime
            "%ld "  // cstime
            "%ld "  // priority
-           "%ld ", // nice
+           "%ld ", // niceness
            &pid2, comm, &state, &ppid, &pgrp, &session, &tty_nr,
            &tpgid, &flags, &minflt, &cminflt, &majflt, &cmajflt,
-           &utime, &stime, &cutime, &cstime, &priority, &nice); 
+           &utime, &stime, &cutime, &cstime, &priority, &niceness);
 
-  fclose(stat);
+  fclose(stat_file);
 
   if (nread != 19) {
     fprintf(stderr, "Expected to read 19 fields from fscanf(%s), but got %d.\n",
@@ -146,7 +146,7 @@ Task::ensure_got_stat()
   // Okay, everything worked out.  Store the data we collected.
 
   m_ppid = ppid;
-  m_nice = nice;
+  m_nice = niceness;
 
   if (comm[0] != '\0') {
     // If comm is non-empty, it should start with a paren, which we strip off.
