@@ -87,9 +87,14 @@ Task::ensure_got_stat()
   // once.
   m_got_stat = true;
 
-  FILE* stat = fopen(filename, "r");
-  if (!stat) {
-    // File doesn't exist; maybe the process exited or something.
+  FILE* stat_file = fopen(filename, "r");
+  if (!stat_file) {
+    // We expect ENOENT; that indicates that the file doesn't exist (maybe the
+    // process exited or something).  If we get anything else, print a warning
+    // to the console.
+    if (errno != ENOENT) {
+      perror("Unable to open /proc/<pid>/stat");
+    }
     return;
   }
 
@@ -246,9 +251,7 @@ Process::get_int_file(const char* name)
   }
 
   char buf[32];
-  int nread = 0;
-  while ((nread = read(fd, buf, sizeof(buf) - 1)) == -1 &&
-         (errno == EAGAIN || errno == EINTR)) {}
+  int nread = TEMP_FAILURE_RETRY(read(fd, buf, sizeof(buf) - 1));
   close(fd);
 
   buf[nread] = '\0';

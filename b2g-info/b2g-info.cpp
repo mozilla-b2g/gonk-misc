@@ -70,17 +70,27 @@ string
 read_whole_file(const char* filename)
 {
   char buf[1024];
-  int fd = open(filename, O_RDONLY);
+  int fd = TEMP_FAILURE_RETRY(open(filename, O_RDONLY));
   if (fd == -1) {
     return "";
   }
 
-  int nread;
-  while ((nread = read(fd, buf, sizeof(buf) - 1)) == -1 &&
-         (errno == EAGAIN || errno == EINTR))
-  {}
+  ssize_t buf_pos = 0;
+  while (true) {
+    // No more room in the buffer; we're done.
+    if (sizeof(buf) - buf_pos - 1 <= 0) {
+      break;
+    }
 
-  buf[nread] = '\0';
+    ssize_t nread = TEMP_FAILURE_RETRY(read(fd, buf + buf_pos, sizeof(buf) - 1));
+    if (nread == 0) {
+      break;
+    }
+
+    buf_pos += nread;
+  }
+
+  buf[buf_pos] = '\0';
   return buf;
 }
 
