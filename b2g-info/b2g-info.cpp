@@ -349,6 +349,7 @@ int main(int argc, const char** argv)
         !(child_pids_only = !strcmp(argv[1], "-c") || !strcmp(argv[1], "--child-pids"))) {
 
       fprintf(stderr, "Unknown argument %s.\n", argv[1]);
+      usage();
       return 1;
     }
   }
