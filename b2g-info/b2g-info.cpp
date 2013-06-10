@@ -103,7 +103,7 @@ void print_system_meminfo()
 
   FILE* meminfo = fopen("/proc/meminfo", "r");
   if (!meminfo) {
-    fprintf(stderr, "Couldn't open /proc/meminfo.");
+    perror("Couldn't open /proc/meminfo");
     return;
   }
 
