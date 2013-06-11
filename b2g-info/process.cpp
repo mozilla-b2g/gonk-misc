@@ -240,14 +240,18 @@ Process::get_int_file(const char* name)
   char filename[128];
   snprintf(filename, sizeof(filename), "/proc/%d/%s", pid(), name);
 
-  int fd = open(filename, O_RDONLY);
+  int fd = TEMP_FAILURE_RETRY(open(filename, O_RDONLY));
   if (fd == -1) {
     return -1;
   }
 
   char buf[32];
   int nread = TEMP_FAILURE_RETRY(read(fd, buf, sizeof(buf) - 1));
-  close(fd);
+  TEMP_FAILURE_RETRY(close(fd));
+
+  if (nread == -1) {
+    return -1;
+  }
 
   buf[nread] = '\0';
   return str_to_int(buf, -1);
