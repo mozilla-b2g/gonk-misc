@@ -80,22 +80,24 @@ read_whole_file(const char* filename)
     return "";
   }
 
-  ssize_t buf_pos = 0;
+  ssize_t total_read = 0;
+  ssize_t num_remaining = sizeof(buf) - 1;
   while (true) {
     // No more room in the buffer; we're done.
-    if (sizeof(buf) - buf_pos - 1 <= 0) {
+    if (num_remaining <= 0) {
       break;
     }
 
-    ssize_t nread = TEMP_FAILURE_RETRY(read(fd, buf + buf_pos, sizeof(buf) - 1));
-    if (nread == 0) {
+    ssize_t nread = TEMP_FAILURE_RETRY(read(fd, buf + total_read, num_remaining));
+    if (nread == 0 || nread == -1) {
       break;
     }
 
-    buf_pos += nread;
+    num_remaining -= nread;
+    total_read += nread;
   }
 
-  buf[buf_pos] = '\0';
+  buf[total_read] = '\0';
   return buf;
 }
 
