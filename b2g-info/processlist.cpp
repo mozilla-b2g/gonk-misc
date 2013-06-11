@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+// Enable assertions.
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
+
 #include "processlist.h"
 #include "process.h"
 #include <assert.h>

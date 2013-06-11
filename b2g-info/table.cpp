@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+// Enable assertions.
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
+
 #include "table.h"
 #include <assert.h>
 

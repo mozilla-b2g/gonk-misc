@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
+// Enable assertions.
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
+
 #include "utils.h"
-#include <algorithm>
+#include <assert.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <string>

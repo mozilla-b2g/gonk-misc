@@ -25,6 +25,11 @@
  * into /system/bin.
  */
 
+// Enable assertions.
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
+
 #include "table.h"
 #include "process.h"
 #include "processlist.h"
@@ -49,7 +54,7 @@ static const char* cmd_name;
 void
 print_b2g_pids(bool main_process_only, bool child_processes_only)
 {
-  assert(!(main_process_only && child_process_only));
+  assert(!(main_process_only && child_processes_only));
 
   if (!child_processes_only) {
     printf("%d ", ProcessList::singleton().main_process()->pid());
