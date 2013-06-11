@@ -98,50 +98,45 @@ Task::ensure_got_stat()
     return;
   }
 
-  int pid2, ppid, pgrp, session, tty_nr, tpgid;
-  char comm[256];
-  char state;
-  unsigned int flags;
-  long unsigned int minflt, cminflt, majflt, cmajflt, utime, stime;
-  long int cutime, cstime, priority, niceness;
+  int pid2, ppid;
+  char comm[32];
+  long int niceness;
   int nread =
     fscanf(stat_file,
            "%d "   // pid
-           "%255[^)]) "// comm
-           "%c "   // state
+           "%17[^)]) "// comm
+           "%*c "  // state
            "%d "   // ppid
-           "%d "   // pgrp
-           "%d "   // session
-           "%d "   // tty_nr
-           "%d "   // tpgid
-           "%u "   // flags
-           "%lu "  // minflt
-           "%lu "  // cminflt
-           "%lu "  // majflt
-           "%lu "  // cmajflt
-           "%lu "  // utime
-           "%lu "  // stime
-           "%ld "  // cutime
-           "%ld "  // cstime
-           "%ld "  // priority
+           "%*d "  // pgrp
+           "%*d "  // session
+           "%*d "  // tty_nr
+           "%*d "  // tpgid
+           "%*u "  // flags
+           "%*u "  // minflt (%lu)
+           "%*u "  // cminflt (%lu)
+           "%*u "  // majflt (%lu)
+           "%*u "  // cmajflt (%lu)
+           "%*u "  // utime (%lu)
+           "%*u "  // stime (%ld)
+           "%*d "  // cutime (%ld)
+           "%*d "  // cstime (%ld)
+           "%*d "  // priority (%ld)
            "%ld ", // niceness
-           &pid2, comm, &state, &ppid, &pgrp, &session, &tty_nr,
-           &tpgid, &flags, &minflt, &cminflt, &majflt, &cmajflt,
-           &utime, &stime, &cutime, &cstime, &priority, &niceness);
+           &pid2, comm, &ppid, &niceness);
 
   fclose(stat_file);
 
-  if (nread != 19) {
-    fprintf(stderr, "Expected to read 19 fields from fscanf(%s), but got %d.\n",
+  if (nread != 4) {
+    fprintf(stderr, "Expected to read 4 fields from fscanf(%s), but got %d.\n",
             filename, nread);
     return;
   }
-     
+
   if (task_id() != pid2) {
     fprintf(stderr, "When reading %s, got pid %d, but expected pid %d.\n",
             filename, pid2, task_id());
     return;
-  } 
+  }
 
   // Okay, everything worked out.  Store the data we collected.
 
