@@ -60,7 +60,20 @@ double kb_to_mb(int kb)
  */
 void strip(string& str)
 {
-  str.erase(remove_if(str.begin(), str.end(), isspace), str.end());
+  string::iterator it;
+  for (it = str.begin(); isspace(*it) && it != str.end(); ++it)
+  {}
+  str.erase(str.begin(), it);
+
+  string::reverse_iterator rit;
+  for (rit = str.rbegin(); isspace(*rit) && rit != str.rend(); ++rit)
+  {}
+  str.erase(rit.base(), str.end());
+
+  // If the string is non-empty, its first and last chars must not be
+  // whitespace.
+  assert(str.begin() == str.end() ||
+         (!isspace(*str.begin()) && !isspace(*str.rbegin())));
 }
 
 /**
