@@ -22,6 +22,8 @@
 #include "utils.h"
 #include <assert.h>
 #include <ctype.h>
+#include <dirent.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <string>
 #include <unistd.h>
@@ -123,3 +125,14 @@ bool str_to_int(const string& str, int* result)
   return str_to_int(str.c_str(), result);
 }
 
+DIR* safe_opendir(const char* dir)
+{
+  // opendir() calls open(), so it can fail with EINTR.  On the other hand,
+  // opendir() can also fail due to malloc() returning null, in which case the
+  // bionic implementation doesn't modify errno.  So to be totally safe, we
+  // have to set errno to 0 before we invoke TEMP_FAILURE_RETRY.
+  errno = 0;
+  DIR* d;
+  while ((d = opendir(dir)) && errno == EINTR) {}
+  return d;
+}

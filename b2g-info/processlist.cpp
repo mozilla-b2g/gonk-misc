@@ -47,7 +47,7 @@ ProcessList::all_processes()
 
   // Create a Process object for each pid in /proc.
 
-  DIR* proc = opendir("/proc");
+  DIR* proc = safe_opendir("/proc");
   if (!proc) {
     perror("Error opening /proc");
     exit(2);

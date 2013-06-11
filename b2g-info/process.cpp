@@ -188,7 +188,7 @@ Process::threads()
 
   m_got_threads = true;
 
-  DIR* tasks = opendir((m_proc_dir + "task").c_str());
+  DIR* tasks = safe_opendir((m_proc_dir + "task").c_str());
   if (!tasks) {
     return m_threads;
   }

@@ -22,6 +22,8 @@
 
 #include <string>
 
+struct DIR;
+
 /**
  * Convert a number of pages to kb.
  *
@@ -57,3 +59,8 @@ int str_to_int(const std::string& str, int _default);
  */
 bool str_to_int(const char* str, int* result);
 bool str_to_int(const std::string& str, int* result);
+
+/**
+ * Call opendir(dir), properly retrying the call if we receive EINTR.
+ */
+DIR* safe_opendir(const char* dir);
