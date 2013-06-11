@@ -110,7 +110,7 @@ void
 Table::print_spaces(int n)
 {
   for (int i = 0; i < n; i++) {
-    printf(" ");
+    putchar(' ');
   }
 }
 
@@ -150,7 +150,7 @@ Table::print_with_indent(int indent)
       print_spaces(col_widths[i] + 1);
     }
 
-    printf("|");
+    putchar('|');
 
     // Figure out how many chars we have between the two |'s.
     int chars_between = 0;
@@ -162,10 +162,10 @@ Table::print_with_indent(int indent)
     int spaces_between = chars_between - m_multi_col_header_str.length();
     spaces_between = max(spaces_between, 0);
     print_spaces((spaces_between + 1)/ 2);
-    printf("%s", m_multi_col_header_str.c_str());
+    fputs(m_multi_col_header_str.c_str(), stdout);
     print_spaces(spaces_between / 2);
 
-    printf("|\n");
+    fputs("|\n", stdout);
   }
 
   // Now print each row.
@@ -175,9 +175,9 @@ Table::print_with_indent(int indent)
 
     if (row->is_delimiter()) {
       for (int i = 0; i < table_width; i++) {
-        printf("-");
+        putchar('-');
       }
-      printf("\n");
+      putchar('\n');
       continue;
     }
 
@@ -186,10 +186,10 @@ Table::print_with_indent(int indent)
       const char* fmt_string = cell.second == ALIGN_RIGHT ? "%*s" : "%-*s";
       printf(fmt_string, col_widths[i], cell.first.c_str());
       if (i != row->size() - 1) {
-        printf(" ");
+        putchar(' ');
       }
     }
-    printf("\n");
+    putchar('\n');
   }
 }
 

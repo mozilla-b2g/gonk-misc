@@ -68,7 +68,7 @@ print_b2g_pids(bool main_process_only, bool child_processes_only)
     }
   }
 
-  printf("\n");
+  putchar('\n');
 }
 
 string
@@ -139,7 +139,7 @@ void print_system_meminfo()
 
   int actually_used = total - free - buffers - cached;
 
-  printf("System memory info:\n");
+  puts("System memory info:\n");
 
   Table t;
 
@@ -184,11 +184,11 @@ void print_lmk_params()
 {
 #define LMK_DIR "/sys/module/lowmemorykiller/parameters/"
 
-  printf("Low-memory killer parameters:\n");
+  puts("Low-memory killer parameters:\n");
 
   int notify_pages = str_to_int(read_whole_file(LMK_DIR "notify_trigger"), -1);
   printf("  notify_trigger %d KB\n", pages_to_kb(notify_pages));
-  printf("\n");
+  putchar('\n');
 
   vector<int> oom_adjs;
   {
@@ -302,10 +302,10 @@ print_b2g_info(bool show_threads)
   }
 
   t.print();
-  printf("\n");
+  putchar('\n');
 
   print_system_meminfo();
-  printf("\n");
+  putchar('\n');
 
   print_lmk_params();
 
@@ -332,7 +332,7 @@ int main(int argc, const char** argv)
 
   // We could use an option-parsing library, but this is easier for now.
   if (argc > 2) {
-    fprintf(stderr, "Too many arguments.\n");
+    fputs("Too many arguments.\n", stderr);
     usage();
     return 1;
   }
