@@ -24,6 +24,9 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string>
+#include <unistd.h>
+
+#define PAGE_SIZE sysconf(_SC_PAGESIZE)
 
 using namespace std;
 
@@ -38,7 +41,7 @@ int pages_to_kb(int pages)
     return -1;
   }
 
-  return pages * 4;
+  return pages * PAGE_SIZE / 1024;
 }
 
 /**
