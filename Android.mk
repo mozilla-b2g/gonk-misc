@@ -14,7 +14,9 @@
 
 LOCAL_PATH:= $(call my-dir)
 
+gonk_misc_LOCAL_PATH := $(LOCAL_PATH)
 include $(call all-subdir-makefiles)
+LOCAL_PATH := $(gonk_misc_LOCAL_PATH)
 
 ifneq ($(TARGET_PROVIDES_B2G_INIT_RC),true)
 include $(CLEAR_VARS)
