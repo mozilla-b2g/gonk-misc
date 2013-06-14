@@ -105,9 +105,15 @@ ProcessList::child_processes()
 
   assert(m_child_processes.size() == 0);
 
+  // We could find child processes by looking for processes whose ppid matches
+  // the main process's pid, but this requires reading /proc/<pid>/stat for
+  // every process on the system.  It's a bit faster just to look for processes
+  // whose |exe|s are "/system/b2g/plugin-container".  As an added bonus, this
+  // will work properly with nested content processes.
+
   for (vector<Process*>::const_iterator it = all_processes().begin();
        it != all_processes().end(); ++it) {
-    if ((*it)->ppid() == main_process()->pid()) {
+    if ((*it)->exe() == "/system/b2g/plugin-container") {
       m_child_processes.push_back(*it);
     }
   }
