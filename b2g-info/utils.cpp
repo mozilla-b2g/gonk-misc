@@ -28,9 +28,9 @@
 #include <string>
 #include <unistd.h>
 
-long PAGE_SIZE = sysconf(_SC_PAGESIZE);
-
 using namespace std;
+
+long sPageSize = sysconf(_SC_PAGESIZE);
 
 /**
  * Convert a number of pages to kb.
@@ -43,7 +43,7 @@ int pages_to_kb(int pages)
     return -1;
   }
 
-  return pages * PAGE_SIZE / 1024;
+  return pages * sPageSize / 1024;
 }
 
 /**

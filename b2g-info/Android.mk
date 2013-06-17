@@ -15,11 +15,11 @@
 LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
+include external/stlport/libstlport.mk
 LOCAL_MODULE       := b2g-info
 LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := EXECUTABLES
 LOCAL_SRC_FILES    := b2g-info.cpp process.cpp processlist.cpp table.cpp utils.cpp
 LOCAL_FORCE_STATIC_EXECUTABLE := false
 LOCAL_SHARED_LIBRARIES := libstlport
-LOCAL_CFLAGS       := -I prebuilt/ndk/android-ndk-r7/sources/cxx-stl/stlport/stlport
 include $(BUILD_EXECUTABLE)
