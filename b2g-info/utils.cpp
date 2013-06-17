@@ -28,7 +28,7 @@
 #include <string>
 #include <unistd.h>
 
-#define PAGE_SIZE sysconf(_SC_PAGESIZE)
+long PAGE_SIZE = sysconf(_SC_PAGESIZE);
 
 using namespace std;
 
