@@ -133,6 +133,6 @@ DIR* safe_opendir(const char* dir)
   // have to set errno to 0 before we invoke TEMP_FAILURE_RETRY.
   errno = 0;
   DIR* d;
-  while ((d = opendir(dir)) && errno == EINTR) {}
+  while (!(d = opendir(dir)) && errno == EINTR) {}
   return d;
 }
