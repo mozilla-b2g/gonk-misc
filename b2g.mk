@@ -15,7 +15,6 @@ PRODUCT_PACKAGES += \
 	killer \
 	rild \
 	rilproxy \
-	sources.xml \
 	$(NULL)
 
 ifneq ($(B2G_VALGRIND),)
@@ -30,4 +29,9 @@ endif
 ifeq ($(ENABLE_LIBRECOVERY),true)
 PRODUCT_PACKAGES += \
   librecovery
+endif
+
+ifneq ($(DISABLE_SOURCES_XML),true)
+PRODUCT_PACKAGES += \
+	sources.xml
 endif
