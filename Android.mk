@@ -138,7 +138,6 @@ LOCAL_MODULE_PATH := $(TARGET_OUT)
 include $(BUILD_PREBUILT)
 
 PRESERVE_B2G_WEBAPPS := 0
-B2G_UPDATE_CHANNEL ?= nightly
 
 # In user (production) builds, gaia goes in $(TARGET_OUT)/b2g/webapps
 # This flag helps us preserve the directory when cleaning out $(TARGET_OUT)/b2g
