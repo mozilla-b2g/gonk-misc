@@ -131,7 +131,7 @@ include $(BUILD_PREBUILT)
 $(LOCAL_BUILT_MODULE): FORCE
 	mkdir -p $(@D)
 	python $(ADD_REVISION) --b2g-path . \
-		--tags .repo/manifest.xml --force --output $@
+		--tags --force --output $@
 endif
 
 #
