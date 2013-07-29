@@ -234,16 +234,20 @@ gecko-update-full:
 
 GECKO_MAKE_FLAGS ?= -j16
 GECKO_LIB_DEPS := \
-	libm.so \
 	libc.so \
 	libdl.so \
 	liblog.so \
+	libm.so \
 	libmedia.so \
+	libsensorservice.so \
 	libstagefright.so \
 	libstagefright_omx.so \
-	libdbus.so \
-	libsensorservice.so \
 	libsysutils.so \
+	$(NULL)
+
+ifneq ($(wildcard external/dbus),)
+GECKO_LIB_DEPS += libdbus.so
+endif
 
 .PHONY: $(LOCAL_BUILT_MODULE)
 $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addprefix $(TARGET_OUT_SHARED_LIBRARIES)/,$(GECKO_LIB_DEPS))
