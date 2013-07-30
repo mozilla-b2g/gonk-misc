@@ -32,7 +32,7 @@ public:
     static const char *getServiceName() { return "scheduling_policy"; }
 
     virtual status_t dump(int fd, const Vector<String16>& args);
-    virtual int requestPriority(int32_t pid, int32_t tid, int32_t prio);
+    virtual int requestPriority(int32_t pid, int32_t tid, int32_t prio, bool async);
 };
 
 FakeSchedulePolicyService::FakeSchedulePolicyService()
@@ -51,7 +51,7 @@ FakeSchedulePolicyService::dump(int fd, const Vector<String16>& args)
 }
 
 int
-FakeSchedulePolicyService::requestPriority(int32_t pid, int32_t tid, int32_t prio)
+FakeSchedulePolicyService::requestPriority(int32_t pid, int32_t tid, int32_t prio, bool async)
 {
     return 0; /* PackageManger.PERMISSION_GRANTED */
 }
