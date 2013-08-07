@@ -63,26 +63,37 @@ def find_ref(path, only_annotated=False):
     else:
         return rev
 
-def parse_manifest(b2g_root):
+def parse_manifest(man_filename):
   """Parse a manifest XML file and return a 'Document' from it.
   Any <include name="another.xml"/> elements are replaced with the contents
   if the specified file."""
-  if os.path.exists(os.path.join(b2g_root, 'repo')):
-      repo_cmd = os.path.join(b2g_root, 'repo')
-  else:
-      repo_cmd = 'repo'
-  manifest = cmd([repo_cmd, 'manifest'], cwd=b2g_root, bufsize=100000)
-  doc = xml.dom.minidom.parseString(manifest)
+  doc = xml.dom.minidom.parse(man_filename)
+  for inc_node in doc.getElementsByTagName("include"):
+    inc_filename = inc_node.getAttribute('name')
+    inc_directory = os.path.dirname(os.path.realpath(man_filename));
+    inc_path = os.path.join(inc_directory, inc_filename)
+    # parse the included xml
+    inc_doc = parse_manifest(inc_path)
+    # add all the elements found in the included manifest
+    m = inc_doc.getElementsByTagName("manifest")[0]
+    for c in m.childNodes:
+      # prevent insertBefore() from deleting c from its parent because
+      # that modifies m.childNodes and the loop gets screwed up
+      c.parentNode = None
+      # insert right before the <include .../> element
+      inc_node.parentNode.insertBefore(c, inc_node)
+    # remove the <include .../> element itself
+    inc_node.parentNode.removeChild(inc_node)
   return doc
 
-def add_revision(b2g_root, output, force=False, tags=False, only_annotated=False):
+def add_revision(man_filename, b2g_root, output, force=False, tags=False, only_annotated=False):
     """Take a string that is a filename to the source manifest, the root
     of the repository tree and write a copy of the xml manifest to the file
     'output' that has revisions.  If tags is set to true, prepend each project
     node with a comment node that contains the name of the repository and the
     tag for that repository.  Specifying force=True will cause revisions in the
     original manifest to be overwritten with computed ones"""
-    doc = parse_manifest(b2g_root)
+    doc = parse_manifest(man_filename)
     for project in doc.getElementsByTagName("project"):
         if project.getAttribute('revision') and not force:
             pass
@@ -131,7 +142,11 @@ def main():
     if not os.path.isdir(options.b2g_path):
         parser.error("b2g path is not a valid and existing directory")
 
-    add_revision(options.b2g_path,
+    if len(args) != 1:
+        parser.error("specify one manifest")
+
+    add_revision(args[0],
+                 options.b2g_path,
                  sys.stdout if options.stdio else options.output,
                  options.force,
                  options.tags,
