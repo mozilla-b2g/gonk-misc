@@ -13,6 +13,7 @@ PRODUCT_PACKAGES += \
 	init.rc \
 	init.b2g.rc \
 	killer \
+	libttspico \
 	rild \
 	rilproxy \
 	$(NULL)
