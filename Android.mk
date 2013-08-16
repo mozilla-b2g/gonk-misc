@@ -112,6 +112,7 @@ $(call intermediates-dir-for,APPS,framework-res,,COMMON)/package-export.apk:
 	zip $@ `dirname $@`/dummy
 
 
+ifneq ($(DISABLE_SOURCES_XML),true)
 ifneq (,$(realpath .repo/manifest.xml))
 #
 # Include a copy of the repo manifest that has the revisions used
@@ -132,6 +133,7 @@ $(LOCAL_BUILT_MODULE): FORCE
 	mkdir -p $(@D)
 	python $(ADD_REVISION) --b2g-path . \
 		--tags .repo/manifest.xml --force --output $@
+endif
 endif
 
 #
