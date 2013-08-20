@@ -8,6 +8,7 @@ PRODUCT_PACKAGES += \
 	b2g-ps \
 	fakeperm \
 	fakesched \
+	fakeappops \
 	gaia \
 	gecko \
 	init.rc \
