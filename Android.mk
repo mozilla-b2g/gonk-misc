@@ -261,6 +261,10 @@ ifneq ($(wildcard external/dbus),)
 GECKO_LIB_DEPS += libdbus.so
 endif
 
+ifneq ($(wildcard system/core/libsuspend),)
+GECKO_LIB_DEPS += libsuspend.so
+endif
+
 .PHONY: $(LOCAL_BUILT_MODULE)
 $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addprefix $(TARGET_OUT_SHARED_LIBRARIES)/,$(GECKO_LIB_DEPS))
 	(echo "export GECKO_OBJDIR=$(abspath $(GECKO_OBJDIR))"; \
