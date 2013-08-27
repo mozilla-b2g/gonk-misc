@@ -26,14 +26,18 @@ if [ ! -d /system/b2g ]; then
   fi
 fi
 
-LD_PRELOAD="/system/b2g/libmozglue.so"
-if [ -f "/system/b2g/libdmd.so" ]; then
+if [ -z "$B2G_DIR" ]; then
+  B2G_DIR="/system/b2g"
+fi
+
+LD_PRELOAD="$B2G_DIR/libmozglue.so"
+if [ -f "$B2G_DIR/libdmd.so" ]; then
   echo "Running with DMD."
-  LD_PRELOAD="/system/b2g/libdmd.so $LD_PRELOAD"
+  LD_PRELOAD="$B2G_DIR/libdmd.so $LD_PRELOAD"
   export DMD="1"
 fi
 export LD_PRELOAD
 
-export LD_LIBRARY_PATH=/vendor/lib:/system/lib:/system/b2g
-export GRE_HOME=/system/b2g
-exec /system/b2g/b2g
+export LD_LIBRARY_PATH=/vendor/lib:/system/lib:"$B2G_DIR"
+export GRE_HOME="$B2G_DIR"
+exec $COMMAND_PREFIX "$B2G_DIR/b2g"
