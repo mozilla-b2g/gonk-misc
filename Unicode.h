@@ -17,8 +17,6 @@
 #ifndef ANDROID_UNICODE_H
 #define ANDROID_UNICODE_H
 
-#define __STDC_LIMIT_MACROS 1
-
 #include <sys/types.h>
 #include <stdint.h>
 
