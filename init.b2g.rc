@@ -20,6 +20,11 @@ service rilproxy /system/bin/rilproxy
     user root
     group radio
 
+service OOMLogger /system/bin/oom-msg-logger
+    class main
+    user shell
+    group system
+
 on boot
     exec /system/bin/rm -r /data/local/tmp
     exec /system/bin/mkdir -p /data/local/tmp
