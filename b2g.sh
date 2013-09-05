@@ -36,4 +36,5 @@ export LD_PRELOAD
 
 export LD_LIBRARY_PATH=/vendor/lib:/system/lib:/system/b2g
 export GRE_HOME=/system/b2g
+export NSPR_LOG_MODULES=SeccompSandbox:2${NSPR_LOG_MODULES:+,$NSPR_LOG_MODULES}
 exec /system/b2g/b2g
