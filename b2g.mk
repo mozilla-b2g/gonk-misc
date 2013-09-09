@@ -18,6 +18,7 @@ PRODUCT_PACKAGES += \
 	libttspico \
 	rild \
 	rilproxy \
+	oom-msg-logger \
 	$(NULL)
 
 ifneq ($(B2G_VALGRIND),)
