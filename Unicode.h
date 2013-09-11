@@ -17,8 +17,6 @@
 #ifndef ANDROID_UNICODE_H
 #define ANDROID_UNICODE_H
 
-#define __STDC_LIMIT_MACROS 1
-
 #include <sys/types.h>
 #include <stdint.h>
 
@@ -170,5 +168,4 @@ void utf8_to_utf16(const uint8_t* src, size_t srcLen, char16_t* dst);
 
 }
 
-#undef __STDC_LIMIT_MACROS
 #endif
