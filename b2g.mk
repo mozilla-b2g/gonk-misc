@@ -9,6 +9,7 @@ PRODUCT_PACKAGES += \
 	fakeperm \
 	fakesched \
 	fakeappops \
+	fs_config \
 	gaia \
 	gecko \
 	init.rc \
