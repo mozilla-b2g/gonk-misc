@@ -60,8 +60,3 @@ ac_add_options --disable-ion
 if [ "${MOZ_DMD:-0}" != 0 ]; then
   ac_add_options --enable-dmd
 fi
-
-if [ "${ENABLE_GLOBAL_PRELINK:-0}" != 0 ]; then
-# Disable ELF_HACK on B2G for prelink.
-ac_add_options --disable-elf-hack
-fi
