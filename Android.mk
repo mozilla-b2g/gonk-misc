@@ -62,7 +62,7 @@ LOCAL_MODULE       := fakeperm
 LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := EXECUTABLES
 LOCAL_SRC_FILES    := fakeperm.cpp
-LOCAL_SHARED_LIBRARIES := libbinder libutils
+LOCAL_SHARED_LIBRARIES := libbinder libutils liblog
 include $(BUILD_EXECUTABLE)
 
 include $(CLEAR_VARS)
