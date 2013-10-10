@@ -5,6 +5,10 @@ ENABLE_MARIONETTE=1
 ENABLE_TESTS=1
 fi
 
+if [ "$TARGET_BUILD_VARIANT" == "eng" ] ; then
+MOZ_DMD=1
+fi
+
 mk_add_options MOZ_OBJDIR="$GECKO_OBJDIR"
 
 # XXX our build system doesn't seem to respect toplevel -j ...
