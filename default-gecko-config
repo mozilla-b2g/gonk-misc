@@ -15,9 +15,6 @@ if [ "$TARGET_ARCH" = "x86" ]; then
 ac_add_options --target=i686-android-linux
 else
 ac_add_options --target=arm-linux-androideabi
-# Disabled for now since this disables enough stripping that our
-# system.img on the sgs2 exceeds 100MB and heimdall fails to work right.
-#ac_add_options --enable-profiling
 fi
 ac_add_options --with-gonk="$GONK_PATH"
 ac_add_options --with-gonk-toolchain-prefix="$TARGET_TOOLS_PREFIX"
@@ -43,6 +40,10 @@ if [ "${B2G_VALGRIND:-0}" != "0" ]; then
 ac_add_options --enable-valgrind
 ac_add_options --enable-profiling
 ac_add_options --disable-jemalloc
+fi
+
+if [ "${B2G_PROFILING:-0}" != "0" ]; then
+ac_add_options --enable-profiling
 fi
 
 if [ "$HOST_OS" != "linux" ]; then
