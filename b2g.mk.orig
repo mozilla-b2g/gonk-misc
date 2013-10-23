@@ -9,7 +9,6 @@ PRODUCT_PACKAGES += \
 	fakeperm \
 	fakesched \
 	fakeappops \
-	fs_config \
 	gaia \
 	gecko \
 	init.rc \
@@ -18,8 +17,11 @@ PRODUCT_PACKAGES += \
 	libttspico \
 	rild \
 	rilproxy \
+<<<<<<< HEAD
+=======
 	sources.xml \
 	oom-msg-logger \
+>>>>>>> Implemented a service to log with to logcat kmsg low memory killer messages
 	$(NULL)
 
 ifneq ($(B2G_VALGRIND),)
