@@ -20,6 +20,10 @@ service rilproxy /system/bin/rilproxy
     user root
     group radio
 
+service nfcd /system/bin/nfcd
+    class main
+    oneshot
+
 on boot
     exec /system/bin/rm -r /data/local/tmp
     exec /system/bin/mkdir -p /data/local/tmp
