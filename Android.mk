@@ -111,6 +111,14 @@ LOCAL_FORCE_STATIC_EXECUTABLE := true	# since this is setuid root
 LOCAL_SHARED_LIBRARIES :=
 include $(BUILD_EXECUTABLE)
 
+include $(CLEAR_VARS)
+LOCAL_MODULE       := oom-msg-logger
+LOCAL_MODULE_TAGS  := optional
+LOCAL_MODULE_CLASS := DATA
+LOCAL_SRC_FILES    := oom-msg-logger.sh
+LOCAL_MODULE_PATH  := $(TARGET_OUT_EXECUTABLES)
+include $(BUILD_PREBUILT) 
+
 $(OUT_DOCS)/api-stubs-timestamp:
 	mkdir -p `dirname $@`
 	touch $@
