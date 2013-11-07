@@ -78,7 +78,7 @@ LOCAL_C_INCLUDES := frameworks/av/services/audioflinger
 include $(BUILD_EXECUTABLE)
 endif
 
-ifneq ($(wildcard frameworks/native/libs/binder),)
+ifneq ($(wildcard frameworks/native/libs/binder/IAppOpsService.cpp),)
 include $(CLEAR_VARS)
 LOCAL_MODULE       := fakeappops
 LOCAL_MODULE_TAGS  := optional
