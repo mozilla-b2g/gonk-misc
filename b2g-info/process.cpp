@@ -40,6 +40,8 @@ Task::Task(pid_t pid, pid_t tid)
   , m_got_stat(false)
   , m_ppid(-1)
   , m_nice(0)
+  , m_utime(-1)
+  , m_stime(-1)
 {
   char procdir[128];
   snprintf(procdir, sizeof(procdir), "/proc/%d/task/%d/", pid, tid);
@@ -73,10 +75,24 @@ Task::nice()
   return m_nice;
 }
 
+double
+Task::utime_s()
+{
+  ensure_got_stat();
+  return m_utime;
+}
+
+double
+Task::stime_s()
+{
+  ensure_got_stat();
+  return m_stime;
+}
+
 void
 Task::ensure_got_stat()
 {
-  static const unsigned int NUM_CAPTURES = 5;
+  static const unsigned int NUM_CAPTURES = 7;
   const char* pattern =
     "^"           // beginning of string
     "([0-9]+) "   // pid
@@ -92,8 +108,8 @@ Task::ensure_got_stat()
     "[0-9]+ "     // cminflt (%lu)
     "[0-9]+ "     // majflt (%lu)
     "[0-9]+ "     // cmajflt (%lu)
-    "[0-9]+ "     // utime (%lu)
-    "[0-9]+ "     // stime (%ld)
+    "([0-9]+) "   // utime (%lu)
+    "([0-9]+) "   // stime (%ld)
     "[0-9]+ "     // cutime (%ld)
     "[0-9]+ "     // cstime (%ld)
     "[0-9]+ "     // priority (%ld)
@@ -152,7 +168,9 @@ Task::ensure_got_stat()
   m_name.clear();
   m_name.append(buf + pmatch[2].rm_so, pmatch[2].rm_eo - pmatch[2].rm_so);
   m_ppid = strtol(buf + pmatch[3].rm_so, NULL, 10);
-  m_nice = strtol(buf + pmatch[4].rm_so, NULL, 10);
+  m_nice = strtol(buf + pmatch[6].rm_so, NULL, 10);
+  m_utime = ticks_to_secs(strtol(buf + pmatch[4].rm_so, NULL, 10));
+  m_stime = ticks_to_secs(strtol(buf + pmatch[5].rm_so, NULL, 10));
 
   // finally, emit an error if the line we read doesn't correspond
   // to the process we expect

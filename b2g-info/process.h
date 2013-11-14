@@ -47,6 +47,9 @@ public:
    */
   pid_t task_id();
 
+  double stime_s();
+  double utime_s();
+
 protected:
   Task(pid_t pid);
   Task(pid_t pid, pid_t tid);
@@ -63,6 +66,9 @@ protected:
   bool m_got_stat;
   pid_t m_ppid;
   int m_nice;
+
+  double m_utime;
+  double m_stime;
 
   std::string m_name;
 };

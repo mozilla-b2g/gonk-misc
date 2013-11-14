@@ -32,6 +32,8 @@ using namespace std;
 
 long sPageSize = sysconf(_SC_PAGESIZE);
 
+long hertz = sysconf(_SC_CLK_TCK);
+
 /**
  * Convert a number of pages to kb.
  *
@@ -58,6 +60,20 @@ double kb_to_mb(int kb)
   }
 
   return kb / 1024.0;
+}
+
+/**
+ * Convert a number of clock ticks into seconds.
+ *
+ * -1 signifies an error, so if ticks == -1, return -1.
+ */
+double ticks_to_secs(int ticks)
+{
+  if (ticks == -1) {
+    return -1;
+  }
+
+  return ticks / (double) hertz;
 }
 
 /**

@@ -39,6 +39,13 @@ int pages_to_kb(int pages);
 double kb_to_mb(int kb);
 
 /**
+ * Convert a number of clock ticks into seconds.
+ *
+ * -1 signifies an error, so if ticks == -1, return -1.
+ */
+double ticks_to_secs(int ticks);
+
+/**
  * Strip whitespace off the beginning and end of the given string.
  */
 void strip(std::string& str);
