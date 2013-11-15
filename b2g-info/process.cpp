@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #include <pwd.h>
 #include <sys/stat.h>
+#include <regex.h>
 
 using namespace std;
 
@@ -75,6 +76,29 @@ Task::nice()
 void
 Task::ensure_got_stat()
 {
+  static const unsigned int NUM_CAPTURES = 5;
+  const char* pattern =
+    "^"           // beginning of string
+    "([0-9]+) "   // pid
+    "\\((.*)\\) " // proc name
+    "[A-Z] "      // state
+    "([0-9]+) "   // ppid       #include <sys/types.h>
+    "[0-9]+ "     // pgrp
+    "[0-9]+ "     // session
+    "[0-9]+ "     // tty_nr
+    "-?[0-9]+ "   // tpgid
+    "[0-9]+ "     // flags
+    "[0-9]+ "     // minflt (%lu)
+    "[0-9]+ "     // cminflt (%lu)
+    "[0-9]+ "     // majflt (%lu)
+    "[0-9]+ "     // cmajflt (%lu)
+    "[0-9]+ "     // utime (%lu)
+    "[0-9]+ "     // stime (%ld)
+    "[0-9]+ "     // cutime (%ld)
+    "[0-9]+ "     // cstime (%ld)
+    "[0-9]+ "     // priority (%ld)
+    "([0-9]+)";   // niceness
+
   if (m_got_stat) {
     return;
   }
@@ -98,56 +122,48 @@ Task::ensure_got_stat()
     return;
   }
 
-  int pid2, ppid;
-  char comm[32];
-  long int niceness;
-  int nread =
-    fscanf(stat_file,
-           "%d "   // pid
-           "%17[^)]) "// comm
-           "%*c "  // state
-           "%d "   // ppid
-           "%*d "  // pgrp
-           "%*d "  // session
-           "%*d "  // tty_nr
-           "%*d "  // tpgid
-           "%*u "  // flags
-           "%*u "  // minflt (%lu)
-           "%*u "  // cminflt (%lu)
-           "%*u "  // majflt (%lu)
-           "%*u "  // cmajflt (%lu)
-           "%*u "  // utime (%lu)
-           "%*u "  // stime (%ld)
-           "%*d "  // cutime (%ld)
-           "%*d "  // cstime (%ld)
-           "%*d "  // priority (%ld)
-           "%ld ", // niceness
-           &pid2, comm, &ppid, &niceness);
+  char buf[512];
+
+  // read a line (fgets performs NULL plugging for us)
+  fgets(buf, sizeof(buf), stat_file);
 
   fclose(stat_file);
 
-  if (nread != 4) {
-    fprintf(stderr, "Expected to read 4 fields from fscanf(%s), but got %d.\n",
-            filename, nread);
+  // now parse the line
+  int rc;
+
+  regex_t preg;
+  if (0 != (rc = regcomp(&preg, pattern, REG_EXTENDED))) {
+    fprintf(stderr, "regcomp() failed, returning nonzero (%d)\n",
+            rc);
     return;
   }
 
-  if (task_id() != pid2) {
+  size_t     nmatch = NUM_CAPTURES;
+  regmatch_t pmatch[NUM_CAPTURES];
+
+  if (0 != (rc = regexec(&preg, buf, nmatch, pmatch, 0))) {
+    fprintf(stderr, "Failed to match '%s' with '%s',returning %d.\n",
+            buf, pattern, rc);
+    return;
+  }
+
+  // Okay, everything worked out.  Store the data we parsed.
+  m_name.clear();
+  m_name.append(buf + pmatch[2].rm_so, pmatch[2].rm_eo - pmatch[2].rm_so);
+  m_ppid = strtol(buf + pmatch[3].rm_so, NULL, 10);
+  m_nice = strtol(buf + pmatch[4].rm_so, NULL, 10);
+
+  // finally, emit an error if the line we read doesn't correspond
+  // to the process we expect
+  int readPid = strtol(buf + pmatch[1].rm_so, NULL, 10);
+  if (task_id() != readPid) {
     fprintf(stderr, "When reading %s, got pid %d, but expected pid %d.\n",
-            filename, pid2, task_id());
-    return;
+            filename, readPid, task_id());
   }
 
-  // Okay, everything worked out.  Store the data we collected.
-
-  m_ppid = ppid;
-  m_nice = niceness;
-
-  if (comm[0] != '\0') {
-    // If comm is non-empty, it should start with a paren, which we strip off.
-    // If it's empty, we don't need to assign anything to m_name.
-    m_name = comm + 1;
-  }
+  // free the compiled regular expression
+  regfree(&preg);
 };
 
 Thread::Thread(pid_t pid, pid_t tid)
