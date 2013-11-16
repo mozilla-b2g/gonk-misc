@@ -29,7 +29,7 @@ service nfcd /system/bin/nfcd
 
 service OOMLogger /system/bin/oom-msg-logger
     class main
-    user shell
+    user root
     group system
 
 on boot
