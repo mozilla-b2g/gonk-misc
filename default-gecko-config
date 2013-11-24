@@ -30,6 +30,10 @@ if [ "${B2G_NOOPT:-0}" != "0" ]; then
 ac_add_options --disable-optimize
 fi
 
+if [ "${B2G_DUMP_PAINTING:-0}" != "0" ]; then
+ac_add_options --enable-dump-painting
+fi
+
 ac_add_options --with-ccache
 
 if [ "${DISABLE_JEMALLOC:-0}" != "0" ]; then
