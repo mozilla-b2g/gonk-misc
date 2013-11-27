@@ -241,7 +241,6 @@ gecko-update-full:
 	MAR=$(MAR) $(MAKE_FULL_UPDATE) $(UPDATE_PACKAGE_TARGET) $(TARGET_OUT)/b2g
 	shasum -a 512 $(UPDATE_PACKAGE_TARGET)
 
-GECKO_MAKE_FLAGS ?= -j16
 GECKO_LIB_DEPS := \
 	libc.so \
 	libdl.so \
@@ -277,15 +276,14 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
 	export GONK_PATH="$(abspath .)" && \
 	export GECKO_OBJDIR="$(abspath $(GECKO_OBJDIR))" && \
 	export USE_CACHE=$(USE_CCACHE) && \
-	export MAKE_FLAGS="$(GECKO_MAKE_FLAGS)" && \
 	export MOZCONFIG="$(abspath $(MOZCONFIG_PATH))" && \
 	export EXTRA_INCLUDE="-include $(UNICODE_HEADER_PATH)" && \
 	export DISABLE_JEMALLOC="$(DISABLE_JEMALLOC)" && \
 	export B2G_UPDATER="$(B2G_UPDATER)" && \
 	export B2G_UPDATE_CHANNEL="$(B2G_UPDATE_CHANNEL)" && \
 	export ARCH_ARM_VFP="$(ARCH_ARM_VFP)" && \
-	echo $(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
-	$(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
+	echo $(MAKE) -C $(GECKO_PATH) -f client.mk -s MOZ_MAKE_FLAGS= && \
+	$(MAKE) -C $(GECKO_PATH) -f client.mk -s MOZ_MAKE_FLAGS= && \
 	rm -f $(GECKO_OBJDIR)/dist/b2g-*.tar.gz && \
 	for LOCALE in $(MOZ_CHROME_MULTILOCALE); do \
           $(MAKE) -C $(GECKO_OBJDIR)/b2g/locales merge-$$LOCALE LOCALE_MERGEDIR=$(GECKO_OBJDIR)/b2g/locales/merge-$$LOCALE && \
