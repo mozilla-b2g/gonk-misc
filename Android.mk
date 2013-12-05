@@ -340,7 +340,6 @@ EMULATOR_FILES := \
 	$(HOST_OUT)/bin/mksdcard \
 	$(HOST_OUT)/bin/qemu-android-x86 \
 	$(HOST_OUT)/lib \
-	$(HOST_OUT)/usr \
 	development/tools/emulator/skins \
 	prebuilts/qemu-kernel/arm/kernel-qemu-armv7 \
 	$(PRODUCT_OUT)/system/build.prop \
