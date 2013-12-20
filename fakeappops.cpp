@@ -36,6 +36,13 @@ public:
     virtual int32_t noteOperation(int32_t code, int32_t uid, const String16& packageName);
     virtual int32_t startOperation(int32_t code, int32_t uid, const String16& packageName);
     virtual void finishOperation(int32_t code, int32_t uid, const String16& packageName);
+
+    virtual int32_t startOperation(const sp<IBinder>& token, int32_t code, int32_t uid,
+            const String16& packageName);
+    virtual void finishOperation(const sp<IBinder>& token, int32_t code, int32_t uid,
+            const String16& packageName);
+    virtual sp<IBinder> getToken(const sp<IBinder>& clientToken);
+
     virtual void startWatchingMode(int32_t op, const String16& packageName,
             const sp<IAppOpsCallback>& callback);
     virtual void stopWatchingMode(const sp<IAppOpsCallback>& callback);
@@ -68,9 +75,28 @@ FakeAppOpsService::startOperation(int32_t code, int32_t uid, const String16& pac
     return MODE_ALLOWED;
 }
 
+int32_t
+FakeAppOpsService::startOperation(const sp<IBinder>& token, int32_t code, int32_t uid,
+    const String16& packageName)
+{
+    return MODE_ALLOWED;
+}
+
 void
 FakeAppOpsService::finishOperation(int32_t code, int32_t uid, const String16& packageName)
 {
+}
+
+void
+FakeAppOpsService::finishOperation(const sp<IBinder>& token, int32_t code, int32_t uid,
+    const String16& packageName)
+{
+}
+
+sp<IBinder>
+FakeAppOpsService::getToken(const sp<IBinder>& clientToken)
+{
+  return NULL;
 }
 
 void
