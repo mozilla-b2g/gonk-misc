@@ -30,7 +30,9 @@ $(LOCAL_BUILT_MODULE):
 	mkdir -p $(@D)
 	echo import /init.b2g.rc > $@
 	cat system/core/rootdir/init.rc >> $@
+ifeq ($(PLATFORM_SDK_VERSION),15)
 	patch $@ gonk-misc/init.rc.patch
+endif
 endif
 
 include $(CLEAR_VARS)
