@@ -345,3 +345,116 @@ $(EMULATOR_ARCHIVE): $(EMULATOR_FILES)
 	echo "Creating emulator archive at $@" && \
 	rm -f $@ && \
 	tar -cvzf $@ --transform 's,^,b2g-distro/,S' --show-transformed-names $^
+
+.PHONY: gecko-update-fota gecko-update-fota-full
+gecko-update-fota: $(PRODUCT_OUT)/fota-update.mar
+gecko-update-fota-full: $(PRODUCT_OUT)/fota-update-full.mar
+
+B2G_FOTA_UPDATE_MAR := fota-update.mar
+B2G_FOTA_UPDATE_FULL_MAR := fota-update-full.mar
+B2G_FOTA_UPDATE_ZIP := fota/partial/update.zip
+B2G_FOTA_UPDATE_FULL_ZIP := fota/full/update.zip
+
+B2G_FOTA_FSTYPE := yaffs2
+B2G_FOTA_SYSTEM_PARTITION := "system"
+B2G_FOTA_DATA_PARTITION := "userdata"
+
+B2G_FOTA_DIRS ?= "system/b2g"
+B2G_FOTA_SYSTEM_FILES := $(PRODUCT_OUT)/system.files
+
+define detect-fstype
+  $(if $(filter true, $(INTERNAL_USERIMAGES_USE_EXT)),
+    $(eval B2G_FOTA_FSTYPE := $(INTERNAL_USERIMAGES_EXT_VARIANT)))
+  $(info Using $(B2G_FOTA_FSTYPE) filesystem)
+endef
+
+FSTAB_TYPE := recovery
+# $(1): recovery_fstab
+define detect-partitions
+  $(eval FSTAB_FILE := $(basename $(notdir $(1))))
+
+  $(if $(FSTAB_FILE),
+    $(if $(filter fstab, $(FSTAB_FILE)),
+      $(eval FSTAB_TYPE := linux))
+
+    $(info Extracting partitions from $(FSTAB_TYPE) fstab)
+
+    $(if $(filter linux, $(FSTAB_TYPE)),
+      $(eval B2G_FOTA_SYSTEM_PARTITION := $(shell grep -v '^\#' $(1) | grep '\s\+/system\s\+' | awk '{ print $$1 }'))
+      $(eval B2G_FOTA_DATA_PARTITION := $(shell grep -v '^\#' $(1) | grep '\s\+/data\s\+' | awk '{ print $$1 }'))
+    )
+
+    $(if $(filter recovery, $(FSTAB_TYPE)),
+      $(eval B2G_FOTA_SYSTEM_PARTITION := $(shell grep -v '^\#' $(1) | grep '^/system\s\+' | awk '{ print $$3 }'))
+      $(eval B2G_FOTA_DATA_PARTITION := $(shell grep -v '^\#' $(1) | grep '^/data\s\+' | awk '{ print $$3 }'))
+    ),
+
+    $(if $(filter ext%, $(B2G_FOTA_FSTYPE)),
+      $(warning Ext FS but no recovery fstab. Using values specified by env: SYSTEM_PARTITION and DATA_PARTITION:)
+      $(warning SYSTEM_PARTITION @ $(SYSTEM_PARTITION))
+      $(warning DATA_PARTITION @ $(DATA_PARTITION))
+      $(if $(SYSTEM_PARTITION),
+        $(if $(DATA_PARTITION),
+          $(eval B2G_FOTA_SYSTEM_PARTITION := $(SYSTEM_PARTITION))
+          $(eval B2G_FOTA_DATA_PARTITION := $(DATA_PARTITION)),
+          $(error No DATA_PARTITION)
+        ),
+        $(error No SYSTEM_PARTITION)
+      ),
+      $(info No recovery, but not Ext FS)
+    )
+  )
+
+  $(info Mounting /system from $(B2G_FOTA_SYSTEM_PARTITION))
+  $(info Mounting /data   from $(B2G_FOTA_DATA_PARTITION))
+endef
+
+define setup-fs
+  $(call detect-fstype)
+  $(call detect-partitions,$(recovery_fstab))
+endef
+
+B2G_FOTA_FLASH_SCRIPT := tools/update-tools/build-flash-fota.py
+B2G_FOTA_FLASH_MAR_SCRIPT := tools/update-tools/build-fota-mar.py
+
+$(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_MAR): $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_ZIP)
+	@$(B2G_FOTA_FLASH_MAR_SCRIPT) --output $@ $^
+
+$(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_MAR): $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_ZIP)
+	@$(B2G_FOTA_FLASH_MAR_SCRIPT) --output $@ $^
+
+# We want to rebuild this list everytime
+.PHONY: $(B2G_FOTA_SYSTEM_FILES)
+$(B2G_FOTA_SYSTEM_FILES): $(PRODUCT_OUT)/system.img
+	@(for d in $(B2G_FOTA_DIRS); do find $(PRODUCT_OUT)/$$d; done;) | sed -e 's|$(PRODUCT_OUT)/||g' > $@
+
+# We temporarily remove Android'd Java from the path
+# Otherwise, our fake java will be used to run signapk.jar
+B2G_FOTA_ENV_PATH := $(shell echo "$$PATH" | sed -e 's|$(ANDROID_JAVA_TOOLCHAIN)||g')
+
+$(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_ZIP): $(B2G_FOTA_SYSTEM_FILES) $(PRODUCT_OUT)/system.img
+	mkdir -p `dirname $@` || true
+	$(call setup-fs)
+	$(info Generating FOTA update package)
+	@PATH=$(B2G_FOTA_ENV_PATH) $(B2G_FOTA_FLASH_SCRIPT) \
+	    --system-dir $(PRODUCT_OUT)/system \
+	    --system-fs-type $(B2G_FOTA_FSTYPE) \
+	    --system-location $(B2G_FOTA_SYSTEM_PARTITION) \
+	    --data-fs-type $(B2G_FOTA_FSTYPE) \
+	    --data-location $(B2G_FOTA_DATA_PARTITION) \
+	    --fota-type partial \
+	    --fota-dirs "$(B2G_FOTA_DIRS)" \
+	    --fota-files $(B2G_FOTA_SYSTEM_FILES) \
+	    --output $@
+
+$(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_ZIP): $(PRODUCT_OUT)/system.img
+	mkdir -p `dirname $@` || true
+	$(call setup-fs)
+	$(info Generating full FOTA update package)
+	@PATH=$(B2G_FOTA_ENV_PATH) $(B2G_FOTA_FLASH_SCRIPT) \
+	    --system-dir $(PRODUCT_OUT)/system \
+	    --system-fs-type $(B2G_FOTA_FSTYPE) \
+	    --system-location $(B2G_FOTA_SYSTEM_PARTITION) \
+	    --data-fs-type $(B2G_FOTA_FSTYPE) \
+	    --data-location $(B2G_FOTA_DATA_PARTITION) \
+	    --output $@
