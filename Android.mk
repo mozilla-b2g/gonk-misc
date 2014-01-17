@@ -216,6 +216,9 @@ $(LOCAL_INSTALLED_MODULE): $(LOCAL_BUILT_MODULE) gaia/profile.tar.gz $(APRIORI) 
 
 	mkdir -p $(TARGET_OUT)/b2g/defaults/pref
 	cp -r $(GAIA_PATH)/profile/defaults/* $(TARGET_OUT)/b2g/defaults/
+ifneq (,$(EXPORT_DEV_PREF))
+	cp $(EXPORT_DEV_PREF)/*.js $(TARGET_OUT)/b2g/defaults/pref/
+endif
 
 	cd $(TARGET_OUT) && tar xvfz $(abspath $<)
 
