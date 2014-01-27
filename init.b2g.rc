@@ -25,7 +25,7 @@ service nfcd /system/bin/nfcd
     oneshot
     socket nfcd stream 660 nfc nfc
     user nfc
-    group nfc
+    group system
 
 on boot
     exec /system/bin/rm -r /data/local/tmp
