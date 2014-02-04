@@ -1,7 +1,3 @@
-service fakeperm /system/bin/fakeperm
-    class main
-    user root
-
 service fakesched /system/bin/fakesched
     class main
     user root
