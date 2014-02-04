@@ -7,7 +7,7 @@ PRODUCT_PACKAGES += \
 	b2g-info \
 	b2g-ps \
 	fakeperm \
-	fakesched \
+	gonksched \
 	fakeappops \
 	fs_config \
 	gaia \
