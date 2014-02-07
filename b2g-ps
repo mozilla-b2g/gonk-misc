@@ -20,7 +20,7 @@ for arg in "$@"
 
 toolbox ps $args | (
   IFS= read header
-  new_hdr="APPLICATION     "
+  new_hdr="APPLICATION    SEC"
   if [ "${report_oom}" == "1" ]; then
     new_hdr="${new_hdr}  OOM_ADJ  OOM_SCORE  OOM_SCORE_ADJ "
   fi
@@ -52,8 +52,14 @@ toolbox ps $args | (
       fmt_user="${pid_user[${pid}]}         "
       fmt_pid="${pid}     "
       fmt_ppid="${pid_ppid[${pid}]}     "
+      seccomp=
+      while read statkey statval; do
+        case $statkey in
+          Seccomp:) seccomp=$statval ;;
+        esac
+      done < /proc/${pid}/status
       comm="$(cat /proc/${pid}/comm)                "
-      new_fields="${comm:0:16}"
+      new_fields="${comm:0:16} ${seccomp:-0}"
       line="${fmt_user:0:9} ${fmt_pid:0:5} ${fmt_ppid:0:5} ${pid_rest[${pid}]}"
       if [ "${report_oom}" == "1" ]; then
         oom_adj="   $(cat /proc/${pid}/oom_adj)    "
