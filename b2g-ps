@@ -52,13 +52,15 @@ toolbox ps $args | (
       fmt_user="${pid_user[${pid}]}         "
       fmt_pid="${pid}     "
       fmt_ppid="${pid_ppid[${pid}]}     "
+      comm=
       seccomp=
       while read statkey statval; do
         case $statkey in
+          Name:) comm=$statval ;;
           Seccomp:) seccomp=$statval ;;
         esac
       done < /proc/${pid}/status
-      comm="$(cat /proc/${pid}/comm)                "
+      comm="$comm                "
       new_fields="${comm:0:16} ${seccomp:-0}"
       line="${fmt_user:0:9} ${fmt_pid:0:5} ${fmt_ppid:0:5} ${pid_rest[${pid}]}"
       if [ "${report_oom}" == "1" ]; then
