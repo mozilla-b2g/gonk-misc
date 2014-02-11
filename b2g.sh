@@ -40,4 +40,11 @@ export LD_PRELOAD
 
 export LD_LIBRARY_PATH=/vendor/lib:/system/lib:"$B2G_DIR"
 export GRE_HOME="$B2G_DIR"
+
+# Run in jar logging mode if needed.
+JAR_LOG_ENABLED=`getprop moz.jar.log`
+if [ $JAR_LOG_ENABLED = "1" ]; then
+  export MOZ_JAR_LOG_FILE=/data/local/tmp/jarloader.log
+fi
+
 exec $COMMAND_PREFIX "$B2G_DIR/b2g"
