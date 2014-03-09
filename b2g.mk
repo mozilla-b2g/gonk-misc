@@ -6,7 +6,6 @@ PRODUCT_PACKAGES += \
 	b2g.sh \
 	b2g-info \
 	b2g-ps \
-	fakeperm \
 	gonksched \
 	fakeappops \
 	fs_config \
