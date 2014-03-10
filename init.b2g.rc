@@ -1,7 +1,3 @@
-service fakeperm /system/bin/fakeperm
-    class main
-    user root
-
 service gonksched /system/bin/gonksched
     class main
     user root
