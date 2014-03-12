@@ -1,4 +1,4 @@
-service fakesched /system/bin/fakesched
+service gonksched /system/bin/gonksched
     class main
     user root
 

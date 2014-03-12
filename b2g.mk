@@ -6,7 +6,7 @@ PRODUCT_PACKAGES += \
 	b2g.sh \
 	b2g-info \
 	b2g-ps \
-	fakesched \
+	gonksched \
 	fakeappops \
 	fs_config \
 	gaia \
