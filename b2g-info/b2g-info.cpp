@@ -119,27 +119,39 @@ void print_system_meminfo()
   int free = -1;
   int buffers = -1;
   int cached = -1;
+  int swap_total = -1;
+  int swap_free = -1;
+  int swap_cached = -1;
 
   char line[256];
   while(fgets(line, sizeof(line), meminfo)) {
-    if (sscanf(line, "MemTotal: %d kB", &total) == 0 &&
-        sscanf(line, "MemFree: %d kB", &free) == 0 &&
-        sscanf(line, "Buffers: %d kB", &buffers) == 0 &&
-        sscanf(line, "Cached: %d kB", &cached)) {
-      // These four values should appear first in meminfo, so if this line
-      // doesn't match any of them, we're done parsing.
-      break;
+    int val;
+    if (sscanf(line, "MemTotal: %d kB", &val) == 1) {
+        total = val;
+    } else if (sscanf(line, "MemFree: %d kB", &val) == 1) {
+        free = val;
+    } else if (sscanf(line, "Buffers: %d kB", &val) == 1) {
+        buffers = val;
+    } else if (sscanf(line, "Cached: %d kB", &val) == 1) {
+        cached = val;
+    } else if (sscanf(line, "SwapTotal: %d kB", &val) == 1) {
+        swap_total = val;
+    } else if (sscanf(line, "SwapFree: %d kB", &val) == 1) {
+        swap_free = val;
+    } else if (sscanf(line, "SwapCached: %d kB", &val) == 1) {
+        swap_cached = val;
     }
   }
 
   fclose(meminfo);
 
-  if (total == -1 || free == -1 || buffers == -1 || cached == -1) {
+  if (total == -1 || free == -1 || buffers == -1 || cached == -1 ||
+      swap_total == -1 || swap_free == -1 || swap_cached == -1) {
     fprintf(stderr, "Unable to parse /proc/meminfo.\n");
     return;
   }
 
-  int actually_used = total - free - buffers - cached;
+  int actually_used = total - free - buffers - cached - swap_cached;
 
   puts("System memory info:\n");
 
@@ -150,8 +162,12 @@ void print_system_meminfo()
   t.add_fmt("%0.1f MB", kb_to_mb(total));
 
   t.start_row();
+  t.add("SwapTotal");
+  t.add_fmt("%0.1f MB", kb_to_mb(swap_total));
+
+  t.start_row();
   t.add("Used - cache");
-  t.add_fmt("%0.1f MB", kb_to_mb(total - free - buffers - cached));
+  t.add_fmt("%0.1f MB", kb_to_mb(total - free - buffers - cached - swap_cached));
 
   t.start_row();
   t.add("B2G procs (PSS)");
@@ -165,11 +181,11 @@ void print_system_meminfo()
 
   t.start_row();
   t.add("Non-B2G procs");
-  t.add_fmt("%0.1f MB", kb_to_mb(total - free - buffers - cached - b2g_mem_kb));
+  t.add_fmt("%0.1f MB", kb_to_mb(total - free - buffers - cached - b2g_mem_kb - swap_cached));
 
   t.start_row();
   t.add("Free + cache");
-  t.add_fmt("%0.1f MB", kb_to_mb(free + buffers + cached));
+  t.add_fmt("%0.1f MB", kb_to_mb(free + buffers + cached + swap_cached));
 
   t.start_row();
   t.add("Free");
@@ -177,7 +193,11 @@ void print_system_meminfo()
 
   t.start_row();
   t.add("Cache");
-  t.add_fmt("%0.1f MB", kb_to_mb(buffers + cached));
+  t.add_fmt("%0.1f MB", kb_to_mb(buffers + cached + swap_cached));
+
+  t.start_row();
+  t.add("SwapFree");
+  t.add_fmt("%0.1f MB", kb_to_mb(swap_free));
 
   t.print_with_indent(2);
 }
@@ -247,6 +267,7 @@ b2g_ps_add_table_headers(Table& t, bool show_threads)
   t.add("USS");
   t.add("PSS");
   t.add("RSS");
+  t.add("SWAP");
   t.add("VSIZE");
   t.add("OOM_ADJ");
   t.add("USER", Table::ALIGN_LEFT);
@@ -285,6 +306,7 @@ print_b2g_info(bool show_threads)
     t.add_fmt("%0.1f", p->uss_mb());
     t.add_fmt("%0.1f", p->pss_mb());
     t.add_fmt("%0.1f", p->rss_mb());
+    t.add_fmt("%0.1f", p->swap_mb());
     t.add_fmt("%0.1f", p->vsize_mb());
     t.add(p->oom_adj());
     t.add(p->user(), Table::ALIGN_LEFT);
