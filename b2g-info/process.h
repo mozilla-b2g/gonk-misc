@@ -120,6 +120,9 @@ public:
   int uss_kb();
   double uss_mb() { return kb_to_mb(uss_kb()); }
 
+  int swap_kb();
+  double swap_mb() { return kb_to_mb(swap_kb()); }
+
   const std::string& user();
 
 private:
@@ -140,6 +143,7 @@ private:
   int m_rss_kb;
   int m_pss_kb;
   int m_uss_kb;
+  int m_swap_kb;
 
   std::string m_user;
 };
