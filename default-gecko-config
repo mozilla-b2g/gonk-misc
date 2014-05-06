@@ -85,3 +85,5 @@ fi
 if [ "${MOZILLA_MLS_KEY_FILE:-0}" != 0 ]; then
 ac_add_options --with-mozilla-api-keyfile=${MOZILLA_MLS_KEY_FILE}
 fi
+
+ac_add_options --disable-webrtc
