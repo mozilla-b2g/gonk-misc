@@ -282,6 +282,7 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
 	export B2G_UPDATER="$(B2G_UPDATER)" && \
 	export B2G_UPDATE_CHANNEL="$(B2G_UPDATE_CHANNEL)" && \
 	export ARCH_ARM_VFP="$(ARCH_ARM_VFP)" && \
+	export BOARD_HAVE_BLUETOOTH_BLUEDROID_CAF="$(BOARD_HAVE_BLUETOOTH_BLUEDROID_CAF)" && \
 	echo $(MAKE) -C $(GECKO_PATH) -f client.mk -s MOZ_MAKE_FLAGS= && \
 	$(MAKE) -C $(GECKO_PATH) -f client.mk -s MOZ_MAKE_FLAGS= && \
 	rm -f $(GECKO_OBJDIR)/dist/b2g-*.tar.gz && \
