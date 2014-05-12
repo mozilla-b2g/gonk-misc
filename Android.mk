@@ -368,14 +368,25 @@ endef
 
 FSTAB_TYPE := recovery
 # $(1): recovery_fstab
+#
+# Android recovery fstab file format is like:
+# /system ext4 /dev/...
+#
+# Linux fstab file format is like:
+# /dev/... /system ext4
+#
+# We will first probe for any line starting with /dev that contains
+# /system. If we find any, it means we have a Linux fstab.
+# Otherwise it means it's an Android recovery fstab.
 define detect-partitions
   $(eval FSTAB_FILE := $(basename $(notdir $(1))))
 
   $(if $(FSTAB_FILE),
-    $(if $(filter fstab, $(FSTAB_FILE)),
+    $(eval STARTS_WITH_DEV := $(shell grep '^/dev/' $(1) | grep '/system'))
+    $(if $(filter /system, $(STARTS_WITH_DEV)),
       $(eval FSTAB_TYPE := linux))
 
-    $(info Extracting partitions from $(FSTAB_TYPE) fstab)
+    $(info Extracting partitions from $(FSTAB_TYPE) fstab ($(1)))
 
     $(if $(filter linux, $(FSTAB_TYPE)),
       $(eval B2G_FOTA_SYSTEM_PARTITION := $(shell grep -v '^\#' $(1) | grep '\s\+/system\s\+' | awk '{ print $$1 }'))
