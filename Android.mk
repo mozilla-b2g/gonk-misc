@@ -219,7 +219,7 @@ endif
 
 # Target to create Gecko update package (MAR)
 DIST_B2G_UPDATE_DIR := $(GECKO_OBJDIR)/dist/b2g-update
-UPDATE_PACKAGE_TARGET := $(DIST_B2G_UPDATE_DIR)/b2g-gecko-update.mar
+UPDATE_PACKAGE_TARGET := $(DIST_B2G_UPDATE_DIR)/b2g-$(TARGET_DEVICE)-gecko-update.mar
 MAR := $(GECKO_OBJDIR)/dist/host/bin/mar
 MAKE_FULL_UPDATE := $(GECKO_PATH)/tools/update-packaging/make_full_update.sh
 
