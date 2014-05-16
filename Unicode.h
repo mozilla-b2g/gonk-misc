@@ -20,6 +20,8 @@
 #include <sys/types.h>
 #include <stdint.h>
 
+#pragma GCC visibility push(default)
+
 extern "C" {
 
 // char32_t and char16_t are built-in types as of c++0x.
@@ -167,5 +169,7 @@ char16_t* utf8_to_utf16_no_null_terminator(const uint8_t* src, size_t srcLen, ch
 void utf8_to_utf16(const uint8_t* src, size_t srcLen, char16_t* dst);
 
 }
+
+#pragma GCC visibility pop
 
 #endif
