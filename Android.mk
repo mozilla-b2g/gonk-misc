@@ -361,6 +361,8 @@ B2G_FOTA_SYSTEM_FILES := $(PRODUCT_OUT)/system.files
 define detect-fstype
   $(if $(filter true, $(INTERNAL_USERIMAGES_USE_EXT)),
     $(eval B2G_FOTA_FSTYPE := $(INTERNAL_USERIMAGES_EXT_VARIANT)))
+  $(if $(filter true, $(TARGET_USERIMAGES_USE_UBIFS)),
+    $(eval B2G_FOTA_FSTYPE := "ubifs"))
   $(info Using $(B2G_FOTA_FSTYPE) filesystem)
 endef
 
