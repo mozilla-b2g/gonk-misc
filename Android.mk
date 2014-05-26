@@ -342,14 +342,14 @@ $(EMULATOR_ARCHIVE): $(EMULATOR_FILES)
 	rm -f $@ && \
 	tar -cvzf $@ --transform 's,^,b2g-distro/,S' --show-transformed-names $^
 
-.PHONY: gecko-update-fota gecko-update-fota-full
-gecko-update-fota: $(PRODUCT_OUT)/fota-update.mar
-gecko-update-fota-full: $(PRODUCT_OUT)/fota-update-full.mar
-
-B2G_FOTA_UPDATE_MAR := fota-update.mar
-B2G_FOTA_UPDATE_FULL_MAR := fota-update-full.mar
+B2G_FOTA_UPDATE_MAR := fota-$(TARGET_DEVICE)-update.mar
+B2G_FOTA_UPDATE_FULL_MAR := fota-$(TARGET_DEVICE)-update-full.mar
 B2G_FOTA_UPDATE_ZIP := fota/partial/update.zip
 B2G_FOTA_UPDATE_FULL_ZIP := fota/full/update.zip
+
+.PHONY: gecko-update-fota gecko-update-fota-full
+gecko-update-fota: $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_MAR)
+gecko-update-fota-full: $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_MAR)
 
 B2G_FOTA_FSTYPE := yaffs2
 B2G_FOTA_SYSTEM_PARTITION := "system"
