@@ -375,15 +375,20 @@ FSTAB_TYPE := recovery
 # Linux fstab file format is like:
 # /dev/... /system ext4
 #
-# We will first probe for any line starting with /dev that contains
-# /system. If we find any, it means we have a Linux fstab.
+# Linux fstab file format is also like(ubifs):
+# system /system ubifs
+#
+# We will first probe for any line starting with '/dev' or
+# NOT starting with '/' that contains /system.
+# If we find any, it means we have a Linux fstab.
 # Otherwise it means it's an Android recovery fstab.
 define detect-partitions
   $(eval FSTAB_FILE := $(basename $(notdir $(1))))
 
   $(if $(FSTAB_FILE),
     $(eval STARTS_WITH_DEV := $(shell grep '^/dev/' $(1) | grep '/system'))
-    $(if $(filter /system, $(STARTS_WITH_DEV)),
+    $(eval STARTS_WITH_NAME := $(shell grep -v '^\#' $(1) | grep -v '^/' | grep '/system'))
+    $(if $(filter /system, $(STARTS_WITH_DEV) $(STARTS_WITH_NAME)),
       $(eval FSTAB_TYPE := linux))
 
     $(info Extracting partitions from $(FSTAB_TYPE) fstab ($(1)))
