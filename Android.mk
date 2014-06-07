@@ -421,9 +421,15 @@ define detect-partitions
   $(info Mounting /data   from $(B2G_FOTA_DATA_PARTITION))
 endef
 
+define detect-update-bin
+  $(if $(wildcard $(TARGET_UPDATE_BINARY)),
+    $(eval FOTA_UPDATE_BIN := --update-bin $(TARGET_UPDATE_BINARY)))
+endef
+
 define setup-fs
   $(call detect-fstype)
   $(call detect-partitions,$(recovery_fstab))
+  $(call detect-update-bin)
 endef
 
 B2G_FOTA_FLASH_SCRIPT := tools/update-tools/build-flash-fota.py
@@ -449,6 +455,7 @@ $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_ZIP): $(B2G_FOTA_SYSTEM_FILES) $(PRODUCT_OUT)/s
 	$(call setup-fs)
 	$(info Generating FOTA update package)
 	@PATH=$(B2G_FOTA_ENV_PATH) $(B2G_FOTA_FLASH_SCRIPT) \
+	    $(FOTA_UPDATE_BIN) \
 	    --system-dir $(PRODUCT_OUT)/system \
 	    --system-fs-type $(B2G_FOTA_FSTYPE) \
 	    --system-location $(B2G_FOTA_SYSTEM_PARTITION) \
@@ -466,6 +473,7 @@ $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_ZIP): $(PRODUCT_OUT)/system.img
 	$(call setup-fs)
 	$(info Generating full FOTA update package)
 	@PATH=$(B2G_FOTA_ENV_PATH) $(B2G_FOTA_FLASH_SCRIPT) \
+	    $(FOTA_UPDATE_BIN) \
 	    --system-dir $(PRODUCT_OUT)/system \
 	    --system-fs-type $(B2G_FOTA_FSTYPE) \
 	    --system-location $(B2G_FOTA_SYSTEM_PARTITION) \
