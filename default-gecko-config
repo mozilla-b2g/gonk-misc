@@ -42,6 +42,10 @@ ac_add_options --enable-profiling
 ac_add_options --disable-jemalloc
 fi
 
+if [ "${MOZ_NON_UNIFIED}:-0}" != "0" ] ; then
+ac_add_options --disable-unified-compilation
+fi
+
 if [ "${B2G_PROFILING:-0}" != "0" ]; then
 ac_add_options --enable-profiling
 fi
