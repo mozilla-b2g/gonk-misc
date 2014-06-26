@@ -205,6 +205,7 @@ Process::Process(pid_t pid)
   , m_rss_kb(-1)
   , m_pss_kb(-1)
   , m_uss_kb(-1)
+  , m_swap_kb(-1)
 {}
 
 pid_t
@@ -336,7 +337,7 @@ Process::ensure_got_meminfo()
     return;
   }
 
-  m_vsize_kb = m_rss_kb = m_pss_kb = m_uss_kb = 0;
+  m_vsize_kb = m_rss_kb = m_pss_kb = m_uss_kb = m_swap_kb = 0;
 
   char line[256];
   while(fgets(line, sizeof(line), f)) {
@@ -350,6 +351,8 @@ Process::ensure_got_meminfo()
       } else if (sscanf(line, "Private_Dirty: %d kB", &val) == 1 ||
                  sscanf(line, "Private_Clean: %d kB", &val) == 1) {
         m_uss_kb += val;
+      } else if (sscanf(line, "Swap: %d kB", &val) == 1) {
+        m_swap_kb += val;
       }
   }
 
@@ -382,6 +385,13 @@ Process::uss_kb()
 {
   ensure_got_meminfo();
   return m_uss_kb;
+}
+
+int
+Process::swap_kb()
+{
+  ensure_got_meminfo();
+  return m_swap_kb;
 }
 
 const string&

@@ -219,7 +219,7 @@ endif
 
 # Target to create Gecko update package (MAR)
 DIST_B2G_UPDATE_DIR := $(GECKO_OBJDIR)/dist/b2g-update
-UPDATE_PACKAGE_TARGET := $(DIST_B2G_UPDATE_DIR)/b2g-gecko-update.mar
+UPDATE_PACKAGE_TARGET := $(DIST_B2G_UPDATE_DIR)/b2g-$(TARGET_DEVICE)-gecko-update.mar
 MAR := $(GECKO_OBJDIR)/dist/host/bin/mar
 MAKE_FULL_UPDATE := $(GECKO_PATH)/tools/update-packaging/make_full_update.sh
 
@@ -241,7 +241,6 @@ gecko-update-full:
 	MAR=$(MAR) $(MAKE_FULL_UPDATE) $(UPDATE_PACKAGE_TARGET) $(TARGET_OUT)/b2g
 	shasum -a 512 $(UPDATE_PACKAGE_TARGET)
 
-GECKO_MAKE_FLAGS ?= -j16
 GECKO_LIB_DEPS := \
 	libc.so \
 	libdl.so \
@@ -277,15 +276,14 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
 	export GONK_PATH="$(abspath .)" && \
 	export GECKO_OBJDIR="$(abspath $(GECKO_OBJDIR))" && \
 	export USE_CACHE=$(USE_CCACHE) && \
-	export MAKE_FLAGS="$(GECKO_MAKE_FLAGS)" && \
 	export MOZCONFIG="$(abspath $(MOZCONFIG_PATH))" && \
 	export EXTRA_INCLUDE="-include $(UNICODE_HEADER_PATH)" && \
 	export DISABLE_JEMALLOC="$(DISABLE_JEMALLOC)" && \
 	export B2G_UPDATER="$(B2G_UPDATER)" && \
 	export B2G_UPDATE_CHANNEL="$(B2G_UPDATE_CHANNEL)" && \
 	export ARCH_ARM_VFP="$(ARCH_ARM_VFP)" && \
-	echo $(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
-	$(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
+	echo $(MAKE) -C $(GECKO_PATH) -f client.mk -s MOZ_MAKE_FLAGS= && \
+	$(MAKE) -C $(GECKO_PATH) -f client.mk -s MOZ_MAKE_FLAGS= && \
 	rm -f $(GECKO_OBJDIR)/dist/b2g-*.tar.gz && \
 	for LOCALE in $(MOZ_CHROME_MULTILOCALE); do \
           $(MAKE) -C $(GECKO_OBJDIR)/b2g/locales merge-$$LOCALE LOCALE_MERGEDIR=$(GECKO_OBJDIR)/b2g/locales/merge-$$LOCALE && \
@@ -466,6 +464,8 @@ $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_ZIP): $(B2G_FOTA_SYSTEM_FILES) $(PRODUCT_OUT)/s
 	    --fota-type partial \
 	    --fota-dirs "$(B2G_FOTA_DIRS)" \
 	    --fota-files $(B2G_FOTA_SYSTEM_FILES) \
+	    --fota-check-device-name "$(TARGET_DEVICE)" \
+	    --fota-check-gonk-version \
 	    --output $@
 
 $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_ZIP): $(PRODUCT_OUT)/system.img
@@ -479,4 +479,5 @@ $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_ZIP): $(PRODUCT_OUT)/system.img
 	    --system-location $(B2G_FOTA_SYSTEM_PARTITION) \
 	    --data-fs-type $(B2G_FOTA_FSTYPE) \
 	    --data-location $(B2G_FOTA_DATA_PARTITION) \
+	    --fota-check-device-name "$(TARGET_DEVICE)" \
 	    --output $@

@@ -20,6 +20,8 @@ PRODUCT_PACKAGES += \
 	oom-msg-logger \
 	$(NULL)
 
+-include external/svox/pico/lang/all_pico_languages.mk
+
 ifneq ($(B2G_VALGRIND),)
 include external/valgrind/valgrind.mk
 endif
