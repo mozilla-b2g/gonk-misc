@@ -16,16 +16,6 @@ service rilproxy /system/bin/rilproxy
     user root
     group radio
 
-service rilproxy1 /system/bin/rilproxy -c 1
-    class main
-    socket rilproxy1 stream 660 root system
-    disabled
-    user root
-    group radio
-
-on property:ro.moz.ril.numclients=2
-    start rilproxy1
-
 service nfcd /system/bin/nfcd
     class main
     oneshot
