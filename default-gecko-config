@@ -39,7 +39,6 @@ fi
 if [ "${B2G_VALGRIND:-0}" != "0" ]; then
 ac_add_options --enable-valgrind
 ac_add_options --enable-profiling
-ac_add_options --disable-jemalloc
 fi
 
 if [ "${MOZ_NON_UNIFIED:-0}" != "0" ] ; then
