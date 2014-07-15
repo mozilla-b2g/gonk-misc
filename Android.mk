@@ -247,6 +247,7 @@ GECKO_LIB_DEPS := \
 	liblog.so \
 	libm.so \
 	libmedia.so \
+	libmtp.so \
 	libsensorservice.so \
 	libstagefright.so \
 	libstagefright_omx.so \
