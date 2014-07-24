@@ -13,6 +13,7 @@ PRODUCT_PACKAGES += \
 	gecko \
 	init.rc \
 	init.b2g.rc \
+	init.b2g.debug.rc \
 	killer \
 	libttspico \
 	rild \

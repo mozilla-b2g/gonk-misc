@@ -1,0 +1,7 @@
+on post-fs-data
+    # Make processes dumpable
+    setrlimit 4 -1 -1
+    mkdir /data/core 0777 system system
+    write /proc/sys/kernel/core_pattern /data/core/%e.%p.%t.core
+    write /proc/sys/kernel/core_use_pipe 4
+    write /proc/sys/fs/suid_dumpable 1
