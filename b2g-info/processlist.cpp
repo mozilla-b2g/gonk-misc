@@ -73,9 +73,8 @@ ProcessList::main_process()
     return m_main_process;
   }
 
-  const vector<Process*>& processes = all_processes();
-  for (vector<Process*>::const_iterator it = processes.begin();
-       it != processes.end(); ++it) {
+  for (Process::const_iterator it = all_processes().begin();
+       it != all_processes().end(); ++it) {
     if ((*it)->exe() == "/system/b2g/b2g") {
       if (m_main_process == NULL) {
         m_main_process = *it;
@@ -111,7 +110,7 @@ ProcessList::child_processes()
   // whose |exe|s are "/system/b2g/plugin-container".  As an added bonus, this
   // will work properly with nested content processes.
 
-  for (vector<Process*>::const_iterator it = all_processes().begin();
+  for (Process::const_iterator it = all_processes().begin();
        it != all_processes().end(); ++it) {
     if ((*it)->exe() == "/system/b2g/plugin-container") {
       m_child_processes.push_back(*it);
@@ -132,7 +131,7 @@ ProcessList::b2g_processes()
   m_b2g_processes.push_back(main_process());
 
   // There's no AppendAll()-type function on stl::vector, seriously?
-  for (vector<Process*>::const_iterator it = child_processes().begin();
+  for (Process::const_iterator it = child_processes().begin();
        it != child_processes().end(); ++it) {
     m_b2g_processes.push_back(*it);
   }

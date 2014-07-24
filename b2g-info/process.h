@@ -79,6 +79,7 @@ protected:
 class Thread : public Task
 {
 public:
+  typedef std::vector<Thread*>::const_iterator const_iterator;
   Thread(pid_t pid, pid_t tid);
   pid_t tid();
 
@@ -92,6 +93,7 @@ private:
 class Process : public Task
 {
 public:
+  typedef std::vector<Process*>::const_iterator const_iterator;
   Process(pid_t pid);
   pid_t pid();
 
