@@ -262,6 +262,10 @@ ifneq ($(wildcard system/core/libsuspend),)
 GECKO_LIB_DEPS += libsuspend.so
 endif
 
+ifeq ($(strip $(SHOW_COMMANDS)),)
+SHOW_COMMAND_GECKO = -s
+endif
+
 .PHONY: $(LOCAL_BUILT_MODULE)
 $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addprefix $(TARGET_OUT_SHARED_LIBRARIES)/,$(GECKO_LIB_DEPS))
 	(echo "export GECKO_OBJDIR=$(abspath $(GECKO_OBJDIR))"; \
@@ -284,8 +288,8 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
 	export B2G_UPDATER="$(B2G_UPDATER)" && \
 	export B2G_UPDATE_CHANNEL="$(B2G_UPDATE_CHANNEL)" && \
 	export ARCH_ARM_VFP="$(ARCH_ARM_VFP)" && \
-	echo $(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
-	$(MAKE) -C $(GECKO_PATH) -f client.mk -s && \
+	echo $(MAKE) -C $(GECKO_PATH) -f client.mk $(SHOW_COMMAND_GECKO) && \
+	$(MAKE) -C $(GECKO_PATH) -f client.mk $(SHOW_COMMAND_GECKO) && \
 	rm -f $(GECKO_OBJDIR)/dist/b2g-*.tar.gz && \
 	for LOCALE in $(MOZ_CHROME_MULTILOCALE); do \
           $(MAKE) -C $(GECKO_OBJDIR)/b2g/locales merge-$$LOCALE LOCALE_MERGEDIR=$(GECKO_OBJDIR)/b2g/locales/merge-$$LOCALE && \
