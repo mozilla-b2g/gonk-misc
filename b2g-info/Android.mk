@@ -19,7 +19,7 @@ include external/stlport/libstlport.mk
 LOCAL_MODULE       := b2g-info
 LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := EXECUTABLES
-LOCAL_SRC_FILES    := b2g-info.cpp process.cpp processlist.cpp table.cpp utils.cpp
+LOCAL_SRC_FILES    := b2g-info.cpp json.cpp process.cpp processlist.cpp table.cpp utils.cpp
 LOCAL_FORCE_STATIC_EXECUTABLE := false
 LOCAL_SHARED_LIBRARIES := libstlport
 include $(BUILD_EXECUTABLE)
