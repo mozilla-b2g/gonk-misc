@@ -76,7 +76,7 @@ ProcessList::main_process()
   const vector<Process*>& processes = all_processes();
   for (vector<Process*>::const_iterator it = processes.begin();
        it != processes.end(); ++it) {
-    if ((*it)->exe() == "/system/b2g/b2g") {
+    if ((*it)->exe() == "/system/b2g/b2g" && (*it)->name() == "b2g") {
       if (m_main_process == NULL) {
         m_main_process = *it;
       } else {
@@ -108,12 +108,14 @@ ProcessList::child_processes()
   // We could find child processes by looking for processes whose ppid matches
   // the main process's pid, but this requires reading /proc/<pid>/stat for
   // every process on the system.  It's a bit faster just to look for processes
-  // whose |exe|s are "/system/b2g/plugin-container".  As an added bonus, this
-  // will work properly with nested content processes.
+  // whose |exe|s are "/system/b2g/plugin-container" or "/system/b2g/b2g".  As
+  // an added bonus, this will work properly with nested content processes.
 
-  for (vector<Process*>::const_iterator it = all_processes().begin();
-       it != all_processes().end(); ++it) {
-    if ((*it)->exe() == "/system/b2g/plugin-container") {
+  const vector<Process*>& processes = all_processes();
+  for (vector<Process*>::const_iterator it = processes.begin();
+       it != processes.end(); ++it) {
+    if ((*it)->exe() == "/system/b2g/plugin-container" ||
+        ((*it)->exe() == "/system/b2g/b2g" && (*it)->name() != "b2g")) {
       m_child_processes.push_back(*it);
     }
   }

@@ -113,7 +113,7 @@ Task::ensure_got_stat()
     "[0-9]+ "     // cutime (%ld)
     "[0-9]+ "     // cstime (%ld)
     "[0-9]+ "     // priority (%ld)
-    "([0-9]+)";   // niceness
+    "(-?[0-9]+)"; // niceness
 
   if (m_got_stat) {
     return;
