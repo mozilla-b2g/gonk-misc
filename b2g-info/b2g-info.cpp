@@ -365,6 +365,10 @@ int main(int argc, const char** argv)
     return 1;
   }
 
+  if (getuid() != 0) {
+    fputs("This program needs to run as the root user in order to query pids.\n", stderr);
+  }
+
   bool threads = false;
   bool pids_only = false;
   bool main_pid_only = false;
