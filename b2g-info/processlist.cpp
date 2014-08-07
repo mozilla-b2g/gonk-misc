@@ -73,19 +73,20 @@ ProcessList::main_process()
     return m_main_process;
   }
 
-  for (vector<Process*>::const_iterator it = b2g_processes().begin();
-       it != b2g_processes().end(); ++it) {
+  const vector<Process*>& processes = unordered_b2g_processes();
+  for (vector<Process*>::const_iterator it = processes.begin();
+       it != processes.end(); ++it) {
     // Check to so if this processes parent is contained in the b2g_processes
     pid_t it_ppid = (*it)->ppid();
     vector<Process*>::const_iterator it2;
-    for (it2 = b2g_processes().begin(); it2 != b2g_processes().end(); ++it2) {
+    for (it2 = processes.begin(); it2 != processes.end(); ++it2) {
       if ((*it2)->pid() == it_ppid) {
         // Our parent is another b2g-process - that makes us a child process
         // of some type.
         break;
       }
     }
-    if (it2 != b2g_processes().end()) {
+    if (it2 != processes.end()) {
       // We found a child process
       continue;
     }
@@ -120,8 +121,9 @@ ProcessList::child_processes()
 
   pid_t main_pid = main_process()->pid();
 
-  for (vector<Process*>::const_iterator it = b2g_processes().begin();
-       it != b2g_processes().end(); ++it) {
+  const vector<Process*>& processes = unordered_b2g_processes();
+  for (vector<Process*>::const_iterator it = processes.begin();
+       it != processes.end(); ++it) {
     if ((*it)->pid() != main_pid) {
       m_child_processes.push_back(*it); 
     }
@@ -131,13 +133,13 @@ ProcessList::child_processes()
 }
 
 const vector<Process*>&
-ProcessList::b2g_processes()
+ProcessList::unordered_b2g_processes()
 {
-  if (m_b2g_processes.size()) {
-    return m_b2g_processes;
+  if (m_unordered_b2g_processes.size()) {
+    return m_unordered_b2g_processes;
   }
 
-  assert(m_b2g_processes.size() == 0);
+  assert(m_unordered_b2g_processes.size() == 0);
 
   // We could find child processes by looking for processes whose ppid matches
   // the main process's pid, but this requires reading /proc/<pid>/stat for
@@ -150,21 +152,33 @@ ProcessList::b2g_processes()
        it != processes.end(); ++it) {
     if ((*it)->exe() == "/system/b2g/plugin-container" || 
         (*it)->exe() == "/system/b2g/b2g") {
-      m_b2g_processes.push_back(*it);
+      m_unordered_b2g_processes.push_back(*it);
     }
   }
+  return m_unordered_b2g_processes;
+}
 
-  // Now that we've calculated m_b2g_processes, we really want it to be ordered
-  // such that its the main process followed by the child processes.
-
-  if (m_b2g_processes.size() == 0) {
-    // This can happen when we're not running as root.
+const vector<Process*>&
+ProcessList::b2g_processes()
+{
+  if (m_b2g_processes.size()) {
     return m_b2g_processes;
   }
+
+  assert(m_b2g_processes.size() == 0);
+
+  const vector<Process*>& processes = unordered_b2g_processes();
+  if (processes.size() == 0) {
+    // This can happen when we're not running as root.
+    return processes;
+  }
+
+  // Order the processes such that we have the main process followed by the
+  // child processes.
+
   Process* main_proc = main_process();
   const vector<Process*>& child_proc = child_processes();
 
-  m_b2g_processes.clear();
   m_b2g_processes.push_back(main_proc);
   for (vector<Process*>::const_iterator it = child_proc.begin();
        it != child_proc.end(); ++it) {
