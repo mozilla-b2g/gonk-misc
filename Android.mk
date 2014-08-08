@@ -183,6 +183,11 @@ PRELOAD_LIBS := -Dlibmozglue.so
 endif
 endif
 
+B2G_ENABLE_GTEST ?= 0
+ifeq ($(B2G_ENABLE_GTEST),1)
+BUILD_GTEST_COMMAND=$(MAKE) -C $(GECKO_OBJDIR)/toolkit/library gtestxul &&
+endif
+
 GAIA_PATH ?= $(abspath $(LOCAL_PATH)/../gaia)
 ifeq (,$(wildcard $(GAIA_PATH)))
 $(error GAIA_PATH is not defined)
@@ -294,6 +299,7 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
           $(MAKE) -C $(GECKO_OBJDIR)/b2g/locales merge-$$LOCALE LOCALE_MERGEDIR=$(GECKO_OBJDIR)/b2g/locales/merge-$$LOCALE && \
           $(MAKE) -C $(GECKO_OBJDIR)/b2g/locales chrome-$$LOCALE LOCALE_MERGEDIR=$(GECKO_OBJDIR)/b2g/locales/merge-$$LOCALE ; \
 	done && \
+	$(BUILD_GTEST_COMMAND) \
 	$(MAKE) -C $(GECKO_OBJDIR) package && \
 	mkdir -p $(@D) && cp $(GECKO_OBJDIR)/dist/b2g-*.tar.gz $@
 
