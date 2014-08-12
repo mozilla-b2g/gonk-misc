@@ -80,15 +80,18 @@ main(int argc, char** argv)
     struct dirent* child;
 
     fd = opendir("/proc");
-    if (fd) {
-      while ((child = readdir(fd)) != NULL) {
-        int n = atoi(child->d_name);
-        if (n > 0) {
-          b2g_prlimit64((pid_t)n, code, &lim, NULL);
-        }
-      }
-      closedir(fd);
+    if (!fd) {
+      printf("b2g-prlimit: failed to open /proc: %s (%d)\n", strerror(errno), errno);
+      return -3;
     }
+
+    while ((child = readdir(fd)) != NULL) {
+      int n = atoi(child->d_name);
+      if (n > 0) {
+        b2g_prlimit64((pid_t)n, code, &lim, NULL);
+      }
+    }
+    closedir(fd);
   }
   return 0;
 }
