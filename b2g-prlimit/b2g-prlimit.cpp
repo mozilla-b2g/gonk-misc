@@ -43,35 +43,40 @@ static void b2g_prlimit_helper(pid_t pid, int code, const struct b2g_rlimit64* w
 
 int main(int argc, char **argv)
 {
-  if (argc == 5) {
-    if (strcmp(argv[2], "core") == 0) {
-      struct b2g_rlimit64 lim;
-      pid_t pid;
-      memset(&lim, 0, sizeof(lim));
-      lim.rlim_cur = (rlim_t)atoi(argv[3]);
-      lim.rlim_max = (rlim_t)atoi(argv[4]);
-      pid = (pid_t)atoi(argv[1]);
-      if (pid) {
-        b2g_prlimit_helper(pid, RLIMIT_CORE, &lim, NULL);
-      } else {
-        /* if pid is 0, we should apply this to all processes */
-        DIR *fd = opendir("/proc");
-        if (fd) {
-          struct dirent *child;
-          while (child = readdir(fd)) {
-            int n = atoi(child->d_name);
-            if (n > 0) {
-              b2g_prlimit_helper((pid_t)n, RLIMIT_CORE, &lim, NULL);
-            }
-          }
-          closedir(fd);
+  if (argc != 5) {
+    printf("usage: %s <pid> <resource> <soft> <hard>\n", argv[0]);
+    return 0;
+  }
+
+  int code;
+  if (strcmp(argv[2], "core") == 0) {
+    code = RLIMIT_CORE;
+  } else {
+    printf("b2g-prlimit: unsupported resource %s; try core\n", argv[1]);
+    return 0;
+  }
+
+  struct b2g_rlimit64 lim;
+  pid_t pid;
+  memset(&lim, 0, sizeof(lim));
+  lim.rlim_cur = (rlim_t)atoi(argv[3]);
+  lim.rlim_max = (rlim_t)atoi(argv[4]);
+  pid = (pid_t)atoi(argv[1]);
+  if (pid) {
+    b2g_prlimit_helper(pid, code, &lim, NULL);
+  } else {
+    /* if pid is 0, we should apply this to all processes */
+    DIR* fd = opendir("/proc");
+    if (fd) {
+      struct dirent* child;
+      while (child = readdir(fd)) {
+        int n = atoi(child->d_name);
+        if (n > 0) {
+          b2g_prlimit_helper((pid_t)n, code, &lim, NULL);
         }
       }
-    } else {
-      printf("b2g-prlimit: %s resource unsupported; try core\n", argv[1]);
+      closedir(fd);
     }
-  } else {
-    printf("usage: b2g-prlimit <pid> <resource> <soft> <hard>\n");
   }
   return 0;
 }
