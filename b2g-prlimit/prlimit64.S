@@ -75,7 +75,7 @@ ENTRY(b2g_prlimit64)
     call    __set_errno
 1:
     ret
-#else
+#else /* x86 */
     pushl   %ebx
     pushl   %ecx
     pushl   %edx
