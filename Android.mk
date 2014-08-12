@@ -32,9 +32,7 @@ $(LOCAL_BUILT_MODULE):
 ifneq ($(TARGET_PROVIDES_B2G_INIT_RC),true)
 	echo import /init.b2g.rc >> $@
 endif
-ifneq (,$(B2G_DEBUG_CORE))
 	echo import /init.b2g.debug.rc >> $@
-endif
 	cat system/core/rootdir/init.rc >> $@
 ifeq ($(PLATFORM_SDK_VERSION),15)
 	patch $@ gonk-misc/init.rc.patch
