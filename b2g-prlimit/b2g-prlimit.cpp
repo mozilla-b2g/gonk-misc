@@ -21,12 +21,12 @@
 #include <errno.h> // for errno
 #include <dirent.h> // for opendir, readdir, etc
 
-struct rlimit64 {
+struct b2g_rlimit64 {
   uint64_t rlim_cur;
   uint64_t rlim_max;
 };
 
-int b2g_prlimit64(pid_t, int, const struct rlimit64*, struct rlimit64*) __asm__("b2g_prlimit64");
+int b2g_prlimit64(pid_t, int, const struct b2g_rlimit64*, struct b2g_rlimit64*) __asm__("b2g_prlimit64");
 
 extern "C" int __set_errno(int n)
 {
@@ -34,10 +34,10 @@ extern "C" int __set_errno(int n)
   return -1;
 }
 
-static void b2g_prlimit_helper(pid_t pid, int code, const struct rlimit64* wval, struct rlimit64* rval)
+static void b2g_prlimit_helper(pid_t pid, int code, const struct b2g_rlimit64* wval, struct b2g_rlimit64* rval)
 {
   if (b2g_prlimit64(pid, RLIMIT_CORE, wval, rval) < 0) {
-    printf("b2g-prlimit: failed to set %d for pid %d: %s (%d)", code, pid, strerror(errno), errno);
+    printf("b2g-prlimit: failed to set %d for pid %d: %s (%d)\n", code, pid, strerror(errno), errno);
   }
 }
 
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 {
   if (argc == 5) {
     if (strcmp(argv[2], "core") == 0) {
-      struct rlimit64 lim;
+      struct b2g_rlimit64 lim;
       pid_t pid;
       memset(&lim, 0, sizeof(lim));
       lim.rlim_cur = (rlim_t)atoi(argv[3]);
