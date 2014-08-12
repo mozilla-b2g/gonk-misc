@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-#include <sys/resource.h> // for prlimit
+#include <asm/unistd.h>   // for __NR_prlimit64
+#include <sys/resource.h> // for RLIMIT_*
+#include <sys/syscall.h>  // for syscall
 #include <string.h>       // for strcmp
 #include <stdlib.h>       // for atoi
 #include <stdio.h>        // for printf
@@ -26,19 +28,10 @@ struct b2g_rlimit64 {
   uint64_t rlim_max;
 };
 
-int b2g_prlimit64(pid_t, int, const struct b2g_rlimit64*, struct b2g_rlimit64*) __asm__("b2g_prlimit64");
-
-extern "C" int
-__set_errno(int n)
-{
-  errno = n;
-  return -1;
-}
-
 static void
-b2g_prlimit_helper(pid_t pid, int code, const struct b2g_rlimit64* wval, struct b2g_rlimit64* rval)
+b2g_prlimit64(pid_t pid, int code, const struct b2g_rlimit64* wval, struct b2g_rlimit64* rval)
 {
-  if (b2g_prlimit64(pid, RLIMIT_CORE, wval, rval) < 0) {
+  if (syscall(__NR_prlimit64, pid, code, wval, rval) < 0) {
     printf("b2g-prlimit: failed to set %d for pid %d: %s (%d)\n", code, pid, strerror(errno), errno);
   }
 }
@@ -80,7 +73,7 @@ main(int argc, char** argv)
   lim.rlim_max = (rlim_t)atoi(argv[4]);
   pid = (pid_t)atoi(argv[1]);
   if (pid) {
-    b2g_prlimit_helper(pid, code, &lim, NULL);
+    b2g_prlimit64(pid, code, &lim, NULL);
   } else {
     /* if pid is 0, we should apply this to all processes */
     DIR* fd;
@@ -91,7 +84,7 @@ main(int argc, char** argv)
       while ((child = readdir(fd)) != NULL) {
         int n = atoi(child->d_name);
         if (n > 0) {
-          b2g_prlimit_helper((pid_t)n, code, &lim, NULL);
+          b2g_prlimit64((pid_t)n, code, &lim, NULL);
         }
       }
       closedir(fd);

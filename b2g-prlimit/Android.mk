@@ -18,5 +18,5 @@ include $(CLEAR_VARS)
 LOCAL_MODULE       := b2g-prlimit
 LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := EXECUTABLES
-LOCAL_SRC_FILES    := b2g-prlimit.cpp prlimit64.S
+LOCAL_SRC_FILES    := b2g-prlimit.cpp
 include $(BUILD_EXECUTABLE)
