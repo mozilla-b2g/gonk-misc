@@ -1,11 +1,12 @@
 on post-fs-data
     mkdir /data/core 0777 system system
     write /proc/sys/kernel/core_pattern /data/core/%e.%p.%t.core
-    write /proc/sys/fs/suid_dumpable 1
 
 on property:persist.debug.coredump=0
+    write /proc/sys/fs/suid_dumpable 0
     exec /system/bin/b2g-prlimit 0 core 0 -1
 
 on property:persist.debug.coredump=1
+    write /proc/sys/fs/suid_dumpable 1
     exec /system/bin/b2g-prlimit 0 core -1 -1
 
