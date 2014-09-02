@@ -261,7 +261,15 @@ ifneq ($(wildcard system/core/libsuspend),)
 GECKO_LIB_DEPS += libsuspend.so
 endif
 
-ifeq ($(strip $(SHOW_COMMANDS)),)
+ifneq ($(strip $(SHOW_COMMANDS)),)
+SKIP_DASH_S = 1
+endif
+
+ifneq ($(strip $(FORCE_GECKO_BUILD_OUTPUT)),)
+SKIP_DASH_S = 1
+endif
+
+ifneq ($(strip $(SKIP_DASH_S)),1)
 SHOW_COMMAND_GECKO = -s
 endif
 
