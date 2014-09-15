@@ -23,7 +23,7 @@ PRODUCT_PACKAGES += \
 -include external/svox/pico/lang/all_pico_languages.mk
 -include gaia/gaia.mk
 
-ifneq ($(B2G_VALGRIND),)
+ifeq ($(B2G_VALGRIND),1)
 include external/valgrind/valgrind.mk
 endif
 
