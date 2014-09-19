@@ -274,10 +274,14 @@ ifneq ($(strip $(SKIP_DASH_S)),1)
 SHOW_COMMAND_GECKO = -s
 endif
 
+ifeq ($(strip $(GECKO_TOOLS_PREFIX)),)
+GECKO_TOOLS_PREFIX = $(TARGET_TOOLS_PREFIX)
+endif
+
 .PHONY: $(LOCAL_BUILT_MODULE)
 $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addprefix $(TARGET_OUT_SHARED_LIBRARIES)/,$(GECKO_LIB_DEPS))
 	(echo "export GECKO_OBJDIR=$(abspath $(GECKO_OBJDIR))"; \
-	echo "export TARGET_TOOLS_PREFIX=$(abspath $(TARGET_TOOLS_PREFIX))"; \
+	echo "export GECKO_TOOLS_PREFIX=$(abspath $(GECKO_TOOLS_PREFIX))"; \
 	echo "export PRODUCT_OUT=$(abspath $(PRODUCT_OUT))" ) > .var.profile
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
 	export GONK_PRODUCT="$(TARGET_DEVICE)" && \
@@ -285,7 +289,7 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
 	export TARGET_BUILD_VARIANT="$(TARGET_BUILD_VARIANT)" && \
 	export PLATFORM_SDK_VERSION="$(PLATFORM_SDK_VERSION)" && \
 	export HOST_OS="$(HOST_OS)" && \
-	export TARGET_TOOLS_PREFIX="$(abspath $(TARGET_TOOLS_PREFIX))" && \
+	export GECKO_TOOLS_PREFIX="$(abspath $(GECKO_TOOLS_PREFIX))" && \
 	export GONK_PATH="$(abspath .)" && \
 	export GECKO_OBJDIR="$(abspath $(GECKO_OBJDIR))" && \
 	export USE_CACHE=$(USE_CCACHE) && \
