@@ -307,6 +307,7 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
 
 MAKE_SYM_STORE_PATH := \
   $(abspath $(PRODUCT_OUT)/symbols) \
+  $(abspath $(PRODUCT_OUT)/system/vendor/lib) \
   $(abspath $(GECKO_OBJDIR)/dist/bin) \
   $(NULL)
 
