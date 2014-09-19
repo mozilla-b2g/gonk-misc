@@ -5,6 +5,7 @@ HTTP := android
 PRODUCT_PACKAGES += \
 	b2g.sh \
 	b2g-info \
+	b2g-prlimit \
 	b2g-ps \
 	gonksched \
 	fakeappops \
@@ -13,6 +14,7 @@ PRODUCT_PACKAGES += \
 	gecko \
 	init.rc \
 	init.b2g.rc \
+	init.b2g.debug.rc \
 	killer \
 	libttspico \
 	rild \
