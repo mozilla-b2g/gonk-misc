@@ -346,7 +346,11 @@ EMULATOR_FILES := \
 	$(PRODUCT_OUT)/system/build.prop \
 	$(PRODUCT_OUT)/system.img \
 	$(PRODUCT_OUT)/userdata.img \
-	$(PRODUCT_OUT)/ramdisk.img
+	$(PRODUCT_OUT)/ramdisk.img \
+	profile.sh \
+	scripts/profile-symbolicate.py \
+	$(GECKO_PATH)/tools/profiler/merge-profiles.py \
+	$(GECKO_PATH)/tools/rb/fix_stack_using_bpsyms.py
 EMULATOR_ARCHIVE:="$(OUT_DIR)/emulator.tar.gz"
 package-emulator: $(EMULATOR_ARCHIVE)
 $(EMULATOR_ARCHIVE): $(EMULATOR_FILES)
