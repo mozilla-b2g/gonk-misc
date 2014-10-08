@@ -5,29 +5,6 @@ mkdir -p $TMPDIR
 chmod 1777 $TMPDIR
 ulimit -n 8192
 
-# Enable core dumps only on debug builds and if explicitly enabled
-DEBUG=`getprop ro.debuggable`
-if [ "$DEBUG" == "1" ]; then
-  COREDUMP=`getprop persist.debug.coredump`
-
-  if [ -n "$COREDUMP" ]; then
-    if [ ! -d /data/core ]; then
-      # applications need write/execute to generate core but not read
-      mkdir /data/core
-      chmod 0733 /data/core
-      chown root:root /data/core
-    fi
-    echo "/data/core/%e.%p.%t.core" > /proc/sys/kernel/core_pattern
-    echo "1" > /proc/sys/fs/suid_dumpable
-  fi
-
-  if [ "$COREDUMP" == "all" ]; then
-    /system/bin/b2g-prlimit 0 core -1 -1
-  elif [ "$COREDUMP" == "b2g" ]; then
-    ulimit -c -1
-  fi
-fi
-
 if [ ! -d /system/b2g ]; then
 
   log -p W "No /system/b2g directory. Attempting recovery."
