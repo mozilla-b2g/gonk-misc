@@ -29,3 +29,4 @@ on boot
     # set RLIMIT_NOFILE to increase soft limit from 1024(default) to 2048.
     # Hard limit keeps default value(4096).
     setrlimit 7 2048 4096
+    write /proc/sys/net/ipv6/conf/default/use_tempaddr 2
