@@ -195,7 +195,7 @@ PRESERVE_DIRS := distribution
 ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
 PRESERVE_DIRS += webapps
 endif
-$(LOCAL_INSTALLED_MODULE): $(LOCAL_BUILT_MODULE) gaia/profile.tar.gz $(APRIORI) $(PRELINK_MAP)
+$(LOCAL_INSTALLED_MODULE): $(LOCAL_BUILT_MODULE) gaia-prefs $(APRIORI) $(PRELINK_MAP)
 	@echo Install dir: $(TARGET_OUT)/b2g
 
 	rm -rf $(filter-out $(addprefix $(TARGET_OUT)/b2g/,$(PRESERVE_DIRS)),$(wildcard $(TARGET_OUT)/b2g/*))
