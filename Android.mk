@@ -287,6 +287,7 @@ $(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addpref
 	export GONK_PRODUCT="$(TARGET_DEVICE)" && \
 	export TARGET_ARCH="$(TARGET_ARCH)" && \
 	export TARGET_BUILD_VARIANT="$(TARGET_BUILD_VARIANT)" && \
+	export TARGET_C_INCLUDES="$(addprefix -isystem ,$(abspath $(TARGET_C_INCLUDES)))" && \
 	export PLATFORM_SDK_VERSION="$(PLATFORM_SDK_VERSION)" && \
 	export HOST_OS="$(HOST_OS)" && \
 	export GECKO_TOOLS_PREFIX="$(abspath $(GECKO_TOOLS_PREFIX))" && \
