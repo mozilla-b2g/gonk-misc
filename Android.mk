@@ -484,6 +484,7 @@ $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_ZIP): $(B2G_FOTA_SYSTEM_FILES) $(PRODUCT_OUT)/s
 	    --fota-type partial \
 	    --fota-dirs "$(B2G_FOTA_DIRS)" \
 	    --fota-files $(B2G_FOTA_SYSTEM_FILES) \
+	    --fota-sdcard "$(RECOVERY_EXTERNAL_STORAGE)" \
 	    --fota-check-device-name "$(TARGET_DEVICE)" \
 	    --fota-check-gonk-version \
 	    --output $@
@@ -500,5 +501,6 @@ $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_ZIP): $(PRODUCT_OUT)/system.img
 	    --system-location $(B2G_FOTA_SYSTEM_PARTITION) \
 	    --data-fs-type $(B2G_FOTA_FSTYPE) \
 	    --data-location $(B2G_FOTA_DATA_PARTITION) \
+	    --fota-sdcard "$(RECOVERY_EXTERNAL_STORAGE)" \
 	    --fota-check-device-name "$(TARGET_DEVICE)" \
 	    --output $@
