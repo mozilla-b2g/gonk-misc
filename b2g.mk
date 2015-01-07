@@ -7,6 +7,7 @@ PRODUCT_PACKAGES += \
 	b2g-info \
 	b2g-prlimit \
 	b2g-ps \
+	bluetoothd \
 	gonksched \
 	fakeappops \
 	fs_config \
