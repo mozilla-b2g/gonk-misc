@@ -1,3 +1,6 @@
+
+import /init.bluetooth.rc
+
 service gonksched /system/bin/gonksched
     class main
     user root
