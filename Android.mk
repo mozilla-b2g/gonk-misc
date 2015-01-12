@@ -440,15 +440,9 @@ define detect-partitions
   $(info Mounting /data   from $(B2G_FOTA_DATA_PARTITION))
 endef
 
-define detect-update-bin
-  $(if $(wildcard $(TARGET_UPDATE_BINARY)),
-    $(eval FOTA_UPDATE_BIN := --update-bin $(TARGET_UPDATE_BINARY)))
-endef
-
 define setup-fs
   $(call detect-fstype)
   $(call detect-partitions,$(recovery_fstab))
-  $(call detect-update-bin)
 endef
 
 B2G_FOTA_FLASH_SCRIPT := tools/update-tools/build-flash-fota.py
@@ -469,38 +463,35 @@ $(B2G_FOTA_SYSTEM_FILES): $(PRODUCT_OUT)/system.img
 # Otherwise, our fake java will be used to run signapk.jar
 B2G_FOTA_ENV_PATH := $(shell echo "$$PATH" | sed -e 's|$(ANDROID_JAVA_TOOLCHAIN)||g')
 
-$(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_ZIP): $(B2G_FOTA_SYSTEM_FILES) $(PRODUCT_OUT)/system.img
+B2G_FOTA_COMMON_TARGETS := $(PRODUCT_OUT)/system.img updater
+define B2G_FOTA_COMMON_VARIABLES
+    --update-bin $(PRODUCT_OUT)/system/bin/updater \
+    --sdk-version $(PLATFORM_SDK_VERSION) \
+    --system-dir $(PRODUCT_OUT)/system \
+    --system-fs-type $(B2G_FOTA_FSTYPE) \
+    --system-location $(B2G_FOTA_SYSTEM_PARTITION) \
+    --data-fs-type $(B2G_FOTA_FSTYPE) \
+    --data-location $(B2G_FOTA_DATA_PARTITION) \
+    --fota-sdcard "$(RECOVERY_EXTERNAL_STORAGE)" \
+    --fota-check-device-name "$(TARGET_DEVICE)"
+endef
+
+$(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_ZIP): $(B2G_FOTA_SYSTEM_FILES) $(B2G_FOTA_COMMON_TARGETS)
 	mkdir -p `dirname $@` || true
 	$(call setup-fs)
 	$(info Generating FOTA update package)
 	@PATH="$(B2G_FOTA_ENV_PATH)" $(B2G_FOTA_FLASH_SCRIPT) \
-	    $(FOTA_UPDATE_BIN) \
-	    --sdk-version $(PLATFORM_SDK_VERSION) \
-	    --system-dir $(PRODUCT_OUT)/system \
-	    --system-fs-type $(B2G_FOTA_FSTYPE) \
-	    --system-location $(B2G_FOTA_SYSTEM_PARTITION) \
-	    --data-fs-type $(B2G_FOTA_FSTYPE) \
-	    --data-location $(B2G_FOTA_DATA_PARTITION) \
+            $(B2G_FOTA_COMMON_VARIABLES) \
 	    --fota-type partial \
 	    --fota-dirs "$(B2G_FOTA_DIRS)" \
 	    --fota-files $(B2G_FOTA_SYSTEM_FILES) \
-	    --fota-sdcard "$(RECOVERY_EXTERNAL_STORAGE)" \
-	    --fota-check-device-name "$(TARGET_DEVICE)" \
 	    --fota-check-gonk-version \
 	    --output $@
 
-$(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_ZIP): $(PRODUCT_OUT)/system.img
+$(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_ZIP): $(B2G_FOTA_COMMON_TARGETS)
 	mkdir -p `dirname $@` || true
 	$(call setup-fs)
 	$(info Generating full FOTA update package)
 	@PATH="$(B2G_FOTA_ENV_PATH)" $(B2G_FOTA_FLASH_SCRIPT) \
-	    $(FOTA_UPDATE_BIN) \
-	    --sdk-version $(PLATFORM_SDK_VERSION) \
-	    --system-dir $(PRODUCT_OUT)/system \
-	    --system-fs-type $(B2G_FOTA_FSTYPE) \
-	    --system-location $(B2G_FOTA_SYSTEM_PARTITION) \
-	    --data-fs-type $(B2G_FOTA_FSTYPE) \
-	    --data-location $(B2G_FOTA_DATA_PARTITION) \
-	    --fota-sdcard "$(RECOVERY_EXTERNAL_STORAGE)" \
-	    --fota-check-device-name "$(TARGET_DEVICE)" \
+            $(B2G_FOTA_COMMON_VARIABLES) \
 	    --output $@
