@@ -9,6 +9,7 @@ PRODUCT_PACKAGES += \
 	b2g-ps \
 	bluetoothd \
 	gonksched \
+	init.bluetooth.rc \
 	fakeappops \
 	fs_config \
 	gaia \
