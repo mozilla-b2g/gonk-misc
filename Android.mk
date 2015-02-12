@@ -373,6 +373,8 @@ B2G_FOTA_SYSTEM_PARTITION := "system"
 B2G_FOTA_DATA_PARTITION := "userdata"
 
 B2G_FOTA_DIRS ?= "system/b2g"
+B2G_FOTA_FILES ?= "system/bin/bluetoothd" \
+                  "system/lib/libfdio.so"
 
 # We expand the content of all B2G_FOTA_DIRS into B2G_FOTA_FILES
 B2G_FOTA_FILES += $(shell (for d in $(B2G_FOTA_DIRS); do find $(PRODUCT_OUT)/$$d; done;) | sed -e 's|$(PRODUCT_OUT)/||g')
