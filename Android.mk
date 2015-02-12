@@ -373,6 +373,10 @@ B2G_FOTA_SYSTEM_PARTITION := "system"
 B2G_FOTA_DATA_PARTITION := "userdata"
 
 B2G_FOTA_DIRS ?= "system/b2g"
+
+# We expand the content of all B2G_FOTA_DIRS into B2G_FOTA_FILES
+B2G_FOTA_FILES += $(shell (for d in $(B2G_FOTA_DIRS); do find $(PRODUCT_OUT)/$$d; done;) | sed -e 's|$(PRODUCT_OUT)/||g')
+
 B2G_FOTA_SYSTEM_FILES := $(PRODUCT_OUT)/system.files
 
 define detect-fstype
@@ -457,7 +461,7 @@ $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_MAR): $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FUL
 # We want to rebuild this list everytime
 .PHONY: $(B2G_FOTA_SYSTEM_FILES)
 $(B2G_FOTA_SYSTEM_FILES): $(PRODUCT_OUT)/system.img
-	@(for d in $(B2G_FOTA_DIRS); do find $(PRODUCT_OUT)/$$d; done;) | sed -e 's|$(PRODUCT_OUT)/||g' > $@
+	@(for d in $(B2G_FOTA_FILES); do find $(PRODUCT_OUT)/$$d; done;) | sed -e 's|$(PRODUCT_OUT)/||g' > $@
 
 # We temporarily remove Android'd Java from the path
 # Otherwise, our fake java will be used to run signapk.jar
