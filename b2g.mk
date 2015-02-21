@@ -31,8 +31,12 @@ include external/valgrind/valgrind.mk
 endif
 
 ifeq ($(ENABLE_DEFAULT_BOOTANIMATION),true)
+ifeq ($(BOOTANIMATION_ASSET_SIZE),)
+	BOOTANIMATION_ASSET_SIZE := hvga
+endif
+BOOTANIMATION_ASSET := bootanimation_$(BOOTANIMATION_ASSET_SIZE).zip
 PRODUCT_COPY_FILES += \
-	gonk-misc/bootanimation.zip:system/media/bootanimation.zip
+	gonk-misc/$(BOOTANIMATION_ASSET):system/media/bootanimation.zip
 endif
 
 ifeq ($(ENABLE_LIBRECOVERY),true)
