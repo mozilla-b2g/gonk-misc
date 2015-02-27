@@ -344,7 +344,6 @@ EMULATOR_FILES := \
 	$(HOST_OUT)/bin/emulator \
 	$(HOST_OUT)/bin/emulator-arm \
 	$(HOST_OUT)/bin/mksdcard \
-	$(HOST_OUT)/bin/qemu-android-x86 \
 	$(HOST_OUT)/lib \
 	development/tools/emulator/skins \
 	prebuilts/qemu-kernel/arm/kernel-qemu-armv7 \
@@ -352,6 +351,15 @@ EMULATOR_FILES := \
 	$(PRODUCT_OUT)/system.img \
 	$(PRODUCT_OUT)/userdata.img \
 	$(PRODUCT_OUT)/ramdisk.img
+
+ifeq ($(PLATFORM_SDK_VERSION),21)
+EMULATOR_FILES += \
+	$(HOST_OUT)/bin/emulator-x86
+else
+EMULATOR_FILES += \
+	$(HOST_OUT)/bin/qemu-android-x86
+endif
+
 EMULATOR_ARCHIVE:="$(OUT_DIR)/emulator.tar.gz"
 package-emulator: $(EMULATOR_ARCHIVE)
 $(EMULATOR_ARCHIVE): $(EMULATOR_FILES)
