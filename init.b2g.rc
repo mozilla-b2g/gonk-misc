@@ -21,10 +21,10 @@ service rilproxy /system/bin/rilproxy
 
 service nfcd /system/bin/nfcd
     class main
-    oneshot
-    socket nfcd stream 660 nfc nfc
     user nfc
     group system
+    disabled
+    oneshot
 
 on boot
     exec /system/bin/rm -r /data/local/tmp
