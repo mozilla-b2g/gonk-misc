@@ -77,3 +77,7 @@ if [ "$TARGET_BUILD_VARIANT" = eng ]; then
   # the profiler enabled by default
   ac_add_options --enable-profiling
 fi
+
+if [ "${LIGHTSABER:-0}" != "0" ]; then
+  ac_add_options --enable-lightsaber
+fi
