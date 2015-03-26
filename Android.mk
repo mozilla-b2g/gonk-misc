@@ -346,12 +346,15 @@ EMULATOR_FILES := \
 	$(PRODUCT_OUT)/userdata.img \
 	$(PRODUCT_OUT)/ramdisk.img
 
-ifeq ($(PLATFORM_SDK_VERSION),21)
-EMULATOR_FILES += \
-	$(HOST_OUT)/bin/emulator-x86
-else
+ifneq ($(filter 15 17 18, $(PLATFORM_SDK_VERSION)),)
 EMULATOR_FILES += \
 	$(HOST_OUT)/bin/qemu-android-x86
+else
+EMULATOR_FILES += \
+	$(HOST_OUT)/bin/emulator-x86 \
+	$(HOST_OUT)/usr/share/pc-bios/bios.bin \
+	$(HOST_OUT)/usr/share/pc-bios/vgabios-cirrus.bin \
+	prebuilts/qemu-kernel/x86/kernel-qemu
 endif
 
 EMULATOR_ARCHIVE:="$(OUT_DIR)/emulator.tar.gz"
