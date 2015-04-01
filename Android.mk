@@ -258,6 +258,10 @@ ifneq ($(wildcard external/dbus),)
 GECKO_LIB_DEPS += libdbus.so
 endif
 
+ifneq ($(PLATFORM_SDK_VERSION),15)
+GECKO_LIB_DEPS += libmdnssd.so
+endif
+
 ifneq ($(wildcard system/core/libsuspend),)
 GECKO_LIB_DEPS += libsuspend.so
 endif
