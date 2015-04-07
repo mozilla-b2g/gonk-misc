@@ -173,6 +173,12 @@ ifeq ($(B2G_SYSTEM_APPS),1)
 PRESERVE_B2G_WEBAPPS := 1
 endif
 
+ifeq ($(PLATFORM_SDK_VERSION),22)
+ifneq ($(MALLOC_IMPL),dlmalloc)
+DISABLE_JEMALLOC := 1
+endif
+endif
+
 ifeq ($(ENABLE_GLOBAL_PRELINK),1)
 APRIORI := $(HOST_OUT_EXECUTABLES)/apriori$(HOST_EXECUTABLE_SUFFIX)
 PRELINK_MAP := $(abspath $(LOCAL_PATH)/prelink.map)
