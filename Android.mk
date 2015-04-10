@@ -469,7 +469,7 @@ endef
 $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_ZIP): $(B2G_FOTA_SYSTEM_FILES) $(B2G_FOTA_COMMON_TARGETS)
 	mkdir -p `dirname $@` || true
 	$(info Generating FOTA update package)
-	@PATH="$(B2G_FOTA_ENV_PATH)" $(B2G_FOTA_FLASH_SCRIPT) \
+	@PATH="$(B2G_FOTA_ENV_PATH)" PLATFORM_SDK_VERSION="$(PLATFORM_SDK_VERSION)" $(B2G_FOTA_FLASH_SCRIPT) \
             $(B2G_FOTA_COMMON_VARIABLES) \
 	    --fota-type partial \
 	    --fota-dirs "$(B2G_FOTA_DIRS)" \
@@ -481,7 +481,7 @@ $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_ZIP): $(B2G_FOTA_SYSTEM_FILES) $(B2G_FOTA_COMMO
 $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_ZIP): $(B2G_FOTA_COMMON_TARGETS)
 	mkdir -p `dirname $@` || true
 	$(info Generating full FOTA update package)
-	@PATH="$(B2G_FOTA_ENV_PATH)" $(B2G_FOTA_FLASH_SCRIPT) \
+	@PATH="$(B2G_FOTA_ENV_PATH)" PLATFORM_SDK_VERSION="$(PLATFORM_SDK_VERSION)" $(B2G_FOTA_FLASH_SCRIPT) \
             $(B2G_FOTA_COMMON_VARIABLES) \
 	    --output $@
 
