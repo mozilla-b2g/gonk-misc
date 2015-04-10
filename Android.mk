@@ -372,16 +372,15 @@ $(EMULATOR_ARCHIVE): $(EMULATOR_FILES)
 
 B2G_FOTA_UPDATE_MAR := fota-$(TARGET_DEVICE)-update.mar
 B2G_FOTA_UPDATE_FULL_MAR := fota-$(TARGET_DEVICE)-update-full.mar
+B2G_FOTA_UPDATE_FULLIMG_MAR := fota-$(TARGET_DEVICE)-update-fullimg.mar
 B2G_FOTA_UPDATE_ZIP := fota/partial/update.zip
 B2G_FOTA_UPDATE_FULL_ZIP := fota/full/update.zip
+B2G_FOTA_UPDATE_FULLIMG_ZIP := fota/fullimg/update.zip
 
-.PHONY: gecko-update-fota gecko-update-fota-full
+.PHONY: gecko-update-fota gecko-update-fota-full gecko-update-fota-fullimg
 gecko-update-fota: $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_MAR)
 gecko-update-fota-full: $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_MAR)
-
-B2G_FOTA_FSTYPE := yaffs2
-B2G_FOTA_SYSTEM_PARTITION := "system"
-B2G_FOTA_DATA_PARTITION := "userdata"
+gecko-update-fota-fullimg: $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULLIMG_MAR)
 
 B2G_FOTA_DIRS ?= "system/b2g"
 B2G_FOTA_FILES ?= "system/bin/bluetoothd" \
@@ -393,76 +392,6 @@ B2G_FOTA_FILES += $(shell (for d in $(B2G_FOTA_DIRS); do find $(PRODUCT_OUT)/$$d
 
 B2G_FOTA_SYSTEM_FILES := $(PRODUCT_OUT)/system.files
 
-define detect-fstype
-  $(if $(filter true, $(INTERNAL_USERIMAGES_USE_EXT)),
-    $(eval B2G_FOTA_FSTYPE := $(INTERNAL_USERIMAGES_EXT_VARIANT)))
-  $(if $(filter true, $(TARGET_USERIMAGES_USE_UBIFS)),
-    $(eval B2G_FOTA_FSTYPE := "ubifs"))
-  $(info Using $(B2G_FOTA_FSTYPE) filesystem)
-endef
-
-FSTAB_TYPE := recovery
-# $(1): recovery_fstab
-#
-# Android recovery fstab file format is like:
-# /system ext4 /dev/...
-#
-# Linux fstab file format is like:
-# /dev/... /system ext4
-#
-# Linux fstab file format is also like(ubifs):
-# system /system ubifs
-#
-# We will first probe for any line starting with '/dev' or
-# NOT starting with '/' that contains /system.
-# If we find any, it means we have a Linux fstab.
-# Otherwise it means it's an Android recovery fstab.
-define detect-partitions
-  $(eval FSTAB_FILE := $(basename $(notdir $(1))))
-
-  $(if $(FSTAB_FILE),
-    $(eval STARTS_WITH_DEV := $(shell grep '^/dev/' $(1) | grep '/system'))
-    $(eval STARTS_WITH_NAME := $(shell grep -v '^\#' $(1) | grep -v '^/' | grep '/system'))
-    $(if $(filter /system, $(STARTS_WITH_DEV) $(STARTS_WITH_NAME)),
-      $(eval FSTAB_TYPE := linux))
-
-    $(info Extracting partitions from $(FSTAB_TYPE) fstab ($(1)))
-
-    $(if $(filter linux, $(FSTAB_TYPE)),
-      $(eval B2G_FOTA_SYSTEM_PARTITION := $(shell grep -v '^\#' $(1) | grep '\s\+/system\s\+' | awk '{ print $$1 }'))
-      $(eval B2G_FOTA_DATA_PARTITION := $(shell grep -v '^\#' $(1) | grep '\s\+/data\s\+' | awk '{ print $$1 }'))
-    )
-
-    $(if $(filter recovery, $(FSTAB_TYPE)),
-      $(eval B2G_FOTA_SYSTEM_PARTITION := $(shell grep -v '^\#' $(1) | grep '^/system\s\+' | awk '{ print $$3 }'))
-      $(eval B2G_FOTA_DATA_PARTITION := $(shell grep -v '^\#' $(1) | grep '^/data\s\+' | awk '{ print $$3 }'))
-    ),
-
-    $(if $(filter ext%, $(B2G_FOTA_FSTYPE)),
-      $(warning Ext FS but no recovery fstab. Using values specified by env: SYSTEM_PARTITION and DATA_PARTITION:)
-      $(warning SYSTEM_PARTITION @ $(SYSTEM_PARTITION))
-      $(warning DATA_PARTITION @ $(DATA_PARTITION))
-      $(if $(SYSTEM_PARTITION),
-        $(if $(DATA_PARTITION),
-          $(eval B2G_FOTA_SYSTEM_PARTITION := $(SYSTEM_PARTITION))
-          $(eval B2G_FOTA_DATA_PARTITION := $(DATA_PARTITION)),
-          $(error No DATA_PARTITION)
-        ),
-        $(error No SYSTEM_PARTITION)
-      ),
-      $(info No recovery, but not Ext FS)
-    )
-  )
-
-  $(info Mounting /system from $(B2G_FOTA_SYSTEM_PARTITION))
-  $(info Mounting /data   from $(B2G_FOTA_DATA_PARTITION))
-endef
-
-define setup-fs
-  $(call detect-fstype)
-  $(call detect-partitions,$(recovery_fstab))
-endef
-
 B2G_FOTA_FLASH_SCRIPT := tools/update-tools/build-flash-fota.py
 B2G_FOTA_FLASH_MAR_SCRIPT := tools/update-tools/build-fota-mar.py
 
@@ -470,6 +399,9 @@ $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_MAR): $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_ZIP)
 	@$(B2G_FOTA_FLASH_MAR_SCRIPT) --output $@ $^
 
 $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_MAR): $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_ZIP)
+	@$(B2G_FOTA_FLASH_MAR_SCRIPT) --output $@ $^
+
+$(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULLIMG_MAR): $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULLIMG_ZIP)
 	@$(B2G_FOTA_FLASH_MAR_SCRIPT) --output $@ $^
 
 # We want to rebuild this list everytime
@@ -481,22 +413,61 @@ $(B2G_FOTA_SYSTEM_FILES): $(PRODUCT_OUT)/system.img
 # Otherwise, our fake java will be used to run signapk.jar
 B2G_FOTA_ENV_PATH := $(shell echo "$$PATH" | sed -e 's|$(ANDROID_JAVA_TOOLCHAIN)||g')
 
-B2G_FOTA_COMMON_TARGETS := $(PRODUCT_OUT)/system.img updater
+# In case we have this set to true, then we will force formatting
+# the userdata partition
+ifeq ($(B2G_FOTA_WIPE_DATA),true)
+B2G_FOTA_PARTS_FORMAT += "/data"
+endif
+
+# In case we have this set to true, then we will force formatting
+# the cache partition
+ifeq ($(B2G_FOTA_WIPE_CACHE),true)
+B2G_FOTA_PARTS_FORMAT += "/cache"
+endif
+
+# B2G_FOTA_PARTS is expected to be a string like:
+# "name:source name:source"
+# with:
+#  - name: device
+#  - source: the $(OUT)/ .img file to pickup
+ifneq ($(B2G_FOTA_PARTS),)
+B2G_FOTA_RAW_PARTITIONS := --fota-partitions "$(B2G_FOTA_PARTS)"
+endif
+
+# This is the same as above, but we force this. When forcing this value, please
+# keep in mind that the goal is to perform a full flash of as much as possible.
+ifeq ($(B2G_FOTA_FULLIMG_PARTS),)
+B2G_FOTA_FULLIMG_PARTS := --fota-partitions "/boot:boot.img /system:system.img /recovery:recovery.img /cache:cache.img $(B2G_FOTA_PARTS)"
+else
+B2G_FOTA_FULLIMG_PARTS := --fota-partitions "$(B2G_FOTA_FULLIMG_PARTS) $(B2G_FOTA_PARTS)"
+endif
+
+# Space separated list of partition mountpoint we should format
+ifneq ($(B2G_FOTA_PARTS_FORMAT),)
+B2G_FOTA_FORCE_FORMAT := --fota-format-partitions "$(B2G_FOTA_PARTS_FORMAT)"
+endif
+
+# This will build the list of dependencies against each .img file
+ALL_FOTA_PARTITIONS := $(subst ",,$(filter %.img,$(B2G_FOTA_FULLIMG_PARTS) $(B2G_FOTA_RAW_PARTITIONS)))
+ifneq ($(ALL_FOTA_PARTITIONS),)
+B2G_FOTA_EXTRA_TARGETS := $(shell for px in $(ALL_FOTA_PARTITIONS); do echo $$px | cut -d':' -f2 | sort | uniq | grep '\.img$$' | sed -e 's|^|$(PRODUCT_OUT)/|g'; done;)
+endif
+
+B2G_FOTA_COMMON_TARGETS := $(PRODUCT_OUT)/system.img $(B2G_FOTA_EXTRA_TARGETS) updater
 define B2G_FOTA_COMMON_VARIABLES
     --update-bin $(PRODUCT_OUT)/system/bin/updater \
     --sdk-version $(PLATFORM_SDK_VERSION) \
     --system-dir $(PRODUCT_OUT)/system \
-    --system-fs-type $(B2G_FOTA_FSTYPE) \
-    --system-location $(B2G_FOTA_SYSTEM_PARTITION) \
-    --data-fs-type $(B2G_FOTA_FSTYPE) \
-    --data-location $(B2G_FOTA_DATA_PARTITION) \
+    --system-fstab $(recovery_fstab) \
     --fota-sdcard "$(RECOVERY_EXTERNAL_STORAGE)" \
-    --fota-check-device-name "$(TARGET_DEVICE)"
+    --fota-check-device-name "$(TARGET_DEVICE)" \
+    $(B2G_FOTA_RAW_PARTITIONS) \
+    $(B2G_FOTA_FORCE_FORMAT)
 endef
 
+# The partial target will drop just what is needed
 $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_ZIP): $(B2G_FOTA_SYSTEM_FILES) $(B2G_FOTA_COMMON_TARGETS)
 	mkdir -p `dirname $@` || true
-	$(call setup-fs)
 	$(info Generating FOTA update package)
 	@PATH="$(B2G_FOTA_ENV_PATH)" PLATFORM_SDK_VERSION="$(PLATFORM_SDK_VERSION)" $(B2G_FOTA_FLASH_SCRIPT) \
             $(B2G_FOTA_COMMON_VARIABLES) \
@@ -506,10 +477,20 @@ $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_ZIP): $(B2G_FOTA_SYSTEM_FILES) $(B2G_FOTA_COMMO
 	    --fota-check-gonk-version \
 	    --output $@
 
+# The full target will update completely the /system partition but just by extracting files
 $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_ZIP): $(B2G_FOTA_COMMON_TARGETS)
 	mkdir -p `dirname $@` || true
-	$(call setup-fs)
 	$(info Generating full FOTA update package)
 	@PATH="$(B2G_FOTA_ENV_PATH)" PLATFORM_SDK_VERSION="$(PLATFORM_SDK_VERSION)" $(B2G_FOTA_FLASH_SCRIPT) \
             $(B2G_FOTA_COMMON_VARIABLES) \
+	    --output $@
+
+# The fullimg target should flash as much as possible, except userdata by default.
+$(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULLIMG_ZIP): $(B2G_FOTA_COMMON_TARGETS)
+	mkdir -p `dirname $@` || true
+	$(info Generating fullimg FOTA update package)
+	@PATH="$(B2G_FOTA_ENV_PATH)" $(B2G_FOTA_FLASH_SCRIPT) \
+            $(B2G_FOTA_COMMON_VARIABLES) \
+	    --fota-type fullimg \
+	    $(B2G_FOTA_FULLIMG_PARTS) \
 	    --output $@
