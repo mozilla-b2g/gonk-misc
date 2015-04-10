@@ -491,7 +491,7 @@ $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_ZIP): $(B2G_FOTA_SYSTEM_FILES) $(PRODUCT_OUT)/s
 	mkdir -p `dirname $@` || true
 	$(call setup-fs)
 	$(info Generating FOTA update package)
-	@PATH="$(B2G_FOTA_ENV_PATH)" $(B2G_FOTA_FLASH_SCRIPT) \
+	@PATH="$(B2G_FOTA_ENV_PATH)" PLATFORM_SDK_VERSION="$(PLATFORM_SDK_VERSION)" $(B2G_FOTA_FLASH_SCRIPT) \
 	    $(FOTA_UPDATE_BIN) \
 	    --sdk-version $(PLATFORM_SDK_VERSION) \
 	    --system-dir $(PRODUCT_OUT)/system \
@@ -511,7 +511,7 @@ $(PRODUCT_OUT)/$(B2G_FOTA_UPDATE_FULL_ZIP): $(PRODUCT_OUT)/system.img
 	mkdir -p `dirname $@` || true
 	$(call setup-fs)
 	$(info Generating full FOTA update package)
-	@PATH="$(B2G_FOTA_ENV_PATH)" $(B2G_FOTA_FLASH_SCRIPT) \
+	@PATH="$(B2G_FOTA_ENV_PATH)" PLATFORM_SDK_VERSION="$(PLATFORM_SDK_VERSION)" $(B2G_FOTA_FLASH_SCRIPT) \
 	    $(FOTA_UPDATE_BIN) \
 	    --sdk-version $(PLATFORM_SDK_VERSION) \
 	    --system-dir $(PRODUCT_OUT)/system \
