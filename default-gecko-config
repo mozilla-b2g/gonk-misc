@@ -32,7 +32,8 @@ fi
 
 ac_add_options --with-ccache
 
-if [ "${DISABLE_JEMALLOC:-0}" != "0" ]; then
+if [ "${DISABLE_JEMALLOC:-0}" != "0" ] ||
+   [ "$PLATFORM_SDK_VERSION" -ge "22" -a "$MALLOC_IMPL" != "dlmalloc" ]; then
 ac_add_options --disable-jemalloc
 fi
 
