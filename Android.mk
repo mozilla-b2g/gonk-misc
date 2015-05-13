@@ -140,6 +140,166 @@ $(LOCAL_BUILT_MODULE): FORCE
 endif
 endif
 
+ifneq ($(TARGET_DEVICE_BLOBS),)
+### We enable this only if the device tree provides TARGET_DEVICE_BLOBS
+
+# Intermediate targets
+TARGET_BLOBS_SHA1_OUT := $(PRODUCT_OUT)/$(TARGET_DEVICE)-blobs-sha1-out.txt
+TARGET_BLOBS_MAP := $(PRODUCT_OUT)/$(TARGET_DEVICE)-blobsmap.txt
+TARGET_LISTFILES_BLOBS := $(PRODUCT_OUT)/$(TARGET_DEVICE)-listfiles_blobs.txt
+TARGET_LISTFILES_NOBLOBS := $(PRODUCT_OUT)/$(TARGET_DEVICE)-listfiles_noblobs.txt
+TARGET_BLOBS_DELETE_LIST := $(PRODUCT_OUT)/$(TARGET_DEVICE)-blobs-todelete.txt
+
+# Final blob free targets
+TARGET_BLOBS_INJECT_LIST := $(PRODUCT_OUT)/blobs-toinject.txt
+TARGET_CMDLINE_FS := $(PRODUCT_OUT)/cmdline-fs.txt
+TARGET_BLOBFREE_ZIP := $(PRODUCT_OUT)/blobfree.zip
+TARGET_DEVICES_JSON := $(TARGET_DEVICE_DIR)/devices.json
+
+# Final package
+TARGET_BLOBFREE_PKG := $(PRODUCT_OUT)/$(TARGET_DEVICE).blobfree-dist.zip
+
+# Producing map for blobs. We need to go deep with sha1 because the build might
+# play behind our back, e.g., external/init_sh/Android.mk does symlink /init to
+# /sbin/init.sh and moves real /init to /init.real. So we use find and sha1 to
+# find potential dupes.
+# This file will contain lines following this patter:
+# <sha1>  <PRODUCT_OUT/ path>
+#
+# We only analyze root/ and system/ within PRODUCT_OUT/ since those should be
+# enough to work on boot.img, recovery.img (root/) and system.img (system/).
+.PHONY: $(TARGET_BLOBS_SHA1_OUT)
+$(TARGET_BLOBS_SHA1_OUT):
+	@find $(PRODUCT_OUT)/root/ $(PRODUCT_OUT)/system/ -type f | \
+	xargs sha1sum | \
+	sed -e "s|$(PRODUCT_OUT)/||g" > $@
+
+# Then, given a device blob list, we will identify where each blob is being
+# used and we will produce a blob mapping file. Each line will contain the
+# mapping, following this pattern:
+# <device path>:<blobfree distribution path>
+#
+# In case a blob is being used a several places (boot ramdisk, recovery
+# ramdisk, ...), there will be multiple lines, which will differ by the second
+# part of the mapping, the blobfree distribution path.
+#
+# The source for identifying blobs is the .mk file produced by extract-files.sh,
+# so we expect this to be a big list of PRODUCT_COPY_FILES. This variable is
+# expected to contain statements like:
+# <vendor path>:<device path>
+# So we extract both values and we cross-check this with the list of sha1 files
+# such that we can identify three types of blobs:
+#  (1) unused ones still referenced within .mk file
+#  (2) blobs used only once
+#  (3) blobs used at multiple places
+#
+# So, in case of (1) we just skip it. In case of (2) we compute the target
+# within PRODUCT_OUT using the sha1 list results and we add this blob to the
+# mapping. In case of (3), we do the same as in case of (2) but we generate
+# the mapping for all the duped uses that have been identified.
+.PHONY: $(TARGET_BLOBS_MAP)
+$(TARGET_BLOBS_MAP): $(TARGET_BLOBS_SHA1_OUT)
+	@rm -f $@ && touch $@; \
+	grep ':' $(TARGET_DEVICE_BLOBS) | grep -v '^\s*#' | cut -d' ' -f1 | grep ':' | while read line; \
+	do \
+		vendor_src=$$(echo "$$line" | cut -d':' -f1); \
+		builds_tgt=$$(echo "$$line" | cut -d':' -f2); \
+		sha1=$$(sha1sum "$$vendor_src" | cut -d' ' -f1); \
+		dupes=$$(grep "$$sha1" $(TARGET_BLOBS_SHA1_OUT)); \
+		dupes_count=$$(echo "$$dupes" | wc -l); \
+		if [ -z "$$dupes" -o $${dupes_count} -eq 0 ]; then \
+			echo "Blob $$vendor_src is not used"; \
+		else \
+			if [ $${dupes_count} -eq 1 ]; then \
+				target=$$(echo $$dupes | awk '{ print $$2 }'); \
+				echo "$${vendor_src}:$${target}" >> $@; \
+			elif [ $${dupes_count} -gt 1 ]; then \
+				dupes_target=$$(echo "$$dupes" | awk '{ print $$2 }'); \
+				for target in $$dupes_target; do \
+					echo "$${vendor_src}:$${target}" >> $@; \
+				done; \
+			fi; \
+		fi; \
+	done
+
+# Parameters for rebuilding filesystem
+# We hardcode sparse for now
+.PHONY: $(TARGET_CMDLINE_FS)
+$(TARGET_CMDLINE_FS):
+	echo "system.img: -s -l $(BOARD_SYSTEMIMAGE_PARTITION_SIZE) -a system" > $@
+	echo "userdata.img: -s -l $(BOARD_USERDATAIMAGE_PARTITION_SIZE) -a userdata" >> $@
+
+# Building the list of blobs we want to delete from the ZIP file
+# So we take the target files from the blob map and we mangle them to match
+# what will be done in the ZIP file
+.PHONY: $(TARGET_BLOBS_DELETE_LIST)
+$(TARGET_BLOBS_DELETE_LIST): $(TARGET_LISTFILES_BLOBS) $(TARGET_BLOBS_MAP)
+	@rm -f $@ && touch $@; \
+	cut -d':' -f2 < $(TARGET_BLOBS_MAP) | sed -e 's|root/|ramdisk/|g' | while read l; \
+	do \
+		grep -i "$$l$$" $(TARGET_LISTFILES_BLOBS) | while read b; \
+		do \
+			echo $$b >> $@; \
+		done; \
+	done; \
+	sort -o $@ < $@; mv $@ $@.tmp; uniq < $@.tmp > $@; rm $@.tmp
+
+# Building the list of blobs we will want to reinject, from the device, so we
+# need to make use of the source of the blob map
+# We need to retransform ramdisk/ into /
+# We also force blacklisting blobs coming from "obj/" because somehow we
+# have some in aries/shinano bobs list but this do not even exists on device
+.PHONY: $(TARGET_BLOBS_INJECT_LIST)
+$(TARGET_BLOBS_INJECT_LIST): $(TARGET_LISTFILES_BLOBS) $(TARGET_BLOBS_MAP)
+	@rm -f $@ && touch $@; \
+	while read map; \
+	do \
+		blob_in_mk=$$(echo "$$map" | cut -d':' -f1); \
+		blob_in_fs=$$(echo "$$map" | cut -d':' -f2); \
+		source=$$(grep -m1 "^$$blob_in_mk:" "$(TARGET_DEVICE_BLOBS)" | cut -d' ' -f1 | cut -d':' -f2 | grep -v '^obj/'); \
+		l=$$(echo "$$blob_in_fs" | sed -e 's|root/|ramdisk/|g'); \
+		if [ ! -z "$$source" ]; then \
+			grep -i "$$l$$" $(TARGET_LISTFILES_BLOBS) | while read b; \
+			do \
+				reall="/$$(echo $$source | sed -e 's|root/||g')"; \
+				echo "$$reall:$$b" >> $@; \
+			done; \
+		else \
+			echo "Empty source for blob_in_mk=$$blob_in_mk blob_in_fs=$$blob_in_fs"; \
+		fi; \
+	done < $(TARGET_BLOBS_MAP); \
+	sort -t ':' -k 2 -o $@ < $@; mv $@ $@.tmp; uniq < $@.tmp > $@; rm $@.tmp
+
+# This will produce the blobfree main distribution file. We rely on the make
+# target "target-files-package" that produces intermediate ready-to-use ZIP
+# file and tree from which we can build upon.
+$(TARGET_BLOBFREE_ZIP): target-files-package $(TARGET_BLOBS_DELETE_LIST)
+	@cp $(BUILT_TARGET_FILES_PACKAGE) $@ && \
+	zip --delete $@ $$(tr '\n' ' ' < $(TARGET_BLOBS_DELETE_LIST)); \
+	zip --delete $@ "OTA/*" "RADIO/*" "META/*"
+
+.PHONY: $(TARGET_LISTFILES_BLOBS) $(TARGET_LISTFILES_NOBLOBS) compare-zipfiles
+$(TARGET_LISTFILES_BLOBS): target-files-package
+	@zipinfo -l2 $(BUILT_TARGET_FILES_PACKAGE) > $@
+
+$(TARGET_LISTFILES_NOBLOBS): $(TARGET_BLOBFREE_ZIP)
+	@zipinfo -l2 $(TARGET_BLOBFREE_ZIP) > $@
+
+compare-zipfiles: $(TARGET_LISTFILES_BLOBS) $(TARGET_LISTFILES_NOBLOBS)
+	diff -uw $(TARGET_LISTFILES_BLOBS) $(TARGET_LISTFILES_NOBLOBS) || true
+
+# Target controlling the build of the {user,addon}-facing ZIP distribution file,
+# which will just contain all the dependencies within the root of the archive.
+$(TARGET_BLOBFREE_PKG): $(TARGET_BLOBFREE_ZIP) $(TARGET_BLOBS_INJECT_LIST) $(TARGET_CMDLINE_FS) $(INSTALLED_DTIMAGE_TARGET) $(TARGET_DEVICES_JSON) $(TARGET_RECOVERY_FSTAB) $(recovery_fstab)
+	rm $@ || true; \
+	zip -r0 --junk-paths $@ $^
+
+.PHONY: blobfree
+blobfree: $(TARGET_BLOBFREE_PKG)
+	echo "Built blobfree."
+
+endif
+
 #
 # Gecko glue
 #
