@@ -1,0 +1,9 @@
+# rilproxy
+type rilproxy, domain;
+type rilproxy_exec, exec_type, file_type;
+
+init_daemon_domain(rilproxy)
+
+unix_socket_connect(rilproxy, rild, rild)
+
+# audit2allow

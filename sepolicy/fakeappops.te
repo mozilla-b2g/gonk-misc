@@ -1,0 +1,11 @@
+# fakeappops
+type fakeappops, domain;
+type fakeappops_exec, exec_type, file_type;
+
+init_daemon_domain(fakeappops)
+
+binder_use(fakeappops)
+
+# audit2allow
+# other domains that interact with fakeappops domain
+allow mediaserver fakeappops:binder { transfer call };
