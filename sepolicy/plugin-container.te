@@ -1,0 +1,22 @@
+# plugin-container
+type plugin-container, domain;
+type plugin-container_exec, exec_type, file_type;
+
+init_daemon_domain(plugin-container)
+
+binder_use(plugin-container)
+binder_call(plugin-container, b2g)
+
+# audit2allow
+allow plugin-container b2g:unix_stream_socket { write read };
+allow plugin-container fuse:file { read write };
+allow plugin-container gpu_device:chr_file { read write ioctl open };
+allow plugin-container mediaserver:binder { transfer call };
+allow plugin-container mediaserver:fd use;
+allow plugin-container self:process execmem;
+allow plugin-container servicemanager:binder call;
+allow plugin-container shell_data_file:file { read write getattr };
+
+# other domains interacting with plugin-container domain
+allow mediaserver plugin-container:binder { transfer call };
+allow mediaserver plugin-container:fd use;

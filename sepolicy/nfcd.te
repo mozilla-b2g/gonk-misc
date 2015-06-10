@@ -1,0 +1,12 @@
+# nfcd
+type nfcd, domain;
+type nfcd_exec, exec_type, file_type;
+
+init_daemon_domain(nfcd)
+
+# audit2allow
+allow nfcd b2g:unix_stream_socket connectto;
+allow nfcd nfc_data_file:dir { write add_name search remove_name };
+allow nfcd nfc_data_file:file { write create open read getattr unlink };
+allow nfcd nfc_device:chr_file { open read write ioctl };
+allow nfcd sysfs_wake_lock:file { open read write };

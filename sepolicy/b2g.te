@@ -1,0 +1,166 @@
+# b2g
+type b2g, domain;
+type b2g_exec, exec_type, file_type;
+
+init_daemon_domain(b2g)
+
+domain_auto_trans(init, b2g_exec, b2g)
+domain_auto_trans(b2g, plugin-container_exec, plugin-container)
+
+binder_use(b2g)
+binder_call(b2g, mediaserver)
+binder_call(b2g, plugin-container)
+
+unix_socket_connect(b2g, netd, netd)
+unix_socket_connect(b2g, vold, vold)
+unix_socket_connect(b2g, rild, rild)
+
+# force SELinux to keep environment variables when calling
+# execve(plugin-container,...) to preserve LD_PRELOAD which is
+# used to load libmozglue.so
+allow b2g plugin-container:process { noatsecure };
+
+# audit2allow
+allow b2g adb_keys_file:dir { read write getattr open };
+allow b2g alarm_device:chr_file write;
+allow b2g apk_data_file:dir { read write open };
+allow b2g apk_private_data_file:dir { read write open getattr };
+allow b2g app_data_file:dir { read write open getattr };
+allow b2g asec_image_file:dir { read write open getattr };
+allow b2g audio_data_file:dir { read write search getattr open };
+allow b2g audio_data_file:file getattr;
+allow b2g b2g_exec:file { getattr open execute_no_trans };
+allow b2g bluetooth_data_file:dir { read write getattr open };
+allow b2g bluetooth_data_file:file { write open getattr };
+allow b2g bluetooth_prop:property_service set;
+allow b2g bluetoothd:fd use;
+allow b2g bluetoothd:unix_stream_socket { read write };
+allow b2g cache_file:dir { create write add_name remove_name };
+allow b2g cache_file:file { rename write create open unlink };
+allow b2g camera_data_file:dir { read write open getattr };
+allow b2g camera_data_file:file { write open getattr };
+allow b2g camera_data_file:sock_file getattr;
+allow b2g cgroup:dir { create add_name };
+allow b2g ctl_default_prop:property_service set;
+allow b2g ctl_mdnsd_prop:property_service set;
+allow b2g dalvikcache_data_file:dir { read write open };
+allow b2g dalvikcache_profiles_data_file:dir { read write getattr open };
+allow b2g default_android_service:service_manager add;
+allow b2g device:chr_file { read write ioctl open };
+allow b2g device:dir { write };
+allow b2g device:sock_file { write };
+allow b2g dhcp_data_file:dir { read write open search getattr };
+allow b2g dhcp_data_file:file { write open getattr };
+allow b2g dhcp_prop:property_service set;
+allow b2g dnsproxyd_socket:sock_file write;
+allow b2g drm_data_file:dir { read write getattr open };
+allow b2g fuse:dir { write search read remove_name create open add_name };
+allow b2g fuse:file { append setattr write getattr read create unlink open };
+allow b2g fwmarkd_socket:sock_file write;
+allow b2g gpu_device:chr_file { read write ioctl open };
+allow b2g graphics_device:chr_file { read write ioctl open };
+allow b2g graphics_device:dir search;
+allow b2g healthd:dir { read search open };
+allow b2g healthd:file { read getattr };
+allow b2g init:dir { read search open getattr };
+allow b2g init:file { read getattr };
+allow b2g init:lnk_file { read getattr };
+allow b2g init:unix_stream_socket { read write connectto };
+allow b2g input_device:chr_file { open read write ioctl };
+allow b2g input_device:dir { open read search };
+allow b2g install_data_file:file getattr;
+allow b2g kernel:dir { read search open };
+allow b2g kernel:system syslog_read;
+allow b2g keychain_data_file:dir { read write getattr open };
+allow b2g keychain_data_file:dir { read write getattr open };
+allow b2g keystore_data_file:dir { write read getattr open search };
+allow b2g keystore_data_file:file { getattr };
+allow b2g keystore_service:service_manager add;
+allow b2g lmkd:dir { read search open };
+allow b2g logd:dir { read search open };
+allow b2g logd:file { read getattr };
+allow b2g mdnsd:unix_stream_socket connectto;
+allow b2g mdnsd_socket:sock_file write;
+allow b2g media_data_file:dir { read write getattr open };
+allow b2g media_rw_data_file:dir { read write open search getattr };
+allow b2g media_rw_data_file:file { write open getattr };
+allow b2g misc_user_data_file:dir { read write search getattr open };
+allow b2g net_data_file:dir { read write search getattr open };
+allow b2g net_data_file:file { getattr write open };
+allow b2g net_radio_prop:property_service set;
+allow b2g nfc_data_file:dir { read write search getattr open };
+allow b2g nfc_data_file:file { write open };
+allow b2g node:tcp_socket { node_bind };
+allow b2g node:udp_socket { node_bind };
+allow b2g plugin-container:dir search;
+allow b2g plugin-container:file { write open };
+allow b2g plugin-container:process { signal setsched };
+allow b2g plugin-container:unix_stream_socket { read write };
+allow b2g port:tcp_socket { name_connect name_bind node_bind };
+allow b2g port:udp_socket { name_bind node_bind };
+allow b2g powerctl_prop:property_service set;
+allow b2g proc_sysrq:file write;
+allow b2g property_data_file:dir { read write search getattr open };
+allow b2g property_data_file:file { write open getattr };
+allow b2g property_socket:sock_file write;
+allow b2g radio_data_file:dir { read write getattr open };
+allow b2g radio_prop:property_service set;
+allow b2g resourcecache_data_file:dir { read write getattr open };
+allow b2g rilproxy:unix_stream_socket connectto;
+allow b2g sdcard_internal:dir { open create read write search add_name remove_name };
+allow b2g sdcard_internal:file { rename unlink read write create open getattr };
+allow b2g security_file:dir { read write open };
+allow b2g self:binder { transfer call };
+allow b2g self:capability2 syslog;
+allow b2g self:capability { sys_boot sys_resource sys_nice sys_ptrace sys_admin sys_module sys_time net_raw net_bind_service net_admin setgid fsetid kill chown setuid fowner dac_override };
+allow b2g self:netlink_kobject_uevent_socket { setopt create bind read };
+allow b2g self:netlink_socket { write bind create read };
+allow b2g self:process { execmem ptrace };
+allow b2g self:socket { create read write ioctl };
+allow b2g self:tcp_socket { write getattr connect read getopt ioctl listen bind create setopt };
+allow b2g self:udp_socket { write getattr connect read getopt ioctl listen bind create setopt };
+allow b2g sensors_device:chr_file getattr;
+allow b2g shared_relro_file:dir { read write getattr open };
+allow b2g shell_data_file:dir { search read create write getattr setattr rmdir remove_name open add_name };
+allow b2g shell_data_file:file { rename read create write getattr unlink open append };
+allow b2g shell_exec:file read;
+allow b2g socket_device:dir { add_name remove_name write };
+allow b2g socket_device:sock_file { create write unlink };
+allow b2g surfaceflinger_service:service_manager add;
+allow b2g sysfs:file write;
+allow b2g sysfs_lowmemorykiller:file { write open };
+allow b2g sysfs_wake_lock:file { read write open };
+allow b2g system_data_file:dir { open setattr rename read write rmdir remove_name create add_name };
+allow b2g system_data_file:fifo_file { open read setattr create getattr unlink };
+allow b2g system_data_file:file { rename setattr lock create write unlink open append };
+allow b2g system_data_file:lnk_file { create unlink };
+allow b2g system_data_file:sock_file { create setattr getattr unlink };
+allow b2g system_file:file execute_no_trans;
+allow b2g systemkeys_data_file:dir { write read open getattr };
+allow b2g system_prop:property_service set;
+allow b2g system_radio_prop:property_service set;
+allow b2g system_server_service:service_manager add;
+allow b2g tmpfs:dir { write create add_name };
+allow b2g tombstone_data_file:dir { read write search getattr open };
+allow b2g ueventd:dir { read search open };
+allow b2g ueventd:file { read getattr };
+allow b2g vpn_data_file:dir { read write open getattr };
+allow b2g wifi_data_file:dir { getattr open read write search add_name remove_name };
+allow b2g wifi_data_file:file { getattr setattr write read create open };
+allow b2g wifi_data_file:sock_file { create getattr setattr unlink };
+allow b2g wpa_socket:dir { read write open search add_name remove_name getattr };
+allow b2g wpa_socket:sock_file { create setattr getattr unlink write };
+allow b2g wpa:unix_dgram_socket sendto;
+allow b2g zoneinfo_data_file:dir write;
+
+# other domains that interact with b2g domain
+allow mediaserver b2g:binder { call transfer };
+allow mediaserver b2g:fd use;
+
+allow mediaserver default_prop:property_service set;
+
+allow netd b2g:fd use;
+allow netd b2g:tcp_socket { read write setopt getopt };
+allow netd b2g:udp_socket { read write setopt getopt };
+
+allow wpa b2g:unix_dgram_socket sendto;
