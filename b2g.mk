@@ -48,3 +48,7 @@ ifneq ($(DISABLE_SOURCES_XML),true)
 PRODUCT_PACKAGES += \
 	sources.xml
 endif
+
+ifneq ($(POWERTEST),)
+include external/i2c-tools/i2c-tools.mk
+endif
