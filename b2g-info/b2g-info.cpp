@@ -303,11 +303,11 @@ print_b2g_info(bool show_threads)
     t.add(p->ppid());
     t.add_fmt("%0.1f", p->stime_s() + p->utime_s());
     t.add(p->nice());
-    t.add_fmt("%0.1f", p->uss_mb());
-    t.add_fmt("%0.1f", p->pss_mb());
-    t.add_fmt("%0.1f", p->rss_mb());
-    t.add_fmt("%0.1f", p->swap_mb());
-    t.add_fmt("%0.1f", p->vsize_mb());
+    t.add_fmt("%0.3f", p->uss_mb());
+    t.add_fmt("%0.3f", p->pss_mb());
+    t.add_fmt("%0.3f", p->rss_mb());
+    t.add_fmt("%0.3f", p->swap_mb());
+    t.add_fmt("%0.3f", p->vsize_mb());
     t.add(p->oom_adj());
     t.add(p->user(), Table::ALIGN_LEFT);
 
