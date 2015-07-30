@@ -155,6 +155,7 @@ TARGET_BLOBS_INJECT_LIST := $(PRODUCT_OUT)/blobs-toinject.txt
 TARGET_CMDLINE_FS := $(PRODUCT_OUT)/cmdline-fs.txt
 TARGET_BLOBFREE_ZIP := $(PRODUCT_OUT)/blobfree.zip
 TARGET_DEVICES_JSON := $(TARGET_DEVICE_DIR)/devices.json
+TARGET_BLOBFREE_RECOVERY_FSTAB := $(PRODUCT_OUT)/recovery.fstab
 
 # Final package
 TARGET_BLOBFREE_PKG := $(PRODUCT_OUT)/$(TARGET_DEVICE).blobfree-dist.zip
@@ -174,17 +175,18 @@ $(TARGET_BLOBS_SHA1_OUT):
 	xargs sha1sum | \
 	sed -e "s|$(PRODUCT_OUT)/||g" > $@
 
-# Then, given a device blob list, we will identify where each blob is being
-# used and we will produce a blob mapping file. Each line will contain the
-# mapping, following this pattern:
+# Then, given list of device blob list files, we will identify where each blob
+# is being used and we will produce a single blob mapping file. Each line will
+# contain the mapping, following this pattern:
 # <device path>:<blobfree distribution path>
 #
 # In case a blob is being used a several places (boot ramdisk, recovery
 # ramdisk, ...), there will be multiple lines, which will differ by the second
 # part of the mapping, the blobfree distribution path.
 #
-# The source for identifying blobs is the .mk file produced by extract-files.sh,
-# so we expect this to be a big list of PRODUCT_COPY_FILES. This variable is
+# The source for identifying blobs is either the .mk file produced by
+# extract-files.sh, or the vendor-provided device-partial.mk files.  These are
+# both expected to be a big list of PRODUCT_COPY_FILES. This variable is
 # expected to contain statements like:
 # <vendor path>:<device path>
 # So we extract both values and we cross-check this with the list of sha1 files
@@ -197,10 +199,18 @@ $(TARGET_BLOBS_SHA1_OUT):
 # within PRODUCT_OUT using the sha1 list results and we add this blob to the
 # mapping. In case of (3), we do the same as in case of (2) but we generate
 # the mapping for all the duped uses that have been identified.
+#
+# The data fed into while read line is the contents of the .mk files with
+# comments, the PRODUCT_COPY_FILES statement, and whitespace stripped out. The
+# -h flag to grep strips out the file information normally included in grep's
+# output when run on multiple files. The grep -v removes comments, the first
+# sed strips leading whitespace, the second sed removes trailing whitespace and
+# \, and the final grep removes any line containing an assignment operator
+# (:=).
 .PHONY: $(TARGET_BLOBS_MAP)
 $(TARGET_BLOBS_MAP): $(TARGET_BLOBS_SHA1_OUT)
 	@rm -f $@ && touch $@; \
-	grep ':' $(TARGET_DEVICE_BLOBS) | grep -v '^\s*#' | cut -d' ' -f1 | grep ':' | while read line; \
+	grep -h ':' $(TARGET_DEVICE_BLOBS) | grep -v '^\s*#' | sed -e 's/^ *//' | sed -e 's/ *\\$$//' | grep ':[^=]' | while read line; \
 	do \
 		vendor_src=$$(echo "$$line" | cut -d':' -f1); \
 		builds_tgt=$$(echo "$$line" | cut -d':' -f2); \
@@ -224,10 +234,16 @@ $(TARGET_BLOBS_MAP): $(TARGET_BLOBS_SHA1_OUT)
 
 # Parameters for rebuilding filesystem
 # We hardcode sparse for now
+# b2g-installer builds system.img and userdata.img using make_ext4fs, which
+# needs the hardcoded sparse flag, the partition size, and the output name.
+# b2g-installer builds boot.img and recovery.img using mkbootimg, requiring the
+# device-defined mkbootimg args
 .PHONY: $(TARGET_CMDLINE_FS)
 $(TARGET_CMDLINE_FS):
 	echo "system.img: -s -l $(BOARD_SYSTEMIMAGE_PARTITION_SIZE) -a system" > $@
 	echo "userdata.img: -s -l $(BOARD_USERDATAIMAGE_PARTITION_SIZE) -a userdata" >> $@
+	echo "boot.img: $(BOARD_MKBOOTIMG_ARGS)" >> $@
+	echo "recovery.img: $(BOARD_MKBOOTIMG_ARGS)" >> $@
 
 # Building the list of blobs we want to delete from the ZIP file
 # So we take the target files from the blob map and we mangle them to match
@@ -245,7 +261,10 @@ $(TARGET_BLOBS_DELETE_LIST): $(TARGET_LISTFILES_BLOBS) $(TARGET_BLOBS_MAP)
 	sort -o $@ < $@; mv $@ $@.tmp; uniq < $@.tmp > $@; rm $@.tmp
 
 # Building the list of blobs we will want to reinject, from the device, so we
-# need to make use of the source of the blob map
+# need to make use of the source of the blob map.
+# This reads all the device blob lists available using the hide filename (-h)
+# flag, which means that it will find the first instance of the blob_in_mk
+# variable in any blob list file.
 # We need to retransform ramdisk/ into /
 # We also force blacklisting blobs coming from "obj/" because somehow we
 # have some in aries/shinano bobs list but this do not even exists on device
@@ -256,7 +275,7 @@ $(TARGET_BLOBS_INJECT_LIST): $(TARGET_LISTFILES_BLOBS) $(TARGET_BLOBS_MAP)
 	do \
 		blob_in_mk=$$(echo "$$map" | cut -d':' -f1); \
 		blob_in_fs=$$(echo "$$map" | cut -d':' -f2); \
-		source=$$(grep -m1 "^$$blob_in_mk:" "$(TARGET_DEVICE_BLOBS)" | cut -d' ' -f1 | cut -d':' -f2 | grep -v '^obj/'); \
+		source=$$(grep -h -m1 "^ *$$blob_in_mk:" $(TARGET_DEVICE_BLOBS) | sed -e 's/^ *//' | sed -e 's/ *\\$$//' | cut -d':' -f2 | grep -v '^obj/'); \
 		l=$$(echo "$$blob_in_fs" | sed -e 's|root/|ramdisk/|g'); \
 		if [ ! -z "$$source" ]; then \
 			grep -i "$$l$$" $(TARGET_LISTFILES_BLOBS) | while read b; \
@@ -288,9 +307,15 @@ $(TARGET_LISTFILES_NOBLOBS): $(TARGET_BLOBFREE_ZIP)
 compare-zipfiles: $(TARGET_LISTFILES_BLOBS) $(TARGET_LISTFILES_NOBLOBS)
 	diff -uw $(TARGET_LISTFILES_BLOBS) $(TARGET_LISTFILES_NOBLOBS) || true
 
+# Necessary to ensure the recovery.fstab file name
+# Prefers TARGET_RECOVERY_FSTAB but attempts to copy both in the event of
+# failure.
+$(TARGET_BLOBFREE_RECOVERY_FSTAB): $(TARGET_RECOVERY_FSTAB) $(recovery_fstab)
+	cp -f $(TARGET_RECOVERY_FSTAB) $@ || cp -f $(recovery_fstab) $@
+
 # Target controlling the build of the {user,addon}-facing ZIP distribution file,
 # which will just contain all the dependencies within the root of the archive.
-$(TARGET_BLOBFREE_PKG): $(TARGET_BLOBFREE_ZIP) $(TARGET_BLOBS_INJECT_LIST) $(TARGET_CMDLINE_FS) $(INSTALLED_DTIMAGE_TARGET) $(TARGET_DEVICES_JSON) $(TARGET_RECOVERY_FSTAB) $(recovery_fstab)
+$(TARGET_BLOBFREE_PKG): $(TARGET_BLOBFREE_ZIP) $(TARGET_BLOBS_INJECT_LIST) $(TARGET_CMDLINE_FS) $(INSTALLED_DTIMAGE_TARGET) $(TARGET_DEVICES_JSON) $(TARGET_BLOBFREE_RECOVERY_FSTAB)
 	rm $@ || true; \
 	zip -r0 --junk-paths $@ $^
 
