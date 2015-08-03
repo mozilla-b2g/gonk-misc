@@ -1,0 +1,15 @@
+# bluetoothd
+type bluetoothd, domain;
+type bluetoothd_exec, exec_type, file_type;
+
+init_daemon_domain(bluetoothd)
+
+# audit2allow
+allow bluetoothd b2g:unix_stream_socket connectto;
+allow bluetoothd bluetooth_data_file:dir { write remove_name getattr add_name };
+allow bluetoothd bluetooth_data_file:file { rename write getattr setattr read create open unlink };
+allow bluetoothd hci_attach_dev:chr_file { read write ioctl open };
+allow bluetoothd proc_bluetooth_writable:file { write open };
+allow bluetoothd self:capability net_admin;
+allow bluetoothd sysfs_bluetooth_writable:file { write open };
+allow bluetoothd sysfs_wake_lock:file { read write open };

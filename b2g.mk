@@ -2,6 +2,8 @@ TARGET_PROVIDES_INIT_RC := true
 CONFIG_ESD := no
 HTTP := android
 
+MAJOR_VERSION := $(word 1,$(subst ., ,$(PLATFORM_VERSION)))
+
 PRODUCT_PACKAGES += \
 	b2g.sh \
 	b2g-info \
@@ -22,6 +24,21 @@ PRODUCT_PACKAGES += \
 	rilproxy \
 	oom-msg-logger \
 	$(NULL)
+
+ifneq ($(filter-out 0 1 2 3 4,$(MAJOR_VERSION)),)
+BOARD_SEPOLICY_DIRS += \
+	gonk-misc/sepolicy
+
+BOARD_SEPOLICY_UNION += \
+	b2g.te \
+	bluetoothd.te \
+	fakeappops.te \
+	gonksched.te \
+	nfcd.te \
+	plugin-container.te \
+	rilproxy.te \
+	file_contexts
+endif
 
 -include external/svox/pico/lang/all_pico_languages.mk
 -include gaia/gaia.mk
