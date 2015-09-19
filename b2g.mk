@@ -51,7 +51,12 @@ ifeq ($(ENABLE_DEFAULT_BOOTANIMATION),true)
 ifeq ($(BOOTANIMATION_ASSET_SIZE),)
 	BOOTANIMATION_ASSET_SIZE := hvga
 endif
-BOOTANIMATION_ASSET := bootanimation_$(BOOTANIMATION_ASSET_SIZE).zip
+ifeq ($(MOZILLA_OFFICIAL),1)
+	BOOTANIMATION_PATH := bootanimations/official
+else
+	BOOTANIMATION_PATH := bootanimations/unofficial
+endif
+BOOTANIMATION_ASSET := $(BOOTANIMATION_PATH)/bootanimation_$(BOOTANIMATION_ASSET_SIZE).zip
 PRODUCT_COPY_FILES += \
 	gonk-misc/$(BOOTANIMATION_ASSET):system/media/bootanimation.zip
 endif
