@@ -295,7 +295,7 @@ $(TARGET_BLOBS_INJECT_LIST): $(TARGET_LISTFILES_BLOBS) $(TARGET_BLOBS_MAP)
 $(TARGET_BLOBFREE_ZIP): target-files-package $(TARGET_BLOBS_DELETE_LIST)
 	@cp $(BUILT_TARGET_FILES_PACKAGE) $@ && \
 	zip --delete $@ $$(tr '\n' ' ' < $(TARGET_BLOBS_DELETE_LIST)); \
-	zip --delete $@ "OTA/*" "RADIO/*" "META/*"
+	zip --delete $@ "IMAGES/*" "OTA/*" "RADIO/*" "META/*"
 
 .PHONY: $(TARGET_LISTFILES_BLOBS) $(TARGET_LISTFILES_NOBLOBS) compare-zipfiles
 $(TARGET_LISTFILES_BLOBS): target-files-package
