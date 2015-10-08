@@ -111,9 +111,10 @@ allow b2g sdcard_internal:dir { open create read write search add_name remove_na
 allow b2g sdcard_internal:file { rename unlink read write create open getattr };
 allow b2g security_file:dir { read write open };
 allow b2g self:binder { transfer call };
-allow b2g self:capability2 syslog;
+allow b2g self:capability2 { block_suspend syslog };
 allow b2g self:capability { sys_boot sys_resource sys_nice sys_ptrace sys_admin sys_module sys_time net_raw net_bind_service net_admin setgid fsetid kill chown setuid fowner dac_override };
 allow b2g self:netlink_kobject_uevent_socket { setopt create bind read };
+allow b2g self:netlink_route_socket { bind create read };
 allow b2g self:netlink_socket { write bind create read };
 allow b2g self:process { execmem ptrace };
 allow b2g self:socket { create read write ioctl };
