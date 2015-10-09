@@ -15,11 +15,19 @@
 LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
+
+ifeq ($(filter-out 0 1 2 3 4 5,$(MAJOR_VERSION)),)
 include external/stlport/libstlport.mk
+endif
+
 LOCAL_MODULE       := b2g-info
 LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := EXECUTABLES
 LOCAL_SRC_FILES    := b2g-info.cpp process.cpp processlist.cpp table.cpp utils.cpp
 LOCAL_FORCE_STATIC_EXECUTABLE := false
+
+ifeq ($(filter-out 0 1 2 3 4 5,$(MAJOR_VERSION)),)
 LOCAL_SHARED_LIBRARIES := libstlport
+endif
+
 include $(BUILD_EXECUTABLE)
