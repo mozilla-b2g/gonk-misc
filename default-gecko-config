@@ -9,9 +9,12 @@ mk_add_options MOZ_OBJDIR="$GECKO_OBJDIR"
 
 if [ "$TARGET_ARCH" = "x86" ]; then
 ac_add_options --target=i686-android-linux
+elif [ "$TARGET_ARCH" = "arm64" ]; then
+ac_add_options --target=aarch64-linux-android
 else
 ac_add_options --target=arm-linux-androideabi
 fi
+
 ac_add_options --with-gonk="$GONK_PATH"
 ac_add_options --with-gonk-toolchain-prefix="$GECKO_TOOLS_PREFIX"
 

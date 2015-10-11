@@ -410,14 +410,16 @@ MAKE_FULL_UPDATE := $(GECKO_PATH)/tools/update-packaging/make_full_update.sh
 
 # Floating point operations hardware support
 ARCH_ARM_VFP := toolchain-default
-ifeq ($(ARCH_ARM_HAVE_VFP), true)
-ARCH_ARM_VFP := vfp
-endif
-ifeq ($(ARCH_ARM_HAVE_VFP_D32), true)
-ARCH_ARM_VFP := vfpv3
-endif
-ifeq ($(ARCH_ARM_HAVE_NEON), true)
-ARCH_ARM_VFP := neon
+ifeq ($(TARGET_ARCH), arm)
+	ifeq ($(ARCH_ARM_HAVE_VFP), true)
+	ARCH_ARM_VFP := vfp
+	endif
+	ifeq ($(ARCH_ARM_HAVE_VFP_D32), true)
+	ARCH_ARM_VFP := vfpv3
+	endif
+	ifeq ($(ARCH_ARM_HAVE_NEON), true)
+	ARCH_ARM_VFP := neon
+	endif
 endif
 
 .PHONY: gecko-update-full
