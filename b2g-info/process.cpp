@@ -19,8 +19,9 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <pwd.h>
-#include <sys/stat.h>
 #include <regex.h>
+#include <stdlib.h>
+#include <sys/stat.h>
 
 using namespace std;
 
@@ -325,7 +326,7 @@ Process::ensure_got_meminfo()
   // Android has this pm_memusage interface to get the data we collect here.
   // But collecting the data from smaps isn't hard, and doing it this way
   // doesn't rely on any external code, which is nice.
-  // 
+  //
   // Also, the vsize value I get out of procrank (which uses pm_memusage) is
   // way lower than what I get out of statm (which matches smaps).  I presume
   // that statm is correct here.

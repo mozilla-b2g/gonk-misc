@@ -23,6 +23,7 @@
 #include "process.h"
 #include <assert.h>
 #include <dirent.h>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -125,7 +126,7 @@ ProcessList::child_processes()
   for (vector<Process*>::const_iterator it = processes.begin();
        it != processes.end(); ++it) {
     if ((*it)->pid() != main_pid) {
-      m_child_processes.push_back(*it); 
+      m_child_processes.push_back(*it);
     }
   }
   m_got_child_processes = true;
@@ -150,7 +151,7 @@ ProcessList::unordered_b2g_processes()
   const vector<Process*>& processes = all_processes();
   for (vector<Process*>::const_iterator it = processes.begin();
        it != processes.end(); ++it) {
-    if ((*it)->exe() == "/system/b2g/plugin-container" || 
+    if ((*it)->exe() == "/system/b2g/plugin-container" ||
         (*it)->exe() == "/system/b2g/b2g") {
       m_unordered_b2g_processes.push_back(*it);
     }
