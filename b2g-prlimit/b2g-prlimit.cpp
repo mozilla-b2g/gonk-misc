@@ -22,6 +22,7 @@
 #include <stdio.h>        // for printf
 #include <errno.h>        // for errno
 #include <dirent.h>       // for opendir, readdir, etc
+#include <unistd.h>       // for syscall
 
 struct b2g_rlimit64 {
   uint64_t rlim_cur;
