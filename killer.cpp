@@ -37,11 +37,12 @@
  *     $ killer SIGRT2 123
  */
 
+#include <assert.h>
+#include <malloc.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
-#include <signal.h>
-#include <malloc.h>
+#include <string.h>
 #include <unistd.h>
 
 using namespace std;
