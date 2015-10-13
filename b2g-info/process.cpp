@@ -416,7 +416,7 @@ Process::user()
     m_user = pw->pw_name;
   } else {
     char uid[32];
-    snprintf(uid, sizeof(uid), "%lu", st.st_uid);
+    snprintf(uid, sizeof(uid), "%lu", (unsigned long)st.st_uid);
     m_user = uid;
   }
 
