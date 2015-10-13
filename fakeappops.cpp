@@ -46,6 +46,10 @@ public:
     virtual void startWatchingMode(int32_t op, const String16& packageName,
             const sp<IAppOpsCallback>& callback);
     virtual void stopWatchingMode(const sp<IAppOpsCallback>& callback);
+
+#if ANDROID_VERSION >= 23
+    virtual int32_t permissionToOpCode(const String16& permission) override;
+#endif
 };
 
 FakeAppOpsService::FakeAppOpsService()
@@ -108,6 +112,15 @@ void
 FakeAppOpsService::stopWatchingMode(const sp<IAppOpsCallback>& callback)
 {
 }
+
+#if ANDROID_VERSION >= 23
+int32_t
+FakeAppOpsService::permissionToOpCode(const String16& permission)
+{
+  return MODE_ALLOWED;
+}
+#endif
+
 }; // namespace android
 
 using namespace android;
