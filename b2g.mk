@@ -37,6 +37,7 @@ BOARD_SEPOLICY_UNION += \
 	nfcd.te \
 	plugin-container.te \
 	rilproxy.te \
+	file.te \
 	file_contexts
 endif
 

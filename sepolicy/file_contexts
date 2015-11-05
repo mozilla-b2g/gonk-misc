@@ -1,11 +1,22 @@
 #############################
-# B2G files
+# B2G data files
 #
-/system/bin/b2g.sh	u:object_r:b2g_exec:s0
-/system/b2g/b2g		u:object_r:b2g_exec:s0
-/system/b2g/plugin-container	u:object_r:plugin-container_exec:s0
-/system/bin/gonksched	u:object_r:gonksched_exec:s0
-/system/bin/rilproxy 	u:object_r:rilproxy_exec:s0
-/system/bin/fakeappops	u:object_r:fakeappops_exec:s0
-/system/bin/bluetoothd	u:object_r:bluetoothd_exec:s0
-/system/bin/nfcd	u:object_r:nfcd_exec:s0
+/data/b2g(/.*)?                 u:object_r:b2g_data_file:s0
+
+# Misc files
+/data/local/permissions.sqlite  u:object_r:b2g_data_file:s0
+
+# Webapps
+/data/local/webapps(/.*)?       u:object_r:b2g_data_file:s0
+
+#############################
+# B2G executables
+#
+/system/bin/b2g.sh              u:object_r:b2g_exec:s0
+/system/b2g/b2g                 u:object_r:b2g_exec:s0
+/system/b2g/plugin-container    u:object_r:plugin-container_exec:s0
+/system/bin/gonksched           u:object_r:gonksched_exec:s0
+/system/bin/rilproxy            u:object_r:rilproxy_exec:s0
+/system/bin/fakeappops          u:object_r:fakeappops_exec:s0
+/system/bin/bluetoothd          u:object_r:bluetoothd_exec:s0
+/system/bin/nfcd                u:object_r:nfcd_exec:s0
