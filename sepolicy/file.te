@@ -1,0 +1,5 @@
+# Filesystem types
+
+# File types
+# Default type for anything inside /data/b2g
+type b2g_data_file, file_type, data_file_type;

@@ -20,6 +20,11 @@ unix_socket_connect(b2g, rild, rild)
 # used to load libmozglue.so
 allow b2g plugin-container:process { noatsecure };
 
+# Files created, inside a directory labeled with 'system_data_file'
+# (such as /data/local/), by a processes running with in the b2g context,
+# should be labled with 'b2g_data_file'
+file_type_auto_trans(b2g, system_data_file, b2g_data_file)
+
 # audit2allow
 allow b2g adb_keys_file:dir { read write getattr open };
 allow b2g alarm_device:chr_file write;
@@ -131,11 +136,7 @@ allow b2g surfaceflinger_service:service_manager add;
 allow b2g sysfs:file write;
 allow b2g sysfs_lowmemorykiller:file { write open };
 allow b2g sysfs_wake_lock:file { read write open };
-allow b2g system_data_file:dir { open setattr rename read write rmdir remove_name create add_name };
-allow b2g system_data_file:fifo_file { open read setattr create getattr unlink };
-allow b2g system_data_file:file { rename setattr lock create write unlink open append };
-allow b2g system_data_file:lnk_file { create unlink };
-allow b2g system_data_file:sock_file { create setattr getattr unlink };
+allow b2g system_data_file:dir { remove_name add_name };
 allow b2g system_file:file execute_no_trans;
 allow b2g systemkeys_data_file:dir { write read open getattr };
 allow b2g system_prop:property_service set;
