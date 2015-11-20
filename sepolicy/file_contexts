@@ -20,3 +20,4 @@
 /system/bin/fakeappops          u:object_r:fakeappops_exec:s0
 /system/bin/bluetoothd          u:object_r:bluetoothd_exec:s0
 /system/bin/nfcd                u:object_r:nfcd_exec:s0
+/system/bin/sensorsd            u:object_r:sensorsd_exec:s0

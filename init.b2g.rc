@@ -26,6 +26,13 @@ service nfcd /system/bin/nfcd
     disabled
     oneshot
 
+service sensorsd /system/bin/sensorsd
+    class main
+    user system
+    group system input
+    disabled
+    oneshot
+
 on boot
     exec /system/bin/rm -r /data/local/tmp
     exec /system/bin/mkdir -p /data/local/tmp

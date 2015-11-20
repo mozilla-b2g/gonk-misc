@@ -126,6 +126,7 @@ allow b2g self:socket { create read write ioctl };
 allow b2g self:tcp_socket { write getattr connect read getopt ioctl listen bind create setopt };
 allow b2g self:udp_socket { write getattr connect read getopt ioctl listen bind create setopt };
 allow b2g sensors_device:chr_file getattr;
+allow b2g sensorsd_exec:file execute;
 allow b2g shared_relro_file:dir { read write getattr open };
 allow b2g shell_data_file:dir { search read create write getattr setattr rmdir remove_name open add_name };
 allow b2g shell_data_file:file { rename read create write getattr unlink open append };
