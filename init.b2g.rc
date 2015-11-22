@@ -33,3 +33,8 @@ on boot
     # Hard limit keeps default value(4096).
     setrlimit 7 2048 4096
     write /proc/sys/net/ipv6/conf/default/use_tempaddr 2
+
+on property:sys.boot_completed=1
+    write /data/system/packages.list 0
+    chmod 0640 /data/system/packages.list
+    chown system package_info /data/system/packages.list
