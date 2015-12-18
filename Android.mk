@@ -496,20 +496,33 @@ ifneq ($(strip $(SKIP_DASH_S)),1)
 SHOW_COMMAND_GECKO = -s
 endif
 
+# If our build target is multilib then we may want to build Gecko as the 2nd arch
+ifeq ($(BUILD_MULTILIB_GECKO_AS_2ND_ARCH), true)
+MULTILIB := 2ND_
+# All 64bit arm64 targets support 32bit neon extensions
+ifeq ($(TARGET_ARCH), arm64)
+ARCH_ARM_VFP := neon
+endif
+endif
+
+# Multilib complicates the obj dir in Gecko, so export it from here
+GONK_OUT_INTERMEDIATES := $($(MULTILIB)TARGET_OUT_INTERMEDIATES)
+
 ifeq ($(strip $(GECKO_TOOLS_PREFIX)),)
-GECKO_TOOLS_PREFIX = $(TARGET_TOOLS_PREFIX)
+GECKO_TOOLS_PREFIX = $($(MULTILIB)TARGET_TOOLS_PREFIX)
 endif
 
 .PHONY: $(LOCAL_BUILT_MODULE)
-$(LOCAL_BUILT_MODULE): $(TARGET_CRTBEGIN_DYNAMIC_O) $(TARGET_CRTEND_O) $(addprefix $(TARGET_OUT_SHARED_LIBRARIES)/,$(GECKO_LIB_DEPS))
+$(LOCAL_BUILT_MODULE): $($(MULTILIB)TARGET_CRTBEGIN_DYNAMIC_O) $($(MULTILIB)TARGET_CRTEND_O) $(addprefix $($(MULTILIB)TARGET_OUT_SHARED_LIBRARIES)/,$(GECKO_LIB_DEPS))
 	(echo "export GECKO_OBJDIR=$(abspath $(GECKO_OBJDIR))"; \
 	echo "export GECKO_TOOLS_PREFIX=$(abspath $(GECKO_TOOLS_PREFIX))"; \
 	echo "export PRODUCT_OUT=$(abspath $(PRODUCT_OUT))" ) > .var.profile
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
+	export GONK_OUT_INTERMEDIATES="$(GONK_OUT_INTERMEDIATES)" && \
 	export GONK_PRODUCT="$(TARGET_DEVICE)" && \
-	export TARGET_ARCH="$(TARGET_ARCH)" && \
+	export TARGET_ARCH="$(TARGET_$(MULTILIB)ARCH)" && \
 	export TARGET_BUILD_VARIANT="$(TARGET_BUILD_VARIANT)" && \
-	export TARGET_C_INCLUDES="$(addprefix -isystem ,$(abspath $(TARGET_C_INCLUDES)))" && \
+	export TARGET_C_INCLUDES="$(addprefix -isystem ,$(abspath $($(MULTILIB)TARGET_C_INCLUDES)))" && \
 	export PLATFORM_SDK_VERSION="$(PLATFORM_SDK_VERSION)" && \
 	export HOST_OS="$(HOST_OS)" && \
 	export GECKO_TOOLS_PREFIX="$(abspath $(GECKO_TOOLS_PREFIX))" && \
