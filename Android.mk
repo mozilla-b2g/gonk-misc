@@ -83,6 +83,14 @@ include $(BUILD_EXECUTABLE)
 endif
 
 include $(CLEAR_VARS)
+LOCAL_MODULE       := fakebattery
+LOCAL_MODULE_TAGS  := optional
+LOCAL_MODULE_CLASS := EXECUTABLES
+LOCAL_SRC_FILES    := fakebattery.cpp
+LOCAL_SHARED_LIBRARIES := libbinder libutils
+include $(BUILD_EXECUTABLE)
+
+include $(CLEAR_VARS)
 LOCAL_MODULE       := b2g-ps
 LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := EXECUTABLES
