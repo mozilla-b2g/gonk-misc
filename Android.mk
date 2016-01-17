@@ -153,6 +153,7 @@ ifneq ($(TARGET_DEVICE_BLOBS),)
 
 # Intermediate targets
 TARGET_BLOBS_SHA1_OUT := $(PRODUCT_OUT)/$(TARGET_DEVICE)-blobs-sha1-out.txt
+TARGET_DEVICE_BLOBS_OUT := $(PRODUCT_OUT)/$(TARGET_DEVICE)-blobs-out.txt
 TARGET_BLOBS_MAP := $(PRODUCT_OUT)/$(TARGET_DEVICE)-blobsmap.txt
 TARGET_LISTFILES_BLOBS := $(PRODUCT_OUT)/$(TARGET_DEVICE)-listfiles_blobs.txt
 TARGET_LISTFILES_NOBLOBS := $(PRODUCT_OUT)/$(TARGET_DEVICE)-listfiles_noblobs.txt
@@ -183,6 +184,33 @@ $(TARGET_BLOBS_SHA1_OUT):
 	xargs sha1sum | \
 	sed -e "s|$(PRODUCT_OUT)/||g" > $@
 
+# The source for identifying blobs can be in two formats. It is either a simple
+# list of blobs in the device tree, or it is a .mk file produced by
+# extract-files.sh (or a vendor-provided device-partial.mk file).
+#
+# Because the format of these two sources differ, we must process them to have
+# them in a common format. We write a file to $OUT containing the list of blobs
+# in the format:
+# <vendor path>:<device path>
+# where:
+# vendor_path is the location in our build tree
+# device_path is the location on the device
+.PHONY: $(TARGET_DEVICE_BLOBS_OUT)
+$(TARGET_DEVICE_BLOBS_OUT): $(TARGET_BLOBS_SHA1_OUT)
+ifeq ($(TARGET_DEVICE_BLOBS_LIST),true)
+	@rm -f $@ && touch $@; \
+	grep -h '/' $(TARGET_DEVICE_BLOBS) | grep -v '^\s*#' | sed -e 's/^-\(.*\)/\1/' | while read line; \
+	do \
+		echo "$(TARGET_DEVICE_BLOBS_SRC_DIR)/$$line:system/$$line" >> $@; \
+	done
+else
+	@rm -f $@ && touch $@; \
+	grep -h ':' $(TARGET_DEVICE_BLOBS) | grep -v '^\s*#' | sed -e 's/^ *//' | sed -e 's/ *\\$$//' | grep ':[^=]' | while read line; \
+	do \
+		echo "$$line" >> $@; \
+	done
+endif
+
 # Then, given list of device blob list files, we will identify where each blob
 # is being used and we will produce a single blob mapping file. Each line will
 # contain the mapping, following this pattern:
@@ -192,11 +220,6 @@ $(TARGET_BLOBS_SHA1_OUT):
 # ramdisk, ...), there will be multiple lines, which will differ by the second
 # part of the mapping, the blobfree distribution path.
 #
-# The source for identifying blobs is either the .mk file produced by
-# extract-files.sh, or the vendor-provided device-partial.mk files.  These are
-# both expected to be a big list of PRODUCT_COPY_FILES. This variable is
-# expected to contain statements like:
-# <vendor path>:<device path>
 # So we extract both values and we cross-check this with the list of sha1 files
 # such that we can identify three types of blobs:
 #  (1) unused ones still referenced within .mk file
@@ -216,9 +239,9 @@ $(TARGET_BLOBS_SHA1_OUT):
 # \, and the final grep removes any line containing an assignment operator
 # (:=).
 .PHONY: $(TARGET_BLOBS_MAP)
-$(TARGET_BLOBS_MAP): $(TARGET_BLOBS_SHA1_OUT)
+$(TARGET_BLOBS_MAP): $(TARGET_BLOBS_SHA1_OUT) $(TARGET_DEVICE_BLOBS_OUT)
 	@rm -f $@ && touch $@; \
-	grep -h ':' $(TARGET_DEVICE_BLOBS) | grep -v '^\s*#' | sed -e 's/^ *//' | sed -e 's/ *\\$$//' | grep ':[^=]' | while read line; \
+	cat $(TARGET_DEVICE_BLOBS_OUT) | while read line; \
 	do \
 		vendor_src=$$(echo "$$line" | cut -d':' -f1); \
 		builds_tgt=$$(echo "$$line" | cut -d':' -f2); \
@@ -277,13 +300,13 @@ $(TARGET_BLOBS_DELETE_LIST): $(TARGET_LISTFILES_BLOBS) $(TARGET_BLOBS_MAP)
 # We also force blacklisting blobs coming from "obj/" because somehow we
 # have some in aries/shinano bobs list but this do not even exists on device
 .PHONY: $(TARGET_BLOBS_INJECT_LIST)
-$(TARGET_BLOBS_INJECT_LIST): $(TARGET_LISTFILES_BLOBS) $(TARGET_BLOBS_MAP)
+$(TARGET_BLOBS_INJECT_LIST): $(TARGET_LISTFILES_BLOBS) $(TARGET_BLOBS_MAP) $(TARGET_DEVICE_BLOBS_OUT)
 	@rm -f $@ && touch $@; \
 	while read map; \
 	do \
 		blob_in_mk=$$(echo "$$map" | cut -d':' -f1); \
 		blob_in_fs=$$(echo "$$map" | cut -d':' -f2); \
-		source=$$(grep -h -m1 "^ *$$blob_in_mk:" $(TARGET_DEVICE_BLOBS) | sed -e 's/^ *//' | sed -e 's/ *\\$$//' | cut -d':' -f2 | grep -v '^obj/'); \
+		source=$$(grep -h -m1 "^ *$$blob_in_mk:" $(TARGET_DEVICE_BLOBS_OUT) | sed -e 's/^ *//' | sed -e 's/ *\\$$//' | cut -d':' -f2 | grep -v '^obj/'); \
 		l=$$(echo "$$blob_in_fs" | sed -e 's|root/|ramdisk/|g'); \
 		if [ ! -z "$$source" ]; then \
 			grep -i "$$l$$" $(TARGET_LISTFILES_BLOBS) | while read b; \
