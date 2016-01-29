@@ -65,6 +65,20 @@ ac_add_options --enable-update-packaging
 # Enable dump() from JS.
 export CXXFLAGS="-DMOZ_ENABLE_JS_DUMP $EXTRA_INCLUDE ${CXXFLAGS}"
 
+# In order to support x86 64bis, Google change x86 toolchain from lollipop.
+# Prefix was changed from i686-linux-android to x86_64-linux-android
+# Add "-m32" to build x86 32bits
+if [ "$TARGET_ARCH" = "x86" ]; then
+  case "$GECKO_TOOLS_PREFIX" in
+  *x86_64-linux-android-*)
+    export CFLAGS="-m32 ${CFLAGS}"
+    export CXXFLAGS="-m32 ${CXXFLAGS}"
+    export LDFLAGS="-m32 ${LDFLAGS}"
+    export ASFLAGS="-m32 ${ASFLAGS}"
+    ;;
+  esac
+fi
+
 ac_add_options --with-fpu="$ARCH_ARM_VFP"
 
 if [ "${MOZ_DMD:-0}" != 0 ]; then
