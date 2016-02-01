@@ -22,6 +22,7 @@ PRODUCT_PACKAGES += \
 	libttspico \
 	rild \
 	rilproxy \
+	sensorsd \
 	oom-msg-logger \
 	$(NULL)
 
@@ -37,6 +38,7 @@ BOARD_SEPOLICY_UNION += \
 	nfcd.te \
 	plugin-container.te \
 	rilproxy.te \
+	sensorsd.te \
 	file.te \
 	file_contexts
 endif

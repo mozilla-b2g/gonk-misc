@@ -1,0 +1,15 @@
+# sensorsd
+type sensorsd, domain;
+type sensorsd_exec, exec_type, file_type;
+
+init_daemon_domain(sensorsd)
+
+# audit2allow
+allow sensorsd b2g:unix_stream_socket connectto;
+allow sensorsd devpts:chr_file { read write getattr };
+allow sensorsd init:unix_stream_socket connectto;
+allow sensorsd self:capability dac_override;
+allow sensorsd self:capability2 block_suspend;
+allow sensorsd sensors_device:chr_file getattr;
+allow sensorsd socket_device:sock_file write;
+allow sensorsd sysfs_wake_lock:file { read write open };
