@@ -344,6 +344,15 @@ compare-zipfiles: $(TARGET_LISTFILES_BLOBS) $(TARGET_LISTFILES_NOBLOBS)
 $(TARGET_BLOBFREE_RECOVERY_FSTAB): $(TARGET_RECOVERY_FSTAB) $(recovery_fstab)
 	cp -f $(TARGET_RECOVERY_FSTAB) $@ || cp -f $(recovery_fstab) $@
 
+# CyanogenMod uses custom mkbootimg.sh scripts to generate the device tree
+# image and we can't detect that here. We can at least force use of dt.img
+# If we detect the custom script.
+ifeq ($(BOARD_KERNEL_SEPARATED_DT),true)
+ifneq ($(BOARD_CUSTOM_BOOTIMG_MK),)
+INSTALLED_DTIMAGE_TARGET := $(PRODUCT_OUT)/dt.img
+endif
+endif
+
 # Target controlling the build of the {user,addon}-facing ZIP distribution file,
 # which will just contain all the dependencies within the root of the archive.
 $(TARGET_BLOBFREE_PKG): $(TARGET_BLOBFREE_ZIP) $(TARGET_BLOBS_INJECT_LIST) $(TARGET_CMDLINE_FS) $(INSTALLED_DTIMAGE_TARGET) $(TARGET_DEVICES_JSON) $(TARGET_BLOBFREE_RECOVERY_FSTAB)
