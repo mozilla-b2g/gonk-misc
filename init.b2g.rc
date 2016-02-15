@@ -13,6 +13,13 @@ service b2g /system/bin/b2g.sh
     class main
     onrestart restart media
 
+service geolocationd /system/bin/geolocationd
+    class main
+    user system
+    group system gps
+    disabled
+    oneshot
+
 service rilproxy /system/bin/rilproxy
     class main
     socket rilproxy stream 660 radio radio
