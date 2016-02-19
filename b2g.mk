@@ -24,6 +24,7 @@ PRODUCT_PACKAGES += \
 	rilproxy \
 	sensorsd \
 	oom-msg-logger \
+	tvd \
 	$(NULL)
 
 ifneq ($(filter-out 0 1 2 3 4,$(MAJOR_VERSION)),)
@@ -39,6 +40,7 @@ BOARD_SEPOLICY_UNION += \
 	plugin-container.te \
 	rilproxy.te \
 	sensorsd.te \
+	tvd.te \
 	file.te \
 	file_contexts
 endif
