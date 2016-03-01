@@ -508,6 +508,7 @@ endif
 # If our build target is multilib then we may want to build Gecko as the 2nd arch
 ifeq ($(BUILD_MULTILIB_GECKO_AS_2ND_ARCH), true)
 MULTILIB := 2ND_
+MULTILIB_OBJDIR := obj_$(TARGET_2ND_ARCH)
 # All 64bit arm64 targets support 32bit neon extensions
 ifeq ($(TARGET_ARCH), arm64)
 ARCH_ARM_VFP := neon
@@ -515,7 +516,8 @@ endif
 endif
 
 # Multilib complicates the obj dir in Gecko, so export it from here
-GONK_OUT_INTERMEDIATES := $($(MULTILIB)TARGET_OUT_INTERMEDIATES)
+MULTILIB_OBJDIR ?= obj
+GONK_OUT_INTERMEDIATES := out/target/product/$(TARGET_DEVICE)/$(MULTILIB_OBJDIR)
 
 ifeq ($(strip $(GECKO_TOOLS_PREFIX)),)
 GECKO_TOOLS_PREFIX = $($(MULTILIB)TARGET_TOOLS_PREFIX)
