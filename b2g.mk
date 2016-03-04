@@ -73,3 +73,15 @@ ifneq ($(DISABLE_SOURCES_XML),true)
 PRODUCT_PACKAGES += \
 	sources.xml
 endif
+
+ifeq ($(ENABLE_NGINX),true)
+PRODUCT_PACKAGES +=           \
+	nginx                 \
+	nginx/nginx.conf      \
+	nginx/mime.types      \
+	nginx/html/index.html \
+	nginx/html/50x.html
+
+PRODUCT_PROPERTY_OVERRIDES += \
+	ro.moz.httpd=1
+endif # ENABLE_NGINX
