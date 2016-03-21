@@ -418,6 +418,7 @@ endif
 # rule executes
 PRESERVE_DIRS := distribution
 ifeq ($(PRESERVE_B2G_WEBAPPS), 1)
+PRESERVE_DIRS += apps # This is for use with kanikani gaia branch
 PRESERVE_DIRS += webapps
 endif
 $(LOCAL_INSTALLED_MODULE): $(LOCAL_BUILT_MODULE) gaia-prefs $(APRIORI) $(PRELINK_MAP)
