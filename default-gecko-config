@@ -40,6 +40,8 @@ if [ "${DISABLE_JEMALLOC:-0}" != "0" ] ||
 ac_add_options --disable-jemalloc
 fi
 
+ac_add_options --disable-printing
+
 if [ "${B2G_VALGRIND:-0}" != "0" ]; then
 ac_add_options --enable-valgrind
 ac_add_options --enable-profiling
