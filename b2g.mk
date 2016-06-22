@@ -10,6 +10,7 @@ PRODUCT_PACKAGES += \
 	b2g-prlimit \
 	b2g-ps \
 	bluetoothd \
+	devicesvcd \
 	gonksched \
 	init.bluetooth.rc \
 	fakeappops \
@@ -20,10 +21,18 @@ PRODUCT_PACKAGES += \
 	init.b2g.rc \
 	killer \
 	libttspico \
+	node \
 	rild \
 	rilproxy \
 	sensorsd \
 	oom-msg-logger \
+	$(NULL)
+
+# List NPM packages below. Downloading these packages will require
+# a network connection at build time.
+
+PRODUCT_PACKAGES += \
+	socket.io \
 	$(NULL)
 
 ifneq ($(filter-out 0 1 2 3 4,$(MAJOR_VERSION)),)
