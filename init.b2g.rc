@@ -1,5 +1,6 @@
 
 import /init.bluetooth.rc
+import /init.devicesvc.rc
 
 service gonksched /system/bin/gonksched
     class main
