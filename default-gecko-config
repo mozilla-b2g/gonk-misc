@@ -30,23 +30,7 @@ ac_add_options --enable-application=b2g
 B2G_ANDROID_NDK_PATH=${B2G_ANDROID_NDK_PATH:="$HOME/.mozbuild/android-ndk-r11b"}
 ac_add_options --with-android-ndk="${B2G_ANDROID_NDK_PATH}"
 
-# Some Android releases don't have their own SDK. We use the next lower
-# version in these cases.
-
-case $PLATFORM_SDK_VERSION in
-22)
-  ac_add_options --with-android-version=21
-  ;;
-20)
-  ac_add_options --with-android-version=19
-  ;;
-11|10)
-  ac_add_options --with-android-version=9
-  ;;
-*)
-  ac_add_options --with-android-version=$PLATFORM_SDK_VERSION
-  ;;
-esac
+ac_add_options --with-android-version=$PLATFORM_SDK_VERSION
 
 ac_add_options --enable-debug-symbols
 if [ "${B2G_DEBUG:-0}" != "0" ]; then
@@ -79,9 +63,7 @@ if [ "${B2G_PROFILING:-0}" != "0" ]; then
 ac_add_options --enable-profiling
 fi
 
-if [ "$HOST_OS" != "linux" ]; then
 ac_add_options --disable-crashreporter
-fi
 
 if [ "${B2G_UPDATER:-0}" != "0" ]; then
   # Note: if B2G_UPDATE_CHANNEL isn't set, then configure will use its own
