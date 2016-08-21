@@ -564,7 +564,8 @@ MAKE_SYM_STORE_PATH := \
 
 # Override the defaults so we don't try to strip
 # system libraries.
-MAKE_SYM_STORE_ARGS := --vcs-info
+REPO_MANIFEST := $(abspath ./sources.xml)
+MAKE_SYM_STORE_ARGS := --vcs-info $(if $(wildcard $(REPO_MANIFEST)),--repo-manifest=$(REPO_MANIFEST))
 
 .PHONY: buildsymbols uploadsymbols
 buildsymbols uploadsymbols:
