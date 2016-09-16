@@ -33,6 +33,13 @@ service sensorsd /system/bin/sensorsd
     disabled
     oneshot
 
+service tvd /system/bin/tvd
+    class main
+    user system
+    group system
+    disabled
+    oneshot
+
 on boot
     exec /system/bin/rm -r /data/local/tmp
     exec /system/bin/mkdir -p /data/local/tmp

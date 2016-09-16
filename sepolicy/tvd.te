@@ -1,0 +1,9 @@
+# tvd
+type tvd, domain;
+type tvd_exec, exec_type, file_type;
+
+init_daemon_domain(tvd)
+
+# audit2allow
+allow tvd b2g:unix_stream_socket connectto;
+allow tvd sysfs_wake_lock:file { read write open };
