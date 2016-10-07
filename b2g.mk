@@ -16,6 +16,7 @@ PRODUCT_PACKAGES += \
 	fs_config \
 	gaia \
 	gecko \
+	geolocationd \
 	init.rc \
 	init.b2g.rc \
 	killer \
