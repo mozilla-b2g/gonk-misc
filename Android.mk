@@ -589,6 +589,7 @@ EMULATOR_FILES := \
 	$(HOST_OUT)/bin/adb \
 	$(HOST_OUT)/bin/emulator \
 	$(HOST_OUT)/bin/emulator-arm \
+	$(HOST_OUT)/bin/emulator64-arm \
 	$(HOST_OUT)/bin/mksdcard \
 	$(HOST_OUT)/lib \
 	development/tools/emulator/skins \
@@ -604,9 +605,17 @@ EMULATOR_FILES += \
 else
 EMULATOR_FILES += \
 	$(HOST_OUT)/bin/emulator-x86 \
+	$(HOST_OUT)/bin/emulator64-x86 \
 	$(HOST_OUT)/usr/share/pc-bios/bios.bin \
 	$(HOST_OUT)/usr/share/pc-bios/vgabios-cirrus.bin \
 	prebuilts/qemu-kernel/x86/kernel-qemu
+endif
+
+# Only standalone emulator build will need lib64. Ics, jb and kk are still
+# using the original way to build emulator.
+ifeq ($(filter 15 18 19, $(PLATFORM_SDK_VERSION)),)
+EMULATOR_FILES += \
+	$(HOST_OUT)/lib64
 endif
 
 EMULATOR_ARCHIVE:="$(OUT_DIR)/emulator.tar.gz"
