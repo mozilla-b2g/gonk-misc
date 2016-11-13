@@ -699,7 +699,7 @@ ifneq ($(ALL_FOTA_PARTITIONS),)
 B2G_FOTA_EXTRA_TARGETS := $(shell for px in $(ALL_FOTA_PARTITIONS); do echo $$px | cut -d':' -f2 | sort | uniq | grep '\.img$$' | sed -e 's|^|$(PRODUCT_OUT)/|g'; done;)
 endif
 
-B2G_FOTA_COMMON_TARGETS := $(PRODUCT_OUT)/system.img $(B2G_FOTA_EXTRA_TARGETS) updater
+B2G_FOTA_COMMON_TARGETS := updater
 define B2G_FOTA_COMMON_VARIABLES
     --update-bin $(PRODUCT_OUT)/system/bin/updater \
     --sdk-version $(PLATFORM_SDK_VERSION) \
